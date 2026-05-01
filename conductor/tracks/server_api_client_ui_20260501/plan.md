@@ -2,7 +2,7 @@
 
 ## Phase 1: Backend API Implementation
 - [x] Task: Backend - Setup Kotlin Serialization for Ktor be7fb9e
-- [ ] Task: Backend - Create API Request/Response Models
+- [x] Task: Backend - Create API Request/Response Models 8180d0d
 - [ ] Task: Backend - Implement `POST /api/servers` Route
     - [ ] Task: Write tests for `POST /api/servers` in `ApplicationTest.kt`
     - [ ] Task: Implement the route logic in `Application.kt` or a new `ServerRoutes.kt`
