@@ -1,9 +1,9 @@
 # Implementation Plan: Database Infrastructure & Core Repositories
 
-## Phase 1: Setup & Infrastructure
+## Phase 1: Setup & Infrastructure [checkpoint: 41fdbf4]
 - [x] Task: Add Exposed 1.0 and H2 dependencies to `libs.versions.toml` and configure `server/build.gradle.kts` e75c78f
 - [x] Task: Implement `DatabaseFactory` to manage H2 in-memory connection and transaction context bc5524c
-- [ ] Task: Conductor - User Manual Verification 'Setup & Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Setup & Infrastructure' (Protocol in workflow.md) 41fdbf4
 
 ## Phase 2: Identity Persistence (User)
 - [ ] Task: Define `Users` Exposed table in the `server` module
