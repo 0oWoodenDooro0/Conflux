@@ -11,6 +11,7 @@ The current application lacks a user-accessible way to create new servers. While
    - Update `ServerApiClient.createServer` to accept and send the `ownerId`.
 4. **API Update (Server)**:
    - Update the `/api/servers` POST route to extract the `ownerId` from the request and use it when creating the `Server` object in the database.
+   - Update the `/api/servers` GET route (via `getServersForUser`) to robustly handle the `userId` parameter, supporting both UUIDs and usernames, and ensuring it returns servers where the user is either the owner or a member.
 5. **UI Integration**: Ensure the `MainScreen` or `ServerSidebar` can handle navigation to the server creation flow.
 
 **Acceptance Criteria**

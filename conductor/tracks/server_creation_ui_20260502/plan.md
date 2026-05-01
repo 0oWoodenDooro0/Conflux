@@ -13,8 +13,11 @@
 - [ ] Task: Update Server route to use `ownerId` from the POST request.
     - [ ] Modify `serverRoutes` in `server/src/main/kotlin/website/woodendoor/conflux/routes/ServerRoutes.kt`.
     - [ ] Remove the hardcoded `"default-user"` owner.
-- [ ] Task: Verify server-side server creation with tests.
-    - [ ] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed.
+- [ ] Task: Update server list query to be robust (handle username and ID).
+    - [ ] Modify `getServersForUser` in `ExposedServerRepository.kt` to resolve username to ID if necessary.
+    - [ ] Ensure the query correctly returns servers where the user is owner OR member.
+- [ ] Task: Verify server-side server creation and querying with tests.
+    - [ ] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed and queried.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md)
 
 **Phase 3: UI Integration**
