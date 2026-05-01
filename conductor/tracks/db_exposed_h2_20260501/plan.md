@@ -2,7 +2,7 @@
 
 ## Phase 1: Setup & Infrastructure
 - [x] Task: Add Exposed 1.0 and H2 dependencies to `libs.versions.toml` and configure `server/build.gradle.kts` e75c78f
-- [ ] Task: Implement `DatabaseFactory` to manage H2 in-memory connection and transaction context
+- [x] Task: Implement `DatabaseFactory` to manage H2 in-memory connection and transaction context bc5524c
 - [ ] Task: Conductor - User Manual Verification 'Setup & Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Identity Persistence (User)
