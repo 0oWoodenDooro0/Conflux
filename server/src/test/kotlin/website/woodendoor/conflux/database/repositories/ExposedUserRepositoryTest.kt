@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import website.woodendoor.conflux.database.DatabaseFactory
-import website.woodendoor.conflux.database.models.Users
+import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.models.User
 import kotlin.test.*
 
@@ -15,8 +15,8 @@ class ExposedUserRepositoryTest {
     fun setup() {
         DatabaseFactory.init()
         transaction {
-            SchemaUtils.drop(Users)
-            SchemaUtils.create(Users)
+            SchemaUtils.drop(ServerMembers, Channels, Roles, Servers, Users)
+            SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers)
         }
     }
 
