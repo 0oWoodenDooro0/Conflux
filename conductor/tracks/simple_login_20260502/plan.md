@@ -28,7 +28,7 @@
     - [ ] Create `LoginScreen.kt`.
     - [ ] Implement username TextField and Login Button.
     - [ ] Add validation logic call.
-- [ ] Task: Connect `LoginScreen` to Backend Login API.
+- [x] Task: Connect `LoginScreen` to Backend Login API. 109c972
     - [ ] Add `login` method to `ServerApiClient`.
     - [ ] Update `LoginScreen` to call `ServerApiClient.login`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Login Screen' (Protocol in workflow.md)
