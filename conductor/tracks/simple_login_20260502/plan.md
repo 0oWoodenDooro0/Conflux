@@ -22,7 +22,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Login Screen
-- [ ] Task: Create `LoginState` to manage current user in memory.
+- [x] Task: Create `LoginState` to manage current user in memory. 3e21aed
     - [ ] Define a shared state holder for `currentUser`.
 - [ ] Task: Implement `LoginScreen` UI.
     - [ ] Create `LoginScreen.kt`.
