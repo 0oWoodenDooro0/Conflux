@@ -37,7 +37,7 @@
 - [x] Task: Implement `MainScreen` scaffolding. 849ceaa
     - [ ] Create `MainScreen.kt`.
     - [ ] Add fetching logic for servers using `currentUser.id`.
-- [ ] Task: Create `ServerSidebar` component.
+- [x] Task: Create `ServerSidebar` component. 6a18773
     - [ ] Implement a vertical list for servers.
     - [ ] Apply Discord-style styling (narrow icons/labels).
 - [ ] Task: Integrate `ServerSidebar` into `MainScreen`.
