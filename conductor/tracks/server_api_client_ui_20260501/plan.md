@@ -3,9 +3,9 @@
 ## Phase 1: Backend API Implementation
 - [x] Task: Backend - Setup Kotlin Serialization for Ktor be7fb9e
 - [x] Task: Backend - Create API Request/Response Models 8180d0d
-- [ ] Task: Backend - Implement `POST /api/servers` Route
-    - [ ] Task: Write tests for `POST /api/servers` in `ApplicationTest.kt`
-    - [ ] Task: Implement the route logic in `Application.kt` or a new `ServerRoutes.kt`
+- [x] Task: Backend - Implement `POST /api/servers` Route acc986a
+    - [x] Task: Write tests for `POST /api/servers` in `ApplicationTest.kt` acc986a
+    - [x] Task: Implement the route logic in `Application.kt` or a new `ServerRoutes.kt` acc986a
 - [ ] Task: Conductor - User Manual Verification 'Backend API' (Protocol in workflow.md)
 
 ## Phase 2: Shared API Client Implementation
