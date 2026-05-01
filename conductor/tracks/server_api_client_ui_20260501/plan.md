@@ -1,7 +1,7 @@
 # Implementation Plan - Server Creation API, Client, and UI
 
 ## Phase 1: Backend API Implementation
-- [ ] Task: Backend - Setup Kotlin Serialization for Ktor
+- [x] Task: Backend - Setup Kotlin Serialization for Ktor be7fb9e
 - [ ] Task: Backend - Create API Request/Response Models
 - [ ] Task: Backend - Implement `POST /api/servers` Route
     - [ ] Task: Write tests for `POST /api/servers` in `ApplicationTest.kt`
