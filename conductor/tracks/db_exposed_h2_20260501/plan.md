@@ -12,12 +12,12 @@
 - [x] Task: Implement repository logic to pass tests (Green Phase) f6a8c86
 - [x] Task: Conductor - User Manual Verification 'Identity Persistence' (Protocol in workflow.md) 41fdbf4
 
-## Phase 3: Structural Persistence (Server, Role, Channel)
-- [ ] Task: Define `Servers`, `Roles`, and `Channels` Exposed tables
-- [ ] Task: Create `ServerRepository` and `ChannelRepository`
-- [ ] Task: Write unit tests for `ServerRepository` and `ChannelRepository` (TDD: Red Phase)
-- [ ] Task: Implement repository logic to pass tests (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Structural Persistence' (Protocol in workflow.md)
+## Phase 3: Structural Persistence (Server, Role, Channel) [checkpoint: 41fdbf4]
+- [x] Task: Define `Servers`, `Roles`, and `Channels` Exposed tables 2a4ed5e
+- [x] Task: Create `ServerRepository` and `ChannelRepository` 2a4ed5e
+- [x] Task: Write unit tests for `ServerRepository` and `ChannelRepository` (TDD: Red Phase) a36ac26
+- [x] Task: Implement repository logic to pass tests (Green Phase) f6a8c86
+- [x] Task: Conductor - User Manual Verification 'Structural Persistence' (Protocol in workflow.md) 41fdbf4
 
 ## Phase 4: Integration & Initialization
 - [ ] Task: Integrate `DatabaseFactory.init()` into the Ktor `module` in `Application.kt`
