@@ -7,8 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import website.woodendoor.conflux.state.LoginState
-import website.woodendoor.conflux.ui.CreateServerScreen
 import website.woodendoor.conflux.ui.LoginScreen
+import website.woodendoor.conflux.ui.MainScreen
 
 @Composable
 @Preview
@@ -28,7 +28,7 @@ fun App() {
                     }
                 )
             } else {
-                CreateServerScreen()
+                MainScreen()
             }
         }
     }
