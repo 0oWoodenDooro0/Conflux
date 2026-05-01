@@ -3,7 +3,7 @@
 ## Phase 1: Shared Models and Validation
 - [x] Task: Create `LoginRequest` model in `shared` module. fc5c774
     - [ ] Define `LoginRequest` data class with `@Serializable`.
-- [ ] Task: Implement `UsernameValidator` in `shared` module.
+- [x] Task: Implement `UsernameValidator` in `shared` module. a021c22
     - [ ] Write tests for username validation (Red).
     - [ ] Implement `validateUsername` function (Green).
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Validation' (Protocol in workflow.md)
