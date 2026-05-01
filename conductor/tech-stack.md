@@ -9,7 +9,8 @@
     - **Targets**: Web (WasmJs/JS) and Desktop (JVM).
 
 ## Backend
-- **Ktor**: Used as the server-side framework for handling client connections and messaging.
+- **Ktor**: Used as the server-side framework and as the client-side library (Ktor Client) for KMP.
+- **Kotlinx Serialization**: Standard library for JSON serialization across backend, shared, and frontend modules.
 - **Coroutines**: Leveraged for high-concurrency message synchronization and async I/O.
 - **JetBrains Exposed**: Type-safe SQL framework for database access.
 - **H2 Database**: In-memory database used for initial development and testing.
