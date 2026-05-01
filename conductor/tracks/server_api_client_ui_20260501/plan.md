@@ -21,3 +21,6 @@
     - [x] Task: Integrate `ServerApiClient` into the UI logic fa555d2
 - [x] Task: UI - Verify functionality on Desktop and Web fa555d2
 - [x] Task: Conductor - User Manual Verification 'Compose UI' (Protocol in workflow.md) fa555d2
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 3e1bbd8
