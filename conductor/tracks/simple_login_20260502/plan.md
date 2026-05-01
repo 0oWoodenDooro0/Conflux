@@ -8,7 +8,7 @@
     - [ ] Implement `validateUsername` function (Green).
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Validation' (Protocol in workflow.md)
 
-## Phase 2: Backend Implementation
+## Phase 2: Backend Implementation [checkpoint: 7bb5b88]
 - [x] Task: Update `UserRepository` to support finding users by username. 24a4f10
     - [ ] Add `findByUsername` to `UserRepository` interface.
     - [ ] Implement `findByUsername` in `ExposedUserRepository`.
