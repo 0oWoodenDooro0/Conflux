@@ -44,4 +44,35 @@ class ServerApiClientTest {
         
         assertEquals(mockServer, result)
     }
+
+    @Test
+    fun testCreateChannel() = runTest {
+        val mockChannel = website.woodendoor.conflux.models.Channel(
+            id = "chan-id",
+            serverId = "server-id",
+            name = "general",
+            type = website.woodendoor.conflux.models.ChannelType.TEXT
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("localhost", request.url.host)
+            assertEquals("/api/servers/server-id/channels", request.url.encodedPath)
+            assertEquals(HttpMethod.Post, request.method)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockChannel)),
+                status = HttpStatusCode.Created,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.createChannel("server-id", "general")
+
+        assertEquals(mockChannel, result)
+    }
 }

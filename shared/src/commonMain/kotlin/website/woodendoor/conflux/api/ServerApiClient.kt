@@ -6,6 +6,8 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import website.woodendoor.conflux.models.Channel
+import website.woodendoor.conflux.models.CreateChannelRequest
 import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
 
@@ -23,6 +25,13 @@ class ServerApiClient(
         return client.post("$baseUrl/api/servers") {
             contentType(ContentType.Application.Json)
             setBody(CreateServerRequest(name, iconUrl))
+        }.body()
+    }
+
+    suspend fun createChannel(serverId: String, name: String): Channel {
+        return client.post("$baseUrl/api/servers/$serverId/channels") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateChannelRequest(name))
         }.body()
     }
 
