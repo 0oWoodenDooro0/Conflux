@@ -71,4 +71,4 @@ fun Application.module() {
         serverRoutes(serverRepository)
         channelRoutes(channelRepository, serverRepository)
     }
-    }
+}

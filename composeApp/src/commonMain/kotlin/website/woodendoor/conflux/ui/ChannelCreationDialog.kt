@@ -8,6 +8,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Channel
+import website.woodendoor.conflux.validation.ChannelValidator
+import website.woodendoor.conflux.validation.ValidationResult
 
 @Composable
 fun ChannelCreationDialog(

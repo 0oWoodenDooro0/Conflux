@@ -1,4 +1,4 @@
-package website.woodendoor.conflux.ui
+package website.woodendoor.conflux.validation
 
 object ChannelValidator {
     fun validateName(name: String): ValidationResult {

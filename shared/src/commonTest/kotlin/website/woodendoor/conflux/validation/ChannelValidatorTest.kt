@@ -1,4 +1,4 @@
-package website.woodendoor.conflux.ui
+package website.woodendoor.conflux.validation
 
 import kotlin.test.Test
 import kotlin.test.assertIs

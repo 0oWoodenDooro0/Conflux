@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import website.woodendoor.conflux.DEFAULT_BASE_URL
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Server
 
@@ -19,7 +20,7 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
     var createdServer by remember { mutableStateOf<Server?>(null) }
     var showChannelDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val apiClient = remember { ServerApiClient("http://localhost:8080") }
+    val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
 
     DisposableEffect(Unit) {
         onDispose {
