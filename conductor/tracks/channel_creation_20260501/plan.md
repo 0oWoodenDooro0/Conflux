@@ -8,12 +8,12 @@
     - [x] Task: Verify tests pass (Green Phase). 766916a
 - [x] Task: Conductor - User Manual Verification 'Backend API Implementation' (Protocol in workflow.md) 766916a
 
-## Phase 2: Shared API Client Implementation
+## Phase 2: Shared API Client Implementation [checkpoint: 9f4c8d1]
 - [x] Task: Shared - Extend ServerApiClient with createChannel d248155
     - [x] Task: Write failing unit tests for `createChannel` in `ServerApiClientTest.kt`. d248155
     - [x] Task: Implement `createChannel(serverId: String, name: String): Channel` using Ktor Client. d248155
     - [x] Task: Verify tests pass (Green Phase). d248155
-- [ ] Task: Conductor - User Manual Verification 'Shared API Client Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Shared API Client Implementation' (Protocol in workflow.md) 9f4c8d1
 
 ## Phase 3: Compose UI Implementation
 - [ ] Task: UI - Implement Channel Creation Modal
