@@ -14,8 +14,10 @@ import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
 import website.woodendoor.conflux.database.repositories.ExposedServerRepository
+import website.woodendoor.conflux.database.repositories.ExposedUserRepository
 import website.woodendoor.conflux.routes.channelRoutes
 import website.woodendoor.conflux.routes.serverRoutes
+import website.woodendoor.conflux.routes.userRoutes
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.core.*
@@ -53,6 +55,7 @@ fun Application.module() {
     
     val serverRepository = ExposedServerRepository()
     val channelRepository = ExposedChannelRepository()
+    val userRepository = ExposedUserRepository()
 
     routing {
         get("/") {
@@ -70,5 +73,6 @@ fun Application.module() {
         }
         serverRoutes(serverRepository)
         channelRoutes(channelRepository, serverRepository)
+        userRoutes(userRepository)
     }
 }
