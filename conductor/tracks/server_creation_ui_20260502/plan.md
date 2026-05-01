@@ -1,0 +1,29 @@
+# Implementation Plan: Server Creation UI and Owner Support
+
+**Phase 1: Shared Models and Client Updates**
+- [ ] Task: Update `CreateServerRequest` model to include `ownerId` field.
+    - [ ] Add `ownerId` to `CreateServerRequest` in `shared/src/commonMain/kotlin/website/woodendoor/conflux/models/ApiModels.kt`.
+    - [ ] Update `ApiModelsTest.kt` to verify serialization with the new field.
+- [ ] Task: Update `ServerApiClient` to pass `ownerId` when creating a server.
+    - [ ] Update `createServer` signature in `ServerApiClient.kt`.
+    - [ ] Update `testCreateServer` in `ServerApiClientTest.kt` to assert `ownerId` is sent in the request body.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Client Updates' (Protocol in workflow.md)
+
+**Phase 2: Server-Side Implementation**
+- [ ] Task: Update Server route to use `ownerId` from the POST request.
+    - [ ] Modify `serverRoutes` in `server/src/main/kotlin/website/woodendoor/conflux/routes/ServerRoutes.kt`.
+    - [ ] Remove the hardcoded `"default-user"` owner.
+- [ ] Task: Verify server-side server creation with tests.
+    - [ ] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md)
+
+**Phase 3: UI Integration**
+- [ ] Task: Add "Create Server" button to the server sidebar.
+    - [ ] Modify `composeApp/src/commonMain/kotlin/website/woodendoor/conflux/ui/ServerSidebar.kt`.
+    - [ ] Add a "+" button at the bottom of the server list.
+- [ ] Task: Implement navigation from Sidebar to `CreateServerScreen`.
+    - [ ] Update `MainScreen.kt` to manage state for showing the `CreateServerScreen`.
+- [ ] Task: Connect `CreateServerScreen` with the current user context.
+    - [ ] Ensure `CreateServerScreen` uses the logged-in user's username for the `ownerId`.
+    - [ ] Update `CreateServerScreen.kt` to use the updated `apiClient.createServer` method.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Integration' (Protocol in workflow.md)
