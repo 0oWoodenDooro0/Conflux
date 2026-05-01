@@ -19,7 +19,7 @@
 - [x] Task: Implement repository logic to pass tests (Green Phase) f6a8c86
 - [x] Task: Conductor - User Manual Verification 'Structural Persistence' (Protocol in workflow.md) 41fdbf4
 
-## Phase 4: Integration & Initialization
-- [ ] Task: Integrate `DatabaseFactory.init()` into the Ktor `module` in `Application.kt`
-- [ ] Task: Implement a health check or smoke test to verify DB connectivity on startup
-- [ ] Task: Conductor - User Manual Verification 'Integration & Initialization' (Protocol in workflow.md)
+## Phase 4: Integration & Initialization [checkpoint: d4034ab]
+- [x] Task: Integrate `DatabaseFactory.init()` into the Ktor `module` in `Application.kt` a144145
+- [x] Task: Implement a health check or smoke test to verify DB connectivity on startup f40f875
+- [x] Task: Conductor - User Manual Verification 'Integration & Initialization' (Protocol in workflow.md) d4034ab
