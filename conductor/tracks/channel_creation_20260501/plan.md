@@ -1,12 +1,12 @@
 # Implementation Plan - Channel Creation
 
 ## Phase 1: Backend API Implementation
-- [ ] Task: Backend - Implement `POST /api/servers/{serverId}/channels` Route
-    - [ ] Task: Write failing integration tests for the new route in `ApplicationTest.kt`.
-    - [ ] Task: Implement server existence check in the route.
-    - [ ] Task: Implement channel creation logic calling `ChannelRepository.createChannel`.
-    - [ ] Task: Verify tests pass (Green Phase).
-- [ ] Task: Conductor - User Manual Verification 'Backend API Implementation' (Protocol in workflow.md)
+- [x] Task: Backend - Implement `POST /api/servers/{serverId}/channels` Route 766916a
+    - [x] Task: Write failing integration tests for the new route in `ApplicationTest.kt`. 766916a
+    - [x] Task: Implement server existence check in the route. 766916a
+    - [x] Task: Implement channel creation logic calling `ChannelRepository.createChannel`. 766916a
+    - [x] Task: Verify tests pass (Green Phase). 766916a
+- [x] Task: Conductor - User Manual Verification 'Backend API Implementation' (Protocol in workflow.md) 766916a
 
 ## Phase 2: Shared API Client Implementation
 - [ ] Task: Shared - Extend `ServerApiClient` with `createChannel`
