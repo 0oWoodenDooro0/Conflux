@@ -10,9 +10,9 @@
 
 ## Phase 2: Shared API Client Implementation
 - [x] Task: Shared - Add `ktor-client` dependencies to `shared/build.gradle.kts` b229d08
-- [ ] Task: Shared - Implement `ServerApiClient` in `commonMain`
-    - [ ] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client)
-    - [ ] Task: Implement `createServer` function
+- [x] Task: Shared - Implement `ServerApiClient` in `commonMain` 47ebffb
+    - [x] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client) 47ebffb
+    - [x] Task: Implement `createServer` function 47ebffb
 - [ ] Task: Conductor - User Manual Verification 'Shared API Client' (Protocol in workflow.md)
 
 ## Phase 3: Compose UI Implementation
