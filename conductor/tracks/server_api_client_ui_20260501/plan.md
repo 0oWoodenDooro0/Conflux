@@ -16,8 +16,8 @@
 - [x] Task: Conductor - User Manual Verification 'Shared API Client' (Protocol in workflow.md) b99b468
 
 ## Phase 3: Compose UI Implementation
-- [ ] Task: UI - Create basic Server Creation screen in `composeApp`
-    - [ ] Task: Implement UI layout with `TextField` and `Button`
-    - [ ] Task: Integrate `ServerApiClient` into the UI logic
+- [x] Task: UI - Create basic Server Creation screen in `composeApp` fa555d2
+    - [x] Task: Implement UI layout with `TextField` and `Button` fa555d2
+    - [x] Task: Integrate `ServerApiClient` into the UI logic fa555d2
 - [ ] Task: UI - Verify functionality on Desktop and Web
 - [ ] Task: Conductor - User Manual Verification 'Compose UI' (Protocol in workflow.md)
