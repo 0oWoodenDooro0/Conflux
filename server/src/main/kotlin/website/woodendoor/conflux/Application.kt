@@ -12,7 +12,9 @@ import io.ktor.server.routing.*
 
 import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
+import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
 import website.woodendoor.conflux.database.repositories.ExposedServerRepository
+import website.woodendoor.conflux.routes.channelRoutes
 import website.woodendoor.conflux.routes.serverRoutes
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -50,7 +52,8 @@ fun Application.module() {
     }
     
     val serverRepository = ExposedServerRepository()
-    
+    val channelRepository = ExposedChannelRepository()
+
     routing {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}")
@@ -66,5 +69,6 @@ fun Application.module() {
             }
         }
         serverRoutes(serverRepository)
+        channelRoutes(channelRepository, serverRepository)
     }
-}
+    }
