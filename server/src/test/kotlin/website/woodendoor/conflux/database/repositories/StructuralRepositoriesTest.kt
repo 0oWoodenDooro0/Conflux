@@ -87,4 +87,24 @@ class StructuralRepositoriesTest {
         val membersAfter = serverRepository.getMembers("s1")
         assertFalse(membersAfter.any { it.id == member.id })
     }
+
+    @Test
+    fun testGetServersForUser() = runBlocking {
+        val user = User("u1", "user1", "0001")
+        val other = User("other", "other", "0002")
+        userRepository.createUser(user)
+        userRepository.createUser(other)
+
+        val ownedServer = Server("s1", "Owned", user.id)
+        serverRepository.createServer(ownedServer)
+
+        val memberServer = Server("s2", "Member", other.id)
+        serverRepository.createServer(memberServer)
+        serverRepository.addMember("s2", user.id)
+
+        val servers = serverRepository.getServersForUser(user.id)
+        assertEquals(2, servers.size)
+        assertTrue(servers.any { it.id == "s1" })
+        assertTrue(servers.any { it.id == "s2" })
+    }
 }
