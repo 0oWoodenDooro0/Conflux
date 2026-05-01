@@ -8,7 +8,7 @@
     - [x] Task: Implement the route logic in `Application.kt` or a new `ServerRoutes.kt` acc986a
 - [x] Task: Conductor - User Manual Verification 'Backend API' (Protocol in workflow.md) a4c232b
 
-## Phase 2: Shared API Client Implementation
+## Phase 2: Shared API Client Implementation [checkpoint: 8c053cd]
 - [x] Task: Shared - Add `ktor-client` dependencies to `shared/build.gradle.kts` b229d08
 - [x] Task: Shared - Implement `ServerApiClient` in `commonMain` 47ebffb
     - [x] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client) 47ebffb
