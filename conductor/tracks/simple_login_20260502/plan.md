@@ -21,7 +21,7 @@
     - [ ] Implement route logic in `ServerRoutes.kt` (Green).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md)
 
-## Phase 3: Frontend Login Screen
+## Phase 3: Frontend Login Screen [checkpoint: 0650270]
 - [x] Task: Create `LoginState` to manage current user in memory. 3e21aed
     - [ ] Define a shared state holder for `currentUser`.
 - [x] Task: Implement `LoginScreen` UI. 0335266
