@@ -1,0 +1,8 @@
+{
+  "track_id": "simple_login_20260502",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-02T10:00:00Z",
+  "updated_at": "2026-05-02T10:00:00Z",
+  "description": "讓使用者只要輸入名字，就能進入系統，並看到他擁有的伺服器列表就好（先不管頻道）。"
+}
