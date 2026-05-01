@@ -16,6 +16,12 @@ import java.util.UUID
 
 fun Route.serverRoutes(serverRepository: ServerRepository) {
     route("/api/servers") {
+        get {
+            val userId = call.request.queryParameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val servers = serverRepository.getServersForUser(userId)
+            call.respond(HttpStatusCode.OK, servers)
+        }
+
         post {
             try {
                 val request = call.receive<CreateServerRequest>()

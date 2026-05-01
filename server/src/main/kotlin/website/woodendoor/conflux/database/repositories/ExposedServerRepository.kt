@@ -46,6 +46,17 @@ class ExposedServerRepository : ServerRepository {
             .singleOrNull()
     }
 
+    override suspend fun getServersForUser(userId: String): List<Server> = dbQuery {
+        val ownedServers = Servers.selectAll().where { Servers.ownerId eq userId }
+            .map(::resultRowToServer)
+        
+        val memberServers = (Servers innerJoin ServerMembers)
+            .selectAll().where { ServerMembers.userId eq userId }
+            .map(::resultRowToServer)
+        
+        (ownedServers + memberServers).distinctBy { it.id }
+    }
+
     override suspend fun updateServer(server: Server): Boolean = dbQuery {
         Servers.update({ Servers.id eq server.id }) {
             it[name] = server.name
