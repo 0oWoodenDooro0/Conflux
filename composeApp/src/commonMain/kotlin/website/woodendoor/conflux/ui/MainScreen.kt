@@ -30,20 +30,11 @@ fun MainScreen() {
     }
 
     Row(modifier = Modifier.fillMaxSize()) {
-        // Sidebar placeholder (Task 4.2)
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(72.dp)
-                .padding(8.dp),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(32.dp))
-            } else {
-                Text("SB", style = MaterialTheme.typography.labelSmall)
-            }
-        }
+        ServerSidebar(
+            servers = servers,
+            onServerClick = { /* Handle server selection later */ },
+            onHomeClick = { /* Handle home click later */ }
+        )
 
         // Main content placeholder
         Box(
