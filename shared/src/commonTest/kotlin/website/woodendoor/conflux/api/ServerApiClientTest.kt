@@ -24,6 +24,7 @@ class ServerApiClientTest {
         )
         
         val mockEngine = MockEngine { request ->
+            assertEquals("localhost", request.url.host)
             assertEquals("/api/servers", request.url.encodedPath)
             assertEquals(HttpMethod.Post, request.method)
             
