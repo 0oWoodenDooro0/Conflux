@@ -75,4 +75,62 @@ class ServerApiClientTest {
 
         assertEquals(mockChannel, result)
     }
+
+    @Test
+    fun testLogin() = runTest {
+        val mockUser = website.woodendoor.conflux.models.User(
+            id = "user-id",
+            username = "testuser",
+            discriminator = "1234"
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/login", request.url.encodedPath)
+            assertEquals(HttpMethod.Post, request.method)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockUser)),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.login("testuser")
+
+        assertEquals(mockUser, result)
+    }
+
+    @Test
+    fun testGetServers() = runTest {
+        val mockServers = listOf(
+            Server(id = "s1", name = "Server 1", ownerId = "u1"),
+            Server(id = "s2", name = "Server 2", ownerId = "u1")
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/servers", request.url.encodedPath)
+            assertEquals("u1", request.url.parameters["userId"])
+            assertEquals(HttpMethod.Get, request.method)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockServers)),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.getServers("u1")
+
+        assertEquals(mockServers, result)
+    }
 }

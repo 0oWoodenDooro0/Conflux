@@ -10,6 +10,8 @@ import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.CreateChannelRequest
 import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.LoginRequest
+import website.woodendoor.conflux.models.User
 
 class ServerApiClient(
     private val client: HttpClient,
@@ -20,6 +22,19 @@ class ServerApiClient(
             json()
         }
     }, baseUrl)
+
+    suspend fun login(username: String): User {
+        return client.post("$baseUrl/api/login") {
+            contentType(ContentType.Application.Json)
+            setBody(LoginRequest(username))
+        }.body()
+    }
+
+    suspend fun getServers(userId: String): List<Server> {
+        return client.get("$baseUrl/api/servers") {
+            parameter("userId", userId)
+        }.body()
+    }
 
     suspend fun createServer(name: String, iconUrl: String?): Server {
         return client.post("$baseUrl/api/servers") {

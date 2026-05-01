@@ -6,15 +6,22 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import website.woodendoor.conflux.DEFAULT_BASE_URL
+import website.woodendoor.conflux.api.ServerApiClient
+import website.woodendoor.conflux.models.User
 import website.woodendoor.conflux.validation.UsernameValidator
 import website.woodendoor.conflux.validation.ValidationResult
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String) -> Unit
+    onLoginSuccess: (User) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -53,13 +60,32 @@ fun LoginScreen(
                         errorMessage = result.message
                     }
                     ValidationResult.Success -> {
-                        onLoginSuccess(username)
+                        scope.launch {
+                            isLoading = true
+                            try {
+                                val user = apiClient.login(username)
+                                onLoginSuccess(user)
+                            } catch (e: Exception) {
+                                errorMessage = "Login failed: ${e.message}"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 }
             },
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth(0.8f)
         ) {
-            Text("Login")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("Login")
+            }
         }
     }
 }
