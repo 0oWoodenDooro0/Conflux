@@ -40,6 +40,6 @@
 - [x] Task: Create `ServerSidebar` component. 6a18773
     - [ ] Implement a vertical list for servers.
     - [ ] Apply Discord-style styling (narrow icons/labels).
-- [ ] Task: Integrate `ServerSidebar` into `MainScreen`.
+- [x] Task: Integrate `ServerSidebar` into `MainScreen`. 41c2dfc
     - [ ] Combine sidebar with a main content placeholder.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Main Screen and Server List' (Protocol in workflow.md)
