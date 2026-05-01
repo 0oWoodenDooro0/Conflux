@@ -25,6 +25,19 @@ kotlin {
             implementation(libs.ktor.client.serialization)
             implementation(libs.ktor.client.logging)
         }
+        
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        
+        jsMain.dependencies {
+            implementation(libs.ktor.client.js)
+        }
+        
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.js) // wasmJs uses js engine for now
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.client.mock)
