@@ -16,7 +16,7 @@
 - [x] Task: Implement `POST /api/login` route. 35cb601
     - [ ] Write integration tests for login route (success, new user, validation fail) (Red).
     - [ ] Implement route logic in `ServerRoutes.kt` (Green).
-- [ ] Task: Implement `GET /api/servers` route.
+- [x] Task: Implement `GET /api/servers` route. 9cf3677
     - [ ] Write integration tests for fetching user's servers (Red).
     - [ ] Implement route logic in `ServerRoutes.kt` (Green).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md)
