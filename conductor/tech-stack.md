@@ -11,6 +11,8 @@
 ## Backend
 - **Ktor**: Used as the server-side framework for handling client connections and messaging.
 - **Coroutines**: Leveraged for high-concurrency message synchronization and async I/O.
+- **JetBrains Exposed**: Type-safe SQL framework for database access.
+- **H2 Database**: In-memory database used for initial development and testing.
 
 ## Build & Tooling
 - **Gradle (Kotlin DSL)**: Unified build system for all modules.
