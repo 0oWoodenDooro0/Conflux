@@ -33,7 +33,7 @@
     - [ ] Update `LoginScreen` to call `ServerApiClient.login`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Login Screen' (Protocol in workflow.md)
 
-## Phase 4: Main Screen and Server List
+## Phase 4: Main Screen and Server List [checkpoint: 09a1f7c]
 - [x] Task: Implement `MainScreen` scaffolding. 849ceaa
     - [ ] Create `MainScreen.kt`.
     - [ ] Add fetching logic for servers using `currentUser.id`.
