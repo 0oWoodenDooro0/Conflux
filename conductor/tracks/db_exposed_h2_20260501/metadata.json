@@ -1,8 +1,0 @@
-{
-  "track_id": "db_exposed_h2_20260501",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-01T10:00:00Z",
-  "updated_at": "2026-05-01T10:00:00Z",
-  "description": "下一步要做資料庫 使用exposed 1.0 並且先用h2 記憶體來儲存 並且做repositories 並且init database"
-}
