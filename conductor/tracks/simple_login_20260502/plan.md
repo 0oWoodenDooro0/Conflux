@@ -34,7 +34,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Login Screen' (Protocol in workflow.md)
 
 ## Phase 4: Main Screen and Server List
-- [ ] Task: Implement `MainScreen` scaffolding.
+- [x] Task: Implement `MainScreen` scaffolding. 849ceaa
     - [ ] Create `MainScreen.kt`.
     - [ ] Add fetching logic for servers using `currentUser.id`.
 - [ ] Task: Create `ServerSidebar` component.
