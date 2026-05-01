@@ -9,7 +9,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Validation' (Protocol in workflow.md)
 
 ## Phase 2: Backend Implementation
-- [ ] Task: Update `UserRepository` to support finding users by username.
+- [x] Task: Update `UserRepository` to support finding users by username. 24a4f10
     - [ ] Add `findByUsername` to `UserRepository` interface.
     - [ ] Implement `findByUsername` in `ExposedUserRepository`.
     - [ ] Write integration test for `findByUsername` (Red -> Green).
