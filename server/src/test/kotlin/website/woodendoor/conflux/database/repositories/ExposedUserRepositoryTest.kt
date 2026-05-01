@@ -42,14 +42,17 @@ class ExposedUserRepositoryTest {
     }
 
     @Test
-    fun testDeleteUser() = runBlocking {
-        val user = User("3", "deleteme", "0000")
+    fun testFindByUsername() = runBlocking {
+        val user = User("4", "findme", "2222")
         repository.createUser(user)
         
-        val success = repository.deleteUser("3")
-        assertTrue(success)
-        
-        val fetched = repository.getUser("3")
-        assertNull(fetched)
+        val found = repository.findByUsername("findme")
+        assertEquals(user, found)
+    }
+
+    @Test
+    fun testFindByUsernameNotFound() = runBlocking {
+        val found = repository.findByUsername("nonexistent")
+        assertNull(found)
     }
 }

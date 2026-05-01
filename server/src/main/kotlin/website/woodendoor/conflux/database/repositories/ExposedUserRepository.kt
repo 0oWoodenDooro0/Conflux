@@ -31,6 +31,12 @@ class ExposedUserRepository : UserRepository {
             .singleOrNull()
     }
 
+    override suspend fun findByUsername(username: String): User? = dbQuery {
+        Users.selectAll().where { Users.username eq username }
+            .map(::resultRowToUser)
+            .singleOrNull()
+    }
+
     override suspend fun updateUser(user: User): Boolean = dbQuery {
         Users.update({ Users.id eq user.id }) {
             it[username] = user.username
