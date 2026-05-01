@@ -17,7 +17,13 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
     var isLoading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-    val apiClient = remember { ServerApiClient() }
+    val apiClient = remember { ServerApiClient("http://localhost:8080") }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            apiClient.close()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),

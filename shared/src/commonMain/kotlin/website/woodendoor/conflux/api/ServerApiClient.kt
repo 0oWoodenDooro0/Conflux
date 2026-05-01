@@ -11,9 +11,9 @@ import website.woodendoor.conflux.models.Server
 
 class ServerApiClient(
     private val client: HttpClient,
-    private val baseUrl: String = "http://localhost:8080"
+    private val baseUrl: String
 ) {
-    constructor(baseUrl: String = "http://localhost:8080") : this(HttpClient {
+    constructor(baseUrl: String) : this(HttpClient {
         install(ContentNegotiation) {
             json()
         }
@@ -24,5 +24,9 @@ class ServerApiClient(
             contentType(ContentType.Application.Json)
             setBody(CreateServerRequest(name, iconUrl))
         }.body()
+    }
+
+    fun close() {
+        client.close()
     }
 }

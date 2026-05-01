@@ -39,7 +39,7 @@ class ServerApiClientTest {
             install(ContentNegotiation) {
                 json()
             }
-        })
+        }, "http://localhost:8080")
         val result = client.createServer("Test Server", "http://icon.com")
         
         assertEquals(mockServer, result)
