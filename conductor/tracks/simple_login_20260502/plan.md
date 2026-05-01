@@ -1,6 +1,6 @@
 # Implementation Plan: Simple Login and Server List
 
-## Phase 1: Shared Models and Validation
+## Phase 1: Shared Models and Validation [checkpoint: 4bea48b]
 - [x] Task: Create `LoginRequest` model in `shared` module. fc5c774
     - [ ] Define `LoginRequest` data class with `@Serializable`.
 - [x] Task: Implement `UsernameValidator` in `shared` module. a021c22
