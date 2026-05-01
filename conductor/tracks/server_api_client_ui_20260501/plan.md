@@ -13,7 +13,7 @@
 - [x] Task: Shared - Implement `ServerApiClient` in `commonMain` 47ebffb
     - [x] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client) 47ebffb
     - [x] Task: Implement `createServer` function 47ebffb
-- [ ] Task: Conductor - User Manual Verification 'Shared API Client' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Shared API Client' (Protocol in workflow.md) b99b468
 
 ## Phase 3: Compose UI Implementation
 - [ ] Task: UI - Create basic Server Creation screen in `composeApp`
