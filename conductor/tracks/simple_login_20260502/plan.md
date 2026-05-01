@@ -13,7 +13,7 @@
     - [ ] Add `findByUsername` to `UserRepository` interface.
     - [ ] Implement `findByUsername` in `ExposedUserRepository`.
     - [ ] Write integration test for `findByUsername` (Red -> Green).
-- [ ] Task: Implement `POST /api/login` route.
+- [x] Task: Implement `POST /api/login` route. 35cb601
     - [ ] Write integration tests for login route (success, new user, validation fail) (Red).
     - [ ] Implement route logic in `ServerRoutes.kt` (Green).
 - [ ] Task: Implement `GET /api/servers` route.
