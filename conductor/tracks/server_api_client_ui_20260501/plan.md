@@ -1,0 +1,23 @@
+# Implementation Plan - Server Creation API, Client, and UI
+
+## Phase 1: Backend API Implementation
+- [ ] Task: Backend - Setup Kotlin Serialization for Ktor
+- [ ] Task: Backend - Create API Request/Response Models
+- [ ] Task: Backend - Implement `POST /api/servers` Route
+    - [ ] Task: Write tests for `POST /api/servers` in `ApplicationTest.kt`
+    - [ ] Task: Implement the route logic in `Application.kt` or a new `ServerRoutes.kt`
+- [ ] Task: Conductor - User Manual Verification 'Backend API' (Protocol in workflow.md)
+
+## Phase 2: Shared API Client Implementation
+- [ ] Task: Shared - Add `ktor-client` dependencies to `shared/build.gradle.kts`
+- [ ] Task: Shared - Implement `ServerApiClient` in `commonMain`
+    - [ ] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client)
+    - [ ] Task: Implement `createServer` function
+- [ ] Task: Conductor - User Manual Verification 'Shared API Client' (Protocol in workflow.md)
+
+## Phase 3: Compose UI Implementation
+- [ ] Task: UI - Create basic Server Creation screen in `composeApp`
+    - [ ] Task: Implement UI layout with `TextField` and `Button`
+    - [ ] Task: Integrate `ServerApiClient` into the UI logic
+- [ ] Task: UI - Verify functionality on Desktop and Web
+- [ ] Task: Conductor - User Manual Verification 'Compose UI' (Protocol in workflow.md)
