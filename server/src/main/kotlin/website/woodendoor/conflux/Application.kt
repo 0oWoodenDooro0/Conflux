@@ -10,6 +10,8 @@ import io.ktor.server.routing.*
 
 import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
+import website.woodendoor.conflux.database.repositories.ExposedServerRepository
+import website.woodendoor.conflux.routes.serverRoutes
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.core.*
@@ -27,7 +29,18 @@ fun Application.module() {
     DatabaseFactory.init()
     transaction {
         SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers)
+        
+        // Create a default user if it doesn't exist
+        if (Users.selectAll().where { Users.id eq "default-user" }.empty()) {
+            Users.insert {
+                it[id] = "default-user"
+                it[username] = "DefaultUser"
+                it[discriminator] = "0000"
+            }
+        }
     }
+    
+    val serverRepository = ExposedServerRepository()
     
     routing {
         get("/") {
@@ -43,5 +56,6 @@ fun Application.module() {
                 call.respondText("Database connection failed: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
             }
         }
+        serverRoutes(serverRepository)
     }
 }
