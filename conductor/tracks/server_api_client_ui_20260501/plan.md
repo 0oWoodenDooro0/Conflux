@@ -9,7 +9,7 @@
 - [x] Task: Conductor - User Manual Verification 'Backend API' (Protocol in workflow.md) a4c232b
 
 ## Phase 2: Shared API Client Implementation
-- [ ] Task: Shared - Add `ktor-client` dependencies to `shared/build.gradle.kts`
+- [x] Task: Shared - Add `ktor-client` dependencies to `shared/build.gradle.kts` b229d08
 - [ ] Task: Shared - Implement `ServerApiClient` in `commonMain`
     - [ ] Task: Write unit tests for `ServerApiClient` (Mocking Ktor Client)
     - [ ] Task: Implement `createServer` function
