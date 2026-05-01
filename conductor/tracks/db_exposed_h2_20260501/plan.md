@@ -5,12 +5,12 @@
 - [x] Task: Implement `DatabaseFactory` to manage H2 in-memory connection and transaction context bc5524c
 - [x] Task: Conductor - User Manual Verification 'Setup & Infrastructure' (Protocol in workflow.md) 41fdbf4
 
-## Phase 2: Identity Persistence (User)
-- [ ] Task: Define `Users` Exposed table in the `server` module
-- [ ] Task: Create `UserRepository` with CRUD operations
-- [ ] Task: Write unit tests for `UserRepository` (TDD: Red Phase)
-- [ ] Task: Implement repository logic to pass tests (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Identity Persistence' (Protocol in workflow.md)
+## Phase 2: Identity Persistence (User) [checkpoint: 41fdbf4]
+- [x] Task: Define `Users` Exposed table in the `server` module 6e057dd
+- [x] Task: Create `UserRepository` with CRUD operations ca394a4
+- [x] Task: Write unit tests for `UserRepository` (TDD: Red Phase) 777fd24
+- [x] Task: Implement repository logic to pass tests (Green Phase) f6a8c86
+- [x] Task: Conductor - User Manual Verification 'Identity Persistence' (Protocol in workflow.md) 41fdbf4
 
 ## Phase 3: Structural Persistence (Server, Role, Channel)
 - [ ] Task: Define `Servers`, `Roles`, and `Channels` Exposed tables
