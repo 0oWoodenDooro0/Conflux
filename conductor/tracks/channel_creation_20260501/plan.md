@@ -9,10 +9,10 @@
 - [x] Task: Conductor - User Manual Verification 'Backend API Implementation' (Protocol in workflow.md) 766916a
 
 ## Phase 2: Shared API Client Implementation
-- [ ] Task: Shared - Extend `ServerApiClient` with `createChannel`
-    - [ ] Task: Write failing unit tests for `createChannel` in `ServerApiClientTest.kt`.
-    - [ ] Task: Implement `createChannel(serverId: String, name: String): Channel` using Ktor Client.
-    - [ ] Task: Verify tests pass (Green Phase).
+- [x] Task: Shared - Extend ServerApiClient with createChannel d248155
+    - [x] Task: Write failing unit tests for `createChannel` in `ServerApiClientTest.kt`. d248155
+    - [x] Task: Implement `createChannel(serverId: String, name: String): Channel` using Ktor Client. d248155
+    - [x] Task: Verify tests pass (Green Phase). d248155
 - [ ] Task: Conductor - User Manual Verification 'Shared API Client Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Compose UI Implementation
