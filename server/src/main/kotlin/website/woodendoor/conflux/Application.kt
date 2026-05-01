@@ -10,6 +10,8 @@ import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -25,6 +27,16 @@ fun Application.module() {
     routing {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}")
+        }
+        get("/health") {
+            try {
+                DatabaseFactory.dbQuery {
+                    Users.selectAll().limit(1).count()
+                }
+                call.respondText("OK")
+            } catch (e: Exception) {
+                call.respondText("Database connection failed: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
+            }
         }
     }
 }
