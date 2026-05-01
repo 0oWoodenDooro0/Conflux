@@ -1,7 +1,7 @@
 # Implementation Plan: Database Infrastructure & Core Repositories
 
 ## Phase 1: Setup & Infrastructure
-- [ ] Task: Add Exposed 1.0 and H2 dependencies to `libs.versions.toml` and configure `server/build.gradle.kts`
+- [x] Task: Add Exposed 1.0 and H2 dependencies to `libs.versions.toml` and configure `server/build.gradle.kts` e75c78f
 - [ ] Task: Implement `DatabaseFactory` to manage H2 in-memory connection and transaction context
 - [ ] Task: Conductor - User Manual Verification 'Setup & Infrastructure' (Protocol in workflow.md)
 
