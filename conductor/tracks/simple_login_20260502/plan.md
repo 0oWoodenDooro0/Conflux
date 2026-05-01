@@ -24,7 +24,7 @@
 ## Phase 3: Frontend Login Screen
 - [x] Task: Create `LoginState` to manage current user in memory. 3e21aed
     - [ ] Define a shared state holder for `currentUser`.
-- [ ] Task: Implement `LoginScreen` UI.
+- [x] Task: Implement `LoginScreen` UI. 0335266
     - [ ] Create `LoginScreen.kt`.
     - [ ] Implement username TextField and Login Button.
     - [ ] Add validation logic call.
