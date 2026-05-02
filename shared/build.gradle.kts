@@ -19,12 +19,12 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.websockets)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.client.serialization)
-            implementation(libs.ktor.client.logging)
+            api(libs.kotlinx.serialization.json)
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.websockets)
+            api(libs.ktor.client.content.negotiation)
+            api(libs.ktor.client.serialization)
+            api(libs.ktor.client.logging)
         }
         
         jvmMain.dependencies {

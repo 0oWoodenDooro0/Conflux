@@ -8,6 +8,7 @@ import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import website.woodendoor.conflux.models.ConfluxEvent
 import kotlin.test.*
 
 class WebSocketRouteTest {
@@ -49,16 +50,11 @@ class WebSocketRouteTest {
 
         // 2. Connect with the token
         client.webSocket("/ws?token=$token") {
-            val frame = incoming.receive() as Frame.Text
-            assertEquals("Connected as user-123", frame.readText())
-
             send("subscribe:channel-123")
             val subFrame = incoming.receive() as Frame.Text
-            assertEquals("Subscribed to channel-123", subFrame.readText())
-
-            send("Hello")
-            val echoFrame = incoming.receive() as Frame.Text
-            assertEquals("Echo: Hello", echoFrame.readText())
+            val subEvent = Json.decodeFromString<ConfluxEvent>(subFrame.readText())
+            assertTrue(subEvent is ConfluxEvent.SubscriptionSuccess)
+            assertEquals("channel-123", subEvent.channelId)
         }
     }
 

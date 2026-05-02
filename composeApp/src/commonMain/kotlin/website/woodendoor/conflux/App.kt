@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import website.woodendoor.conflux.state.LoginState
+import website.woodendoor.conflux.state.MainState
+import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.ui.LoginScreen
 import website.woodendoor.conflux.ui.MainScreen
 
@@ -14,6 +16,7 @@ import website.woodendoor.conflux.ui.MainScreen
 @Preview
 fun App() {
     var isLoggedIn by remember { mutableStateOf(LoginState.currentUser != null) }
+    val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
 
     MaterialTheme {
         Surface(
@@ -24,6 +27,7 @@ fun App() {
                 LoginScreen(
                     onLoginSuccess = { user ->
                         LoginState.login(user)
+                        MainState.initializeWebSocket(apiClient, user.id, DEFAULT_BASE_URL)
                         isLoggedIn = true
                     }
                 )
