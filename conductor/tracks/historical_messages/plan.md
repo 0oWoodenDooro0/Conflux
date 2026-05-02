@@ -1,7 +1,7 @@
 # Implementation Plan: Static Historical Messages (HTTP-based)
 
 ## Phase 1: Backend Persistence Layer
-- [ ] Task: Define `Messages` Table
+- [x] Task: Define `Messages` Table 46a6ec3
     - [ ] Create `Messages.kt` with Exposed DSL.
     - [ ] Register table in `DatabaseFactory`.
 - [ ] Task: Implement `MessageRepository` (TDD)
