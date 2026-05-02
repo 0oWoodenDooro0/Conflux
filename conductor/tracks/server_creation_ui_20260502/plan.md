@@ -20,7 +20,7 @@
     - [x] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed and queried.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md) f399cb5
 
-**Phase 3: UI Integration**
+**Phase 3: UI Integration** [checkpoint: 7d25ba5]
 - [x] Task: Add "Create Server" button to the server sidebar. 53ace05
     - [x] Modify `composeApp/src/commonMain/kotlin/website/woodendoor/conflux/ui/ServerSidebar.kt`.
     - [x] Add a "+" button at the bottom of the server list.
@@ -29,4 +29,4 @@
 - [x] Task: Connect `CreateServerScreen` with the current user context. 53ace05
     - [x] Ensure `CreateServerScreen` uses the logged-in user's username for the `ownerId`.
     - [x] Update `CreateServerScreen.kt` to use the updated `apiClient.createServer` method.
-- [~] Task: Conductor - User Manual Verification 'Phase 3: UI Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration' (Protocol in workflow.md) 7d25ba5
