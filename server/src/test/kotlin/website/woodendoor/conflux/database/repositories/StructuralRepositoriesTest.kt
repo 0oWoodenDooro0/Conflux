@@ -9,9 +9,9 @@ import website.woodendoor.conflux.models.*
 import kotlin.test.*
 
 class StructuralRepositoriesTest {
-    private val serverRepository = ExposedServerRepository()
-    private val channelRepository = ExposedChannelRepository()
     private val userRepository = ExposedUserRepository()
+    private val serverRepository = ExposedServerRepository(userRepository)
+    private val channelRepository = ExposedChannelRepository()
 
     @BeforeTest
     fun setup() {

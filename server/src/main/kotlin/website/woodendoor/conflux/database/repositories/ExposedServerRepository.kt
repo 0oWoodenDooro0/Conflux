@@ -8,7 +8,7 @@ import website.woodendoor.conflux.models.User
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 
-class ExposedServerRepository : ServerRepository {
+class ExposedServerRepository(private val userRepository: UserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
         name = row[Servers.name],
@@ -47,11 +47,17 @@ class ExposedServerRepository : ServerRepository {
     }
 
     override suspend fun getServersForUser(userId: String): List<Server> = dbQuery {
-        val ownedServers = Servers.selectAll().where { Servers.ownerId eq userId }
+        val resolvedUserId = if (Servers.selectAll().where { Servers.id eq userId }.empty()) {
+            userRepository.findByUsername(userId)?.id ?: userId
+        } else {
+            userId
+        }
+
+        val ownedServers = Servers.selectAll().where { Servers.ownerId eq resolvedUserId }
             .map(::resultRowToServer)
         
         val memberServers = (Servers innerJoin ServerMembers)
-            .selectAll().where { ServerMembers.userId eq userId }
+            .selectAll().where { ServerMembers.userId eq resolvedUserId }
             .map(::resultRowToServer)
         
         (ownedServers + memberServers).distinctBy { it.id }
