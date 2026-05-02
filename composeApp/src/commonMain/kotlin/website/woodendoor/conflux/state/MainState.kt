@@ -1,14 +1,15 @@
 package website.woodendoor.conflux.state
 
+import androidx.compose.runtime.*
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.Server
 
 object MainState {
-    var selectedServer: Server? = null
-    var channelList: List<Channel> = emptyList()
-    var isFetchingChannels: Boolean = false
-    var channelFetchError: String? = null
+    var selectedServer by mutableStateOf<Server?>(null)
+    var channelList by mutableStateOf<List<Channel>>(emptyList())
+    var isFetchingChannels by mutableStateOf(false)
+    var channelFetchError by mutableStateOf<String?>(null)
 
     suspend fun selectServer(server: Server, apiClient: ServerApiClient) {
         selectedServer = server

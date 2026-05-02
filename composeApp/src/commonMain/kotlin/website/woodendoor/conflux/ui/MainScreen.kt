@@ -101,23 +101,26 @@ fun MainScreen() {
                             }
                         }
                     )
-                } else if (error != null) {
-                    Text(error, color = MaterialTheme.colorScheme.error)
-                } else if (channelFetchError != null) {
-                    Text(channelFetchError, color = MaterialTheme.colorScheme.error)
-                } else if (!isLoading) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (selectedServer != null) {
-                            Text("Server: ${selectedServer.name}", style = MaterialTheme.typography.headlineSmall)
-                            Text("Select a channel from the left.", style = MaterialTheme.typography.bodyMedium)
-                        } else {
-                            Text("Welcome, ${user.username}!", style = MaterialTheme.typography.headlineSmall)
-                            Text("Select a server from the left to get started.", style = MaterialTheme.typography.bodyMedium)
+                } else {
+                    val currentError = error
+                    if (currentError != null) {
+                        Text(currentError, color = MaterialTheme.colorScheme.error)
+                    } else if (channelFetchError != null) {
+                        Text(channelFetchError, color = MaterialTheme.colorScheme.error)
+                    } else if (!isLoading) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            if (selectedServer != null) {
+                                Text("Server: ${selectedServer.name}", style = MaterialTheme.typography.headlineSmall)
+                                Text("Select a channel from the left.", style = MaterialTheme.typography.bodyMedium)
+                            } else {
+                                Text("Welcome, ${user.username}!", style = MaterialTheme.typography.headlineSmall)
+                                Text("Select a server from the left to get started.", style = MaterialTheme.typography.bodyMedium)
+                            }
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Text("Found ${servers.size} servers", style = MaterialTheme.typography.bodySmall)
                         }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Text("Found ${servers.size} servers", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
