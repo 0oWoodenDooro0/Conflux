@@ -31,7 +31,9 @@ object MainState {
     fun initializeWebSocket(apiClient: ServerApiClient, userId: String, baseUrl: String) {
         if (webSocketClient != null) return
         
-        val wsClient = WebSocketClient(io.ktor.client.HttpClient(), baseUrl)
+        val wsClient = WebSocketClient(io.ktor.client.HttpClient {
+            install(io.ktor.client.plugins.websocket.WebSockets)
+        }, baseUrl)
         webSocketClient = wsClient
         
         wsClient.events.onEach { event ->
