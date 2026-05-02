@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
@@ -43,11 +44,15 @@ fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager:
                     val connections = connectionManager.getConnectionsForChannel(channelId)
                     val event = ConfluxEvent.NewMessage(message)
                     val eventJson = Json.encodeToString<ConfluxEvent>(event)
-                    connections.forEach { session ->
-                        try {
-                            session.send(Frame.Text(eventJson))
-                        } catch (e: Exception) {
-                            // Session might be closed
+                    kotlinx.coroutines.coroutineScope {
+                        connections.forEach { session ->
+                            launch {
+                                try {
+                                    session.send(Frame.Text(eventJson))
+                                } catch (e: Exception) {
+                                    // Session might be closed
+                                }
+                            }
                         }
                     }
                     
