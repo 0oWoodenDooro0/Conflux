@@ -20,3 +20,9 @@ data class CreateChannelRequest(
     val type: ChannelType = ChannelType.TEXT,
     val topic: String? = null
 )
+
+@Serializable
+data class SendMessageRequest(
+    val senderId: String,
+    val content: String
+)

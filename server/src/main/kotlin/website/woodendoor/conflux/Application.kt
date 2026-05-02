@@ -19,13 +19,14 @@ import website.woodendoor.conflux.database.repositories.ExposedMessageRepository
 import website.woodendoor.conflux.routes.channelRoutes
 import website.woodendoor.conflux.routes.serverRoutes
 import website.woodendoor.conflux.routes.userRoutes
+import website.woodendoor.conflux.routes.messageRoutes
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 
 fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 
@@ -76,5 +77,6 @@ fun Application.module() {
         serverRoutes(serverRepository, userRepository)
         channelRoutes(channelRepository, serverRepository)
         userRoutes(userRepository)
+        messageRoutes(messageRepository)
     }
 }
