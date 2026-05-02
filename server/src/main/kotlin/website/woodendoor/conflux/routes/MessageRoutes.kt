@@ -5,10 +5,14 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.websocket.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.MessageRepository
 import website.woodendoor.conflux.models.SendMessageRequest
 
-fun Route.messageRoutes(messageRepository: MessageRepository) {
+fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager: WebSocketConnectionManager) {
     route("/api/channels/{channelId}/messages") {
         get {
             val channelId = call.parameters["channelId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing channelId")
@@ -34,6 +38,17 @@ fun Route.messageRoutes(messageRepository: MessageRepository) {
                     content = request.content
                 )
                 if (message != null) {
+                    // Broadcast to WebSocket subscribers
+                    val connections = connectionManager.getConnectionsForChannel(channelId)
+                    val messageJson = Json.encodeToString(message)
+                    connections.forEach { session ->
+                        try {
+                            session.send(Frame.Text(messageJson))
+                        } catch (e: Exception) {
+                            // Session might be closed
+                        }
+                    }
+                    
                     call.respond(HttpStatusCode.Created, message)
                 } else {
                     call.respond(HttpStatusCode.InternalServerError, "Failed to save message")
