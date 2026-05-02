@@ -10,16 +10,16 @@
     - [x] **Verify**: Ensure tests pass and coverage >80%.
 - [x] Task: Conductor - User Manual Verification 'Backend Persistence Layer' (Protocol in workflow.md) a4352cf
 
-## Phase 2: API & Shared Client
+## Phase 2: API & Shared Client [checkpoint: c7e2b93]
 - [x] Task: Implement Message Routes (TDD) 034936f
-    - [ ] **Red**: Write failing integration tests for `POST` and `GET` message endpoints.
-    - [ ] **Green**: Implement Ktor routes and dependency injection for the repository.
-    - [ ] **Verify**: Ensure integration tests pass.
+    - [x] **Red**: Write failing integration tests for `POST` and `GET` message endpoints.
+    - [x] **Green**: Implement Ktor routes and dependency injection for the repository.
+    - [x] **Verify**: Ensure integration tests pass.
 - [x] Task: Extend `ServerApiClient` in Shared Module 35d979c
-    - [ ] Define `Message` model in `shared/commonMain`.
-    - [ ] Implement `getMessages` and `sendMessage` in `ServerApiClient`.
-    - [ ] Write unit tests for the client methods using Ktor `MockEngine`.
-- [ ] Task: Conductor - User Manual Verification 'API & Shared Client' (Protocol in workflow.md)
+    - [x] Define `Message` model in `shared/commonMain`.
+    - [x] Implement `getMessages` and `sendMessage` in `ServerApiClient`.
+    - [x] Write unit tests for the client methods using Ktor `MockEngine`.
+- [x] Task: Conductor - User Manual Verification 'API & Shared Client' (Protocol in workflow.md) c7e2b93
 
 ## Phase 3: Frontend State & UI
 - [ ] Task: Update `MainState` for Message Management (TDD)
