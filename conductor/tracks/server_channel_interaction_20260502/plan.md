@@ -23,17 +23,17 @@
     - [x] Verify test passes
 - [x] Task: Conductor - User Manual Verification 'Shared API Client & Models' (Protocol in workflow.md) d814056
 
-## Phase 3: Frontend State & Logic
-- [ ] Task: Update `MainState` to handle server selection and channel list
-    - [ ] Write failing test for state transitions
-    - [ ] Add `selectedServer` and `channelList` to the state management
-    - [ ] Implement `selectServer(server)` action that triggers API call
-    - [ ] Verify test passes
-- [ ] Task: Implement loading and error states for channel fetching
-    - [ ] Write failing test for loading/error transitions
-    - [ ] Add `isFetchingChannels` and `channelFetchError` states
-    - [ ] Verify test passes
-- [ ] Task: Conductor - User Manual Verification 'Frontend State & Logic' (Protocol in workflow.md)
+## Phase 3: Frontend State & Logic [checkpoint: 5059e95]
+- [x] Task: Update `MainState` to handle server selection and channel list 34e3ac9
+    - [x] Write failing test for state transitions
+    - [x] Create `MainState` (or update existing) with `selectedServer` and `channelList`
+    - [x] Implement `selectServer(server)` action that triggers API call
+    - [x] Verify test passes
+- [x] Task: Implement loading and error states for channel fetching 34e3ac9
+    - [x] Write failing test for loading/error transitions
+    - [x] Add `isFetchingChannels` and `channelFetchError` states
+    - [x] Verify test passes
+- [x] Task: Conductor - User Manual Verification 'Frontend State & Logic' (Protocol in workflow.md) 34e3ac9
 
 ## Phase 4: UI Components & Integration
 - [ ] Task: Update `ServerSidebar` to trigger selection
