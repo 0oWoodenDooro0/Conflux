@@ -41,7 +41,7 @@ fun Application.module() {
     }
     DatabaseFactory.init()
     transaction {
-        SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers)
+        SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, Messages)
         
         // Create a default user if it doesn't exist
         if (Users.selectAll().where { Users.id eq "default-user" }.empty()) {
