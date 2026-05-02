@@ -5,7 +5,7 @@
 
 ## Multiplatform & UI
 - **Kotlin Multiplatform (KMP)**: Facilitates sharing logic across Web, JVM, and Server.
-- **Compose Multiplatform**: Used for building the shared UI components.
+- **Compose Multiplatform**: Used for building the shared UI components, including Material3 and Material Icons.
     - **Targets**: Web (WasmJs/JS) and Desktop (JVM).
 
 ## Backend
