@@ -50,6 +50,10 @@ class ServerApiClient(
         }.body()
     }
 
+    suspend fun getChannels(serverId: String): List<Channel> {
+        return client.get("$baseUrl/api/servers/$serverId/channels").body()
+    }
+
     fun close() {
         client.close()
     }
