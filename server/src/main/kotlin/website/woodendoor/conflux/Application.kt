@@ -64,6 +64,7 @@ fun Application.module() {
     val channelRepository = ExposedChannelRepository()
     val messageRepository = ExposedMessageRepository()
     val tokenManager = WebSocketAuthTokenManager()
+    val connectionManager = WebSocketConnectionManager()
 
     routing {
         get("/") {
@@ -83,6 +84,6 @@ fun Application.module() {
         channelRoutes(channelRepository, serverRepository)
         userRoutes(userRepository)
         messageRoutes(messageRepository)
-        webSocketRoutes(tokenManager)
+        webSocketRoutes(tokenManager, connectionManager)
     }
 }

@@ -23,7 +23,7 @@ class WebSocketRouteTest {
         }
 
         client.webSocket("/ws") {
-            val reason = this.closeReason.await()
+            val reason = closeReason.await()
             assertEquals(CloseReason.Codes.VIOLATED_POLICY.code, reason?.code)
         }
     }
@@ -49,11 +49,15 @@ class WebSocketRouteTest {
 
         // 2. Connect with the token
         client.webSocket("/ws?token=$token") {
-            val frame = this.incoming.receive() as Frame.Text
+            val frame = incoming.receive() as Frame.Text
             assertEquals("Connected as user-123", frame.readText())
-            
-            this.send(Frame.Text("Hello"))
-            val echoFrame = this.incoming.receive() as Frame.Text
+
+            send("subscribe:channel-123")
+            val subFrame = incoming.receive() as Frame.Text
+            assertEquals("Subscribed to channel-123", subFrame.readText())
+
+            send("Hello")
+            val echoFrame = incoming.receive() as Frame.Text
             assertEquals("Echo: Hello", echoFrame.readText())
         }
     }
@@ -69,7 +73,7 @@ class WebSocketRouteTest {
         }
 
         client.webSocket("/ws?token=invalid") {
-            val reason = this.closeReason.await()
+            val reason = closeReason.await()
             assertEquals(CloseReason.Codes.VIOLATED_POLICY.code, reason?.code)
         }
     }

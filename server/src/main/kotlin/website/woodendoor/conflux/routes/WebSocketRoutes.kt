@@ -5,9 +5,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
 
-fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager) {
+fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionManager: WebSocketConnectionManager) {
     post("/api/auth/ws-token") {
         val userId = call.receiveText() // Simple for now
         if (userId.isBlank()) {
@@ -32,13 +33,26 @@ fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager) {
         }
 
         // Successfully connected
-        send("Connected as $userId")
+        connectionManager.addConnection(userId, this)
         
-        for (frame in incoming) {
-            if (frame is Frame.Text) {
-                val text = frame.readText()
-                send("Echo: $text")
+        try {
+            send("Connected as $userId")
+            
+            for (frame in incoming) {
+                if (frame is Frame.Text) {
+                    val text = frame.readText()
+                    // Simple protocol: "subscribe:channelId"
+                    if (text.startsWith("subscribe:")) {
+                        val channelId = text.substringAfter("subscribe:")
+                        connectionManager.subscribeToChannel(userId, channelId)
+                        send("Subscribed to $channelId")
+                    } else {
+                        send("Echo: $text")
+                    }
+                }
             }
+        } finally {
+            connectionManager.removeConnection(userId, this)
         }
     }
 }
