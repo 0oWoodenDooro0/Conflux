@@ -16,6 +16,6 @@ To provide a core, pure communication space for personal users and professional 
 
 # Key Features (In Progress)
 - **Simplified User Onboarding**: Fast, username-based login flow for immediate access.
-- **Server & Channel Management**: End-to-end flow for creating servers and channels; flexible hierarchies for structured discussions.
+- **Server & Channel Management**: End-to-end flow for creating servers and channels; flexible hierarchies for structured discussions. Includes user-owned server creation with context-aware API calls.
 - **Real-time Messaging**: Low-latency delivery with robust sync and reconnection logic.
 - **Roles & Permissions**: Fine-grained access control for server security and order.
