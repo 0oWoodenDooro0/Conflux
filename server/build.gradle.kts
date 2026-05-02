@@ -29,4 +29,5 @@ dependencies {
     implementation(libs.h2)
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
+    testImplementation(libs.mockk)
 }
