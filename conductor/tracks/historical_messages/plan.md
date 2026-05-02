@@ -15,7 +15,7 @@
     - [ ] **Red**: Write failing integration tests for `POST` and `GET` message endpoints.
     - [ ] **Green**: Implement Ktor routes and dependency injection for the repository.
     - [ ] **Verify**: Ensure integration tests pass.
-- [ ] Task: Extend `ServerApiClient` in Shared Module
+- [x] Task: Extend `ServerApiClient` in Shared Module 35d979c
     - [ ] Define `Message` model in `shared/commonMain`.
     - [ ] Implement `getMessages` and `sendMessage` in `ServerApiClient`.
     - [ ] Write unit tests for the client methods using Ktor `MockEngine`.
