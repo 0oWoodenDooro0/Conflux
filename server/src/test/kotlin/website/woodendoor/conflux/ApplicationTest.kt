@@ -31,7 +31,7 @@ class ApplicationTest {
         }
         val response = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(CreateServerRequest(name = "New Server", iconUrl = "http://icon.com")))
+            setBody(Json.encodeToString(CreateServerRequest(name = "New Server", iconUrl = "http://icon.com", ownerId = "test-owner")))
         }
         assertEquals(HttpStatusCode.Created, response.status)
         val server = Json.decodeFromString<Server>(response.bodyAsText())
@@ -49,7 +49,7 @@ class ApplicationTest {
         // 1. Create a server
         val serverResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(CreateServerRequest(name = "Test Server")))
+            setBody(Json.encodeToString(CreateServerRequest(name = "Test Server", ownerId = "test-owner")))
         }
         val server = Json.decodeFromString<Server>(serverResponse.bodyAsText())
 

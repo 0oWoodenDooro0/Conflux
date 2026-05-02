@@ -39,7 +39,7 @@ class ServerListRouteTest {
         
         val createResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(CreateServerRequest(name = "User's Server")))
+            setBody(Json.encodeToString(CreateServerRequest(name = "User's Server", ownerId = "default-user")))
         }
         assertEquals(HttpStatusCode.Created, createResponse.status)
         
