@@ -21,13 +21,11 @@ This track implements the reactive linkage between selecting a server and displa
 - **UI Components**:
     - Channel Sidebar: Displays the list of channels and the "Add" button.
     - Channel Creation Dialog: Modal for inputting new channel info (Integrate existing component).
-    - Skeleton/Shimmer: Loading state for the channel list.
     - Toast: Notification for errors.
 
 ## Acceptance Criteria
-- [ ] Clicking a server icon in the sidebar highlights the server and triggers a fetch.
-- [ ] A loading skeleton appears while channels are being fetched.
-- [ ] The channel list is populated with correct channel names.
+- Clicking a server icon in the sidebar highlights the server and triggers a fetch.
+- The channel list is populated with correct channel names.
 - [ ] If fetching fails, a toast notification is shown.
 - [ ] "Create Channel" button is visible when a server is selected.
 - [ ] Successfully created channel appears in the list immediately.

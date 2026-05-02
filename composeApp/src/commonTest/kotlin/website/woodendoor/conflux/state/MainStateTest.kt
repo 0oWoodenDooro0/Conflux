@@ -45,13 +45,6 @@ class MainStateTest {
     }
 
     @Test
-    fun testFetchingState() {
-        assertFalse(MainState.isFetchingChannels)
-        MainState.isFetchingChannels = true
-        assertTrue(MainState.isFetchingChannels)
-    }
-
-    @Test
     fun testErrorState() {
         assertNull(MainState.channelFetchError)
         MainState.channelFetchError = "Error"
@@ -80,7 +73,6 @@ class MainStateTest {
 
         assertEquals(server, MainState.selectedServer)
         assertEquals(channels, MainState.channelList)
-        assertFalse(MainState.isFetchingChannels)
         assertNull(MainState.channelFetchError)
     }
 
@@ -102,7 +94,6 @@ class MainStateTest {
 
         assertEquals(server, MainState.selectedServer)
         assertTrue(MainState.channelList.isEmpty())
-        assertFalse(MainState.isFetchingChannels)
         assertNotNull(MainState.channelFetchError)
     }
 }

@@ -26,7 +26,6 @@ fun MainScreen() {
 
     val selectedServer = MainState.selectedServer
     val channels = MainState.channelList
-    val isFetchingChannels = MainState.isFetchingChannels
     val channelFetchError = MainState.channelFetchError
     val snackbarHostState = remember { SnackbarHostState() }
 
