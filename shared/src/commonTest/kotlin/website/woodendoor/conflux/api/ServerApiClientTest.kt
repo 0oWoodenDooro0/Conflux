@@ -28,6 +28,17 @@ class ServerApiClientTest {
             assertEquals("/api/servers", request.url.encodedPath)
             assertEquals(HttpMethod.Post, request.method)
             
+            // Verify body
+            val body = (request.body as? io.ktor.http.content.TextContent)?.text
+            val expectedBody = Json.encodeToString(
+                website.woodendoor.conflux.models.CreateServerRequest(
+                    name = "Test Server",
+                    iconUrl = "http://icon.com",
+                    ownerId = "owner-id"
+                )
+            )
+            assertEquals(expectedBody, body)
+            
             respond(
                 content = ByteReadChannel(Json.encodeToString(mockServer)),
                 status = HttpStatusCode.Created,
@@ -40,7 +51,7 @@ class ServerApiClientTest {
                 json()
             }
         }, "http://localhost:8080")
-        val result = client.createServer("Test Server", "http://icon.com")
+        val result = client.createServer("Test Server", "http://icon.com", "owner-id")
         
         assertEquals(mockServer, result)
     }

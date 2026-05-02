@@ -36,10 +36,10 @@ class ServerApiClient(
         }.body()
     }
 
-    suspend fun createServer(name: String, iconUrl: String?): Server {
+    suspend fun createServer(name: String, iconUrl: String?, ownerId: String): Server {
         return client.post("$baseUrl/api/servers") {
             contentType(ContentType.Application.Json)
-            setBody(CreateServerRequest(name, iconUrl))
+            setBody(CreateServerRequest(name, iconUrl, ownerId))
         }.body()
     }
 
