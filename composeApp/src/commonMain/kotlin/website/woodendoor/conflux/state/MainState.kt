@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.api.WebSocketClient
 import website.woodendoor.conflux.models.Channel
@@ -24,6 +25,7 @@ object MainState {
     var messageSendError by mutableStateOf<String?>(null)
 
     private var webSocketClient: WebSocketClient? = null
+    // Use a fixed scope or ensure it's matched with the platform's Main dispatcher
     private val scope = CoroutineScope(Dispatchers.Main)
 
     fun initializeWebSocket(apiClient: ServerApiClient, userId: String, baseUrl: String) {
@@ -33,11 +35,12 @@ object MainState {
         webSocketClient = wsClient
         
         wsClient.events.onEach { event ->
-            when (event) {
-                is ConfluxEvent.Connected -> {
-                    // Sync messages for current channel if selected
-                    selectedChannel?.let { channel ->
-                        scope.launch {
+            // Ensure state updates happen on the Main thread for Compose to see them
+            withContext(Dispatchers.Main) {
+                when (event) {
+                    is ConfluxEvent.Connected -> {
+                        // Sync messages for current channel if selected
+                        selectedChannel?.let { channel ->
                             try {
                                 messages = apiClient.getMessages(channel.id)
                             } catch (e: Exception) {
@@ -45,20 +48,20 @@ object MainState {
                             }
                         }
                     }
-                }
-                is ConfluxEvent.NewMessage -> {
-                    if (event.message.channelId == selectedChannel?.id) {
-                        // Avoid duplicates if we just sent it and refreshed
-                        if (messages.none { it.id == event.message.id }) {
-                            messages = messages + event.message
+                    is ConfluxEvent.NewMessage -> {
+                        if (event.message.channelId == selectedChannel?.id) {
+                            // Avoid duplicates
+                            if (messages.none { it.id == event.message.id }) {
+                                messages = messages + event.message
+                            }
                         }
                     }
-                }
-                is ConfluxEvent.Error -> {
-                    // Could show a notification or log
-                }
-                is ConfluxEvent.SubscriptionSuccess -> {
-                    // OK
+                    is ConfluxEvent.Error -> {
+                        // Log or handle error
+                    }
+                    is ConfluxEvent.SubscriptionSuccess -> {
+                        // OK
+                    }
                 }
             }
         }.launchIn(scope)
@@ -106,10 +109,8 @@ object MainState {
         
         try {
             apiClient.sendMessage(channelId, senderId, content)
-            // No need to refresh messages manually here anymore if WebSocket works,
-            // but keeping it for immediate feedback or as a fallback is OK.
-            // Actually, let's let the WebSocket handle the update to avoid double-refresh issues,
-            // or just refresh and let NewMessage deduplicate.
+            // Manual refresh is now a fallback, but we'll keep it for immediate local feedback
+            // while the WebSocket event will handle the deduplication and others' messages.
             messages = apiClient.getMessages(channelId)
         } catch (e: Exception) {
             messageSendError = e.message ?: "Unknown error"
