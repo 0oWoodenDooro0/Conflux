@@ -1,10 +1,10 @@
 # Implementation Plan: Server Creation UI and Owner Support
 
 **Phase 1: Shared Models and Client Updates**
-- [ ] Task: Update `CreateServerRequest` model to include `ownerId` field.
-    - [ ] Add `ownerId` to `CreateServerRequest` in `shared/src/commonMain/kotlin/website/woodendoor/conflux/models/ApiModels.kt`.
-    - [ ] Update `ApiModelsTest.kt` to verify serialization with the new field.
-- [ ] Task: Update `ServerApiClient` to pass `ownerId` when creating a server.
+- [x] Task: Update `CreateServerRequest` model to include `ownerId` field. 4f0315c
+    - [x] Add `ownerId` to `CreateServerRequest` in `shared/src/commonMain/kotlin/website/woodendoor/conflux/models/ApiModels.kt`.
+    - [x] Update `ApiModelsTest.kt` to verify serialization with the new field.
+- [~] Task: Update `ServerApiClient` to pass `ownerId` when creating a server.
     - [ ] Update `createServer` signature in `ServerApiClient.kt`.
     - [ ] Update `testCreateServer` in `ServerApiClientTest.kt` to assert `ownerId` is sent in the request body.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Client Updates' (Protocol in workflow.md)
