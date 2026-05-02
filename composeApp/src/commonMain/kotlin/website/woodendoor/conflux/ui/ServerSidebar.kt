@@ -20,7 +20,8 @@ import website.woodendoor.conflux.models.Server
 fun ServerSidebar(
     servers: List<Server>,
     onServerClick: (Server) -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    onCreateServerClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -46,6 +47,7 @@ fun ServerSidebar(
         
         // Server List
         LazyColumn(
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -56,6 +58,20 @@ fun ServerSidebar(
                 )
             }
         }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+            thickness = 2.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
+
+        // Add Server Button
+        ServerIcon(
+            name = "+",
+            onClick = onCreateServerClick,
+            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
     }
 }
 

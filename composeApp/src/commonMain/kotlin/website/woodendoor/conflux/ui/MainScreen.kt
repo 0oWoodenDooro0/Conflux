@@ -18,33 +18,45 @@ fun MainScreen() {
     var servers by remember { mutableStateOf<List<Server>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var isCreatingServer by remember { mutableStateOf(false) }
 
-    LaunchedEffect(user.id) {
-        try {
-            servers = apiClient.getServers(user.id)
-        } catch (e: Exception) {
-            error = "Failed to load servers: ${e.message}"
-        } finally {
-            isLoading = false
+    val refreshServers = {
+        isLoading = true
+        // Launch effect will handle this if we trigger a change or just use a scope
+    }
+
+    LaunchedEffect(user.id, isCreatingServer) {
+        if (!isCreatingServer) {
+            try {
+                servers = apiClient.getServers(user.id)
+            } catch (e: Exception) {
+                error = "Failed to load servers: ${e.message}"
+            } finally {
+                isLoading = false
+            }
         }
     }
 
     Row(modifier = Modifier.fillMaxSize()) {
         ServerSidebar(
             servers = servers,
-            onServerClick = { /* Handle server selection later */ },
-            onHomeClick = { /* Handle home click later */ }
+            onServerClick = { isCreatingServer = false /* Later: select server */ },
+            onHomeClick = { isCreatingServer = false },
+            onCreateServerClick = { isCreatingServer = true }
         )
 
         // Main content placeholder
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(1f)
-                .padding(16.dp),
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            if (error != null) {
+            if (isCreatingServer) {
+                CreateServerScreen(onServerCreated = {
+                    isCreatingServer = false
+                })
+            } else if (error != null) {
                 Text(error!!, color = MaterialTheme.colorScheme.error)
             } else if (!isLoading) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import website.woodendoor.conflux.DEFAULT_BASE_URL
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.state.LoginState
 
 @Composable
 fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
@@ -71,7 +72,12 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
                     scope.launch {
                         isLoading = true
                         try {
-                            val server = apiClient.createServer(serverName, iconUrl.ifBlank { null })
+                            val ownerId = LoginState.currentUser?.username ?: "default-user"
+                            val server = apiClient.createServer(
+                                name = serverName,
+                                iconUrl = iconUrl.ifBlank { null },
+                                ownerId = ownerId
+                            )
                             message = "Success! Server ID: ${server.id}"
                             createdServer = server
                             onServerCreated(server)
