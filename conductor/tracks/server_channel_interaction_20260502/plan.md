@@ -1,6 +1,6 @@
 # Implementation Plan: Server-Channel Interaction & Creation
 
-## Phase 1: Backend Implementation (API & Repository)
+## Phase 1: Backend Implementation (API & Repository) [checkpoint: 0c6df14]
 - [x] Task: Implement `ChannelRepository.getChannelsByServer` (Already exists)
     - [x] Write failing test for repository method (Verified)
     - [x] Implement repository logic in `ExposedChannelRepository` (Verified)
@@ -12,7 +12,7 @@
 - [x] Task: Verify `POST /api/servers/{serverId}/channels` Route a30f75e
     - [x] Ensure the existing implementation matches the current needs
     - [x] Run existing tests to confirm functionality
-- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) a30f75e
 
 ## Phase 2: Shared API Client & Models
 - [ ] Task: Update Shared Models (if necessary)
