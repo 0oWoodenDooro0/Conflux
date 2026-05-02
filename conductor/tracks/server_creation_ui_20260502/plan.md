@@ -16,9 +16,9 @@
 - [x] Task: Update server list query to be robust (handle username and ID). 4715d5d
     - [x] Modify `getServersForUser` in `ExposedServerRepository.kt` to resolve username to ID if necessary.
     - [x] Ensure the query correctly returns servers where the user is owner OR member.
-- [~] Task: Verify server-side server creation and querying with tests.
-    - [ ] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed and queried.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md)
+- [x] Task: Verify server-side server creation and querying with tests. df5cf37
+    - [x] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed and queried.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md)
 
 **Phase 3: UI Integration**
 - [ ] Task: Add "Create Server" button to the server sidebar.
