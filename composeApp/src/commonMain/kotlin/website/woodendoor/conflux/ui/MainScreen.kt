@@ -71,12 +71,10 @@ fun MainScreen() {
                 ChannelSidebar(
                     serverName = selectedServer.name,
                     channels = channels,
-                    isFetching = isFetchingChannels,
                     onCreateChannelClick = { isCreatingChannel = true },
                     onChannelClick = { /* Later: Select channel */ }
                 )
             }
-
             // Main content placeholder
             Box(
                 modifier = Modifier

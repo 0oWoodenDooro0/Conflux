@@ -21,7 +21,6 @@ import website.woodendoor.conflux.models.Channel
 fun ChannelSidebar(
     serverName: String,
     channels: List<Channel>,
-    isFetching: Boolean,
     onCreateChannelClick: () -> Unit,
     onChannelClick: (Channel) -> Unit
 ) {
@@ -50,23 +49,15 @@ fun ChannelSidebar(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (isFetching) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                repeat(5) {
-                    ChannelSkeletonItem()
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(channels) { channel ->
-                    ChannelItem(
-                        channel = channel,
-                        onClick = { onChannelClick(channel) }
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(channels) { channel ->
+                ChannelItem(
+                    channel = channel,
+                    onClick = { onChannelClick(channel) }
+                )
             }
         }
     }
@@ -95,28 +86,5 @@ fun ChannelItem(channel: Channel, onClick: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
-    }
-}
-
-@Composable
-fun ChannelSkeletonItem() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(12.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.6f)
-                .height(16.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small)
-        )
     }
 }
