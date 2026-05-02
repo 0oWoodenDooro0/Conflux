@@ -10,7 +10,8 @@ data class LoginRequest(
 @Serializable
 data class CreateServerRequest(
     val name: String,
-    val iconUrl: String? = null
+    val iconUrl: String? = null,
+    val ownerId: String
 )
 
 @Serializable
