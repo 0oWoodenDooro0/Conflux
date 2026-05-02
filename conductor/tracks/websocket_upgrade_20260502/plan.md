@@ -24,9 +24,9 @@ Implement the WebSocket client in the KMP module and connect it to the UI state.
 - [x] Task: Update `MainState` to handle incoming WebSocket messages and update the UI. 458e823
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Client-Side WebSocket Integration' (Protocol in workflow.md) cd09c80
 
-## Phase 4: Verification and Polish
+## Phase 4: Verification and Polish [checkpoint: b5527a6]
 Final testing and performance verification.
 
-- [ ] Task: Perform end-to-end integration tests for real-time message delivery.
-- [ ] Task: Verify reconnection and sync logic under simulated network failure.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification and Polish' (Protocol in workflow.md)
+- [x] Task: Perform end-to-end integration tests for real-time message delivery. b5527a6
+- [x] Task: Verify reconnection and sync logic under simulated network failure. b5527a6
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification and Polish' (Protocol in workflow.md) b5527a6
