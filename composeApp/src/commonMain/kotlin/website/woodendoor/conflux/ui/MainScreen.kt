@@ -6,10 +6,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import website.woodendoor.conflux.DEFAULT_BASE_URL
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.state.LoginState
+import website.woodendoor.conflux.state.MainState
 
 @Composable
 fun MainScreen() {
@@ -19,6 +21,14 @@ fun MainScreen() {
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var isCreatingServer by remember { mutableStateOf(false) }
+    var isCreatingChannel by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val selectedServer = MainState.selectedServer
+    val channels = MainState.channelList
+    val isFetchingChannels = MainState.isFetchingChannels
+    val channelFetchError = MainState.channelFetchError
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(user.id, isCreatingServer) {
         if (!isCreatingServer) {
@@ -32,35 +42,83 @@ fun MainScreen() {
         }
     }
 
-    Row(modifier = Modifier.fillMaxSize()) {
-        ServerSidebar(
-            servers = servers,
-            onServerClick = { isCreatingServer = false /* Later: select server */ },
-            onHomeClick = { isCreatingServer = false },
-            onCreateServerClick = { isCreatingServer = true }
-        )
+    LaunchedEffect(channelFetchError) {
+        if (channelFetchError != null) {
+            snackbarHostState.showSnackbar(channelFetchError)
+        }
+    }
 
-        // Main content placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            if (isCreatingServer) {
-                CreateServerScreen(onServerCreated = {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Row(modifier = Modifier.fillMaxSize().padding(padding)) {
+            ServerSidebar(
+                servers = servers,
+                onServerClick = { server ->
                     isCreatingServer = false
-                })
-            } else if (error != null) {
-                Text(error!!, color = MaterialTheme.colorScheme.error)
-            } else if (!isLoading) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Welcome, ${user.username}!", style = MaterialTheme.typography.headlineSmall)
-                    Text("Select a server from the left to get started.", style = MaterialTheme.typography.bodyMedium)
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Text("Found ${servers.size} servers", style = MaterialTheme.typography.bodySmall)
+                    scope.launch {
+                        MainState.selectServer(server, apiClient)
+                    }
+                },
+                onHomeClick = {
+                    isCreatingServer = false
+                    MainState.selectedServer = null
+                },
+                onCreateServerClick = { isCreatingServer = true }
+            )
+
+            if (selectedServer != null && !isCreatingServer) {
+                ChannelSidebar(
+                    serverName = selectedServer.name,
+                    channels = channels,
+                    isFetching = isFetchingChannels,
+                    onCreateChannelClick = { isCreatingChannel = true },
+                    onChannelClick = { /* Later: Select channel */ }
+                )
+            }
+
+            // Main content placeholder
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isCreatingServer) {
+                    CreateServerScreen(onServerCreated = {
+                        isCreatingServer = false
+                    })
+                } else if (isCreatingChannel && selectedServer != null) {
+                    ChannelCreationDialog(
+                        serverId = selectedServer.id,
+                        apiClient = apiClient,
+                        onDismissRequest = { isCreatingChannel = false },
+                        onChannelCreated = { channel ->
+                            isCreatingChannel = false
+                            scope.launch {
+                                // Refresh channels
+                                MainState.selectServer(selectedServer, apiClient)
+                            }
+                        }
+                    )
+                } else if (error != null) {
+                    Text(error, color = MaterialTheme.colorScheme.error)
+                } else if (channelFetchError != null) {
+                    Text(channelFetchError, color = MaterialTheme.colorScheme.error)
+                } else if (!isLoading) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (selectedServer != null) {
+                            Text("Server: ${selectedServer.name}", style = MaterialTheme.typography.headlineSmall)
+                            Text("Select a channel from the left.", style = MaterialTheme.typography.bodyMedium)
+                        } else {
+                            Text("Welcome, ${user.username}!", style = MaterialTheme.typography.headlineSmall)
+                            Text("Select a server from the left to get started.", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text("Found ${servers.size} servers", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
         }
