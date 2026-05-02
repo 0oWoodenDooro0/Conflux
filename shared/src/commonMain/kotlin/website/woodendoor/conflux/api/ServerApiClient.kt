@@ -12,6 +12,8 @@ import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.LoginRequest
 import website.woodendoor.conflux.models.User
+import website.woodendoor.conflux.models.Message
+import website.woodendoor.conflux.models.SendMessageRequest
 
 class ServerApiClient(
     private val client: HttpClient,
@@ -52,6 +54,17 @@ class ServerApiClient(
 
     suspend fun getChannels(serverId: String): List<Channel> {
         return client.get("$baseUrl/api/servers/$serverId/channels").body()
+    }
+
+    suspend fun getMessages(channelId: String): List<Message> {
+        return client.get("$baseUrl/api/channels/$channelId/messages").body()
+    }
+
+    suspend fun sendMessage(channelId: String, senderId: String, content: String): Message {
+        return client.post("$baseUrl/api/channels/$channelId/messages") {
+            contentType(ContentType.Application.Json)
+            setBody(SendMessageRequest(senderId, content))
+        }.body()
     }
 
     fun close() {

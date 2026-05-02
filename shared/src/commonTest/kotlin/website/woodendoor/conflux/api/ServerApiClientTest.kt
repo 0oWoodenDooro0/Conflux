@@ -172,4 +172,72 @@ class ServerApiClientTest {
 
         assertEquals(mockChannels, result)
     }
+
+    @Test
+    fun testSendMessage() = runTest {
+        val mockMessage = website.woodendoor.conflux.models.Message(
+            id = "msg-id",
+            channelId = "chan-id",
+            authorId = "user-id",
+            content = "Hello",
+            timestamp = 123456789L
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/channels/chan-id/messages", request.url.encodedPath)
+            assertEquals(HttpMethod.Post, request.method)
+            
+            val body = (request.body as? io.ktor.http.content.TextContent)?.text
+            val expectedBody = Json.encodeToString(
+                website.woodendoor.conflux.models.SendMessageRequest(
+                    senderId = "user-id",
+                    content = "Hello"
+                )
+            )
+            assertEquals(expectedBody, body)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockMessage)),
+                status = HttpStatusCode.Created,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.sendMessage("chan-id", "user-id", "Hello")
+
+        assertEquals(mockMessage, result)
+    }
+
+    @Test
+    fun testGetMessages() = runTest {
+        val mockMessages = listOf(
+            website.woodendoor.conflux.models.Message(id = "m1", channelId = "c1", authorId = "u1", content = "Msg 1", timestamp = 1L),
+            website.woodendoor.conflux.models.Message(id = "m2", channelId = "c1", authorId = "u2", content = "Msg 2", timestamp = 2L)
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/channels/c1/messages", request.url.encodedPath)
+            assertEquals(HttpMethod.Get, request.method)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockMessages)),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.getMessages("c1")
+
+        assertEquals(mockMessages, result)
+    }
 }
