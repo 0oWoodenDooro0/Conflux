@@ -31,10 +31,10 @@
     - [x] Implement Auto-Scroll and "Scroll to Bottom" button.
 - [x] Task: Conductor - User Manual Verification 'Frontend State & UI' (Protocol in workflow.md) a853139
 
-## Phase 4: Final Validation
-- [ ] Task: End-to-End Testing
-    - [ ] Verify full flow: Login -> Select Server -> Select Channel -> Send Message -> Refresh/View History.
-- [ ] Task: Performance and Edge Case Verification
-    - [ ] Verify character limit enforcement.
-    - [ ] Verify persistence after server restart.
-- [ ] Task: Conductor - User Manual Verification 'Final Validation' (Protocol in workflow.md)
+## Phase 4: Final Validation [checkpoint: 00d85f8]
+- [x] Task: End-to-End Testing e695e17
+    - [x] Verify full flow: Login -> Select Server -> Select Channel -> Send Message -> Refresh/View History.
+- [x] Task: Performance and Edge Case Verification e695e17
+    - [x] Verify character limit enforcement.
+    - [x] Verify persistence after server restart.
+- [x] Task: Conductor - User Manual Verification 'Final Validation' (Protocol in workflow.md) 00d85f8
