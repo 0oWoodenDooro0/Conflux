@@ -13,6 +13,7 @@ import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.ChannelType
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.Message
 import kotlin.test.*
 
 class MainStateTest {
@@ -95,5 +96,66 @@ class MainStateTest {
         assertEquals(server, MainState.selectedServer)
         assertTrue(MainState.channelList.isEmpty())
         assertNotNull(MainState.channelFetchError)
+    }
+
+    @Test
+    fun testSelectChannel() = runTest {
+        val channel = Channel("c1", "s1", "general", ChannelType.TEXT)
+        val messages = listOf(
+            Message("m1", "c1", "u1", "Hello", 1L)
+        )
+
+        val mockEngine = MockEngine { request ->
+            if (request.url.encodedPath.contains("/messages")) {
+                respond(
+                    content = ByteReadChannel(Json.encodeToString(messages)),
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            } else {
+                respond(content = ByteReadChannel(""), status = HttpStatusCode.NotFound)
+            }
+        }
+        val apiClient = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) { json() }
+        }, "http://localhost")
+
+        MainState.selectChannel(channel, apiClient)
+
+        assertEquals(channel, MainState.selectedChannel)
+        assertEquals(messages, MainState.messages)
+        assertNull(MainState.messageFetchError)
+    }
+
+    @Test
+    fun testSendMessage() = runTest {
+        val channel = Channel("c1", "s1", "general", ChannelType.TEXT)
+        MainState.selectedChannel = channel
+        val newMessage = Message("m2", "c1", "u1", "New Message", 2L)
+
+        val mockEngine = MockEngine { request ->
+            if (request.method == HttpMethod.Post) {
+                respond(
+                    content = ByteReadChannel(Json.encodeToString(newMessage)),
+                    status = HttpStatusCode.Created,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            } else {
+                // GET messages (after send)
+                respond(
+                    content = ByteReadChannel(Json.encodeToString(listOf(newMessage))),
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            }
+        }
+        val apiClient = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) { json() }
+        }, "http://localhost")
+
+        MainState.sendMessage("u1", "New Message", apiClient)
+
+        assertEquals(listOf(newMessage), MainState.messages)
+        assertNull(MainState.messageSendError)
     }
 }
