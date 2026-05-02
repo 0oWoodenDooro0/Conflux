@@ -1,12 +1,12 @@
 # Implementation Plan: WebSocket Real-time Messaging
 
-## Phase 1: Server-Side WebSocket Infrastructure
+## Phase 1: Server-Side WebSocket Infrastructure [checkpoint: 78a5b92]
 Setup the basic WebSocket server and connection management.
 
 - [x] Task: TDD - Implement WebSocket authentication token generation and validation. 73da706
 - [x] Task: TDD - Setup Ktor WebSocket plugin and basic routing. b84ff79
 - [x] Task: TDD - Implement ConnectionManager to track active users and their channels. eb24ef0
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Server-Side WebSocket Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Server-Side WebSocket Infrastructure' (Protocol in workflow.md) 78a5b92
 
 ## Phase 2: Real-time Broadcasting
 Integrate the message sending flow with the WebSocket broadcast mechanism.
