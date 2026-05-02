@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Client Updates' (Protocol in workflow.md) 6da4eee
 
 **Phase 2: Server-Side Implementation**
-- [ ] Task: Update Server route to use `ownerId` from the POST request.
-    - [ ] Modify `serverRoutes` in `server/src/main/kotlin/website/woodendoor/conflux/routes/ServerRoutes.kt`.
-    - [ ] Remove the hardcoded `"default-user"` owner.
-- [ ] Task: Update server list query to be robust (handle username and ID).
+- [x] Task: Update Server route to use `ownerId` from the POST request. 1107d72
+    - [x] Modify `serverRoutes` in `server/src/main/kotlin/website/woodendoor/conflux/routes/ServerRoutes.kt`.
+    - [x] Remove the hardcoded `"default-user"` owner.
+- [~] Task: Update server list query to be robust (handle username and ID).
     - [ ] Modify `getServersForUser` in `ExposedServerRepository.kt` to resolve username to ID if necessary.
     - [ ] Ensure the query correctly returns servers where the user is owner OR member.
 - [ ] Task: Verify server-side server creation and querying with tests.
