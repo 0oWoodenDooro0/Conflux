@@ -1,18 +1,18 @@
 # Implementation Plan: Server-Channel Interaction & Creation
 
 ## Phase 1: Backend Implementation (API & Repository)
-- [ ] Task: Implement `ChannelRepository.getChannelsByServerId`
-    - [ ] Write failing test for repository method
-    - [ ] Implement repository logic in `ExposedChannelRepository`
-    - [ ] Verify test passes
-- [ ] Task: Create `GET /api/servers/{serverId}/channels` Route
-    - [ ] Write failing integration test for the route
-    - [ ] Implement route in `ServerRoutes.kt`
-    - [ ] Verify test passes
-- [ ] Task: Verify `POST /api/servers/{serverId}/channels` Route
-    - [ ] Ensure the existing implementation matches the current needs
-    - [ ] Run existing tests to confirm functionality
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Implement `ChannelRepository.getChannelsByServer` (Already exists)
+    - [x] Write failing test for repository method (Verified)
+    - [x] Implement repository logic in `ExposedChannelRepository` (Verified)
+    - [x] Verify test passes (Verified)
+- [x] Task: Create `GET /api/servers/{serverId}/channels` Route a30f75e
+    - [x] Write failing integration test for the route
+    - [x] Implement route in `ServerRoutes.kt`
+    - [x] Verify test passes
+- [x] Task: Verify `POST /api/servers/{serverId}/channels` Route a30f75e
+    - [x] Ensure the existing implementation matches the current needs
+    - [x] Run existing tests to confirm functionality
+- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Shared API Client & Models
 - [ ] Task: Update Shared Models (if necessary)
