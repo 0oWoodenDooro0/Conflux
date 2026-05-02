@@ -1,14 +1,14 @@
 # Implementation Plan: Static Historical Messages (HTTP-based)
 
-## Phase 1: Backend Persistence Layer
+## Phase 1: Backend Persistence Layer [checkpoint: a4352cf]
 - [x] Task: Define `Messages` Table 46a6ec3
-    - [ ] Create `Messages.kt` with Exposed DSL.
-    - [ ] Register table in `DatabaseFactory`.
+    - [x] Create `Messages.kt` with Exposed DSL.
+    - [x] Register table in `DatabaseFactory`.
 - [x] Task: Implement `MessageRepository` (TDD) f9aa5ed
-    - [ ] **Red**: Write failing unit tests for `saveMessage` and `getMessagesByChannel`.
-    - [ ] **Green**: Implement `MessageRepository` and `ExposedMessageRepository`.
-    - [ ] **Verify**: Ensure tests pass and coverage >80%.
-- [ ] Task: Conductor - User Manual Verification 'Backend Persistence Layer' (Protocol in workflow.md)
+    - [x] **Red**: Write failing unit tests for `saveMessage` and `getMessagesByChannel`.
+    - [x] **Green**: Implement `MessageRepository` and `ExposedMessageRepository`.
+    - [x] **Verify**: Ensure tests pass and coverage >80%.
+- [x] Task: Conductor - User Manual Verification 'Backend Persistence Layer' (Protocol in workflow.md) a4352cf
 
 ## Phase 2: API & Shared Client
 - [ ] Task: Implement Message Routes (TDD)
