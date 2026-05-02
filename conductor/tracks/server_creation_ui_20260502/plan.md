@@ -9,7 +9,7 @@
     - [x] Update `testCreateServer` in `ServerApiClientTest.kt` to assert `ownerId` is sent in the request body.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Shared Models and Client Updates' (Protocol in workflow.md) 6da4eee
 
-**Phase 2: Server-Side Implementation**
+**Phase 2: Server-Side Implementation** [checkpoint: f399cb5]
 - [x] Task: Update Server route to use `ownerId` from the POST request. 1107d72
     - [x] Modify `serverRoutes` in `server/src/main/kotlin/website/woodendoor/conflux/routes/ServerRoutes.kt`.
     - [x] Remove the hardcoded `"default-user"` owner.
@@ -18,7 +18,7 @@
     - [x] Ensure the query correctly returns servers where the user is owner OR member.
 - [x] Task: Verify server-side server creation and querying with tests. df5cf37
     - [x] Add/Update tests in `server/src/test/kotlin/website/woodendoor/conflux/ServerListRouteTest.kt` to check if `ownerId` is correctly processed and queried.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Server-Side Implementation' (Protocol in workflow.md) f399cb5
 
 **Phase 3: UI Integration**
 - [ ] Task: Add "Create Server" button to the server sidebar.
