@@ -47,7 +47,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
     }
 
     override suspend fun getServersForUser(userId: String): List<Server> = dbQuery {
-        val resolvedUserId = if (Servers.selectAll().where { Servers.id eq userId }.empty()) {
+        val resolvedUserId = if (userRepository.getUser(userId) == null) {
             userRepository.findByUsername(userId)?.id ?: userId
         } else {
             userId

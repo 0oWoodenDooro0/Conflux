@@ -28,21 +28,26 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
             try {
                 val request = call.receive<CreateServerRequest>()
                 
-                // Ensure owner exists (placeholder for full auth)
-                if (userRepository.getUser(request.ownerId) == null) {
+                // Resolve or create owner with UUID
+                val owner = userRepository.getUser(request.ownerId) ?: userRepository.findByUsername(request.ownerId)
+                val resolvedOwnerId = if (owner == null) {
+                    val newUserId = UUID.randomUUID().toString()
                     userRepository.createUser(
                         User(
-                            id = request.ownerId,
-                            username = request.ownerId, // For now use ownerId as username if it doesn't exist
+                            id = newUserId,
+                            username = request.ownerId,
                             discriminator = "0000"
                         )
                     )
+                    newUserId
+                } else {
+                    owner.id
                 }
 
                 val server = Server(
                     id = UUID.randomUUID().toString(),
                     name = request.name,
-                    ownerId = request.ownerId,
+                    ownerId = resolvedOwnerId,
                     icon = request.iconUrl
                 )
                 val created = serverRepository.createServer(server)
