@@ -67,6 +67,15 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
 
 fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: ServerRepository) {
     route("/api/servers/{serverId}/channels") {
+        get {
+            val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            if (serverRepository.getServer(serverId) == null) {
+                return@get call.respond(HttpStatusCode.NotFound, "Server not found")
+            }
+            val channels = channelRepository.getChannelsByServer(serverId)
+            call.respond(HttpStatusCode.OK, channels)
+        }
+
         post {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             if (serverRepository.getServer(serverId) == null) {
