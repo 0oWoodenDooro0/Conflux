@@ -30,3 +30,7 @@
     - [x] Ensure `CreateServerScreen` uses the logged-in user's username for the `ownerId`.
     - [x] Update `CreateServerScreen.kt` to use the updated `apiClient.createServer` method.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration' (Protocol in workflow.md) 7d25ba5
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 97b44a3
+
