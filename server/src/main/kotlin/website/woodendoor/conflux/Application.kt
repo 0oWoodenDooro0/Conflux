@@ -15,6 +15,7 @@ import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
 import website.woodendoor.conflux.database.repositories.ExposedServerRepository
 import website.woodendoor.conflux.database.repositories.ExposedUserRepository
+import website.woodendoor.conflux.database.repositories.ExposedMessageRepository
 import website.woodendoor.conflux.routes.channelRoutes
 import website.woodendoor.conflux.routes.serverRoutes
 import website.woodendoor.conflux.routes.userRoutes
