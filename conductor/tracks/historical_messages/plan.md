@@ -11,7 +11,7 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Persistence Layer' (Protocol in workflow.md) a4352cf
 
 ## Phase 2: API & Shared Client
-- [ ] Task: Implement Message Routes (TDD)
+- [x] Task: Implement Message Routes (TDD) 034936f
     - [ ] **Red**: Write failing integration tests for `POST` and `GET` message endpoints.
     - [ ] **Green**: Implement Ktor routes and dependency injection for the repository.
     - [ ] **Verify**: Ensure integration tests pass.
