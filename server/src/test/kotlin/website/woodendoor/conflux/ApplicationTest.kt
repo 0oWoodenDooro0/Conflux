@@ -37,6 +37,7 @@ class ApplicationTest {
         val server = Json.decodeFromString<Server>(response.bodyAsText())
         assertEquals("New Server", server.name)
         assertEquals("http://icon.com", server.icon)
+        assertEquals("test-owner", server.ownerId)
         assertNotNull(server.id)
         }
 
