@@ -41,7 +41,6 @@
     - [x] Call `selectServer` on click
 - [x] Task: Implement `ChannelSidebar` Component 0f2a054
     - [x] Display the server name and a "Create Channel" button
-    - [x] Implement skeleton/shimmer UI for loading
     - [x] Render channel list from state
 - [x] Task: Integrate `ChannelCreationDialog` 0f2a054
     - [x] Connect the existing dialog to the "Create Channel" button
@@ -49,3 +48,6 @@
 - [x] Task: Integrate Toast Notification for Errors 0f2a054
     - [x] Trigger toast when `channelFetchError` is set
 - [x] Task: Conductor - User Manual Verification 'UI Components & Integration' (Protocol in workflow.md) 0f2a054
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions b4e157d
