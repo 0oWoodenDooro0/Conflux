@@ -25,7 +25,7 @@
 - [x] Task: Update `MainState` for Message Management (TDD) 2d199a1
     - [ ] **Red**: Write tests for `MainState` message fetching and sending logic.
     - [ ] **Green**: Implement state updates, error handling, and API integration.
-- [ ] Task: Implement Chat Room UI
+- [x] Task: Implement Chat Room UI 33d655a
     - [ ] Create `MessageList` with `LazyColumn`.
     - [ ] Create `MessageInput` with auto-focus and character limit (2000).
     - [ ] Implement Auto-Scroll and "Scroll to Bottom" button.
