@@ -15,14 +15,14 @@ Integrate the message sending flow with the WebSocket broadcast mechanism.
 - [x] Task: TDD - Implement message serialization for WebSocket transmission. 9b76031
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Real-time Broadcasting' (Protocol in workflow.md) ea6437f
 
-## Phase 3: Client-Side WebSocket Integration
+## Phase 3: Client-Side WebSocket Integration [checkpoint: cd09c80]
 Implement the WebSocket client in the KMP module and connect it to the UI state.
 
 - [x] Task: TDD - Implement WebSocketClient in the `shared` or `composeApp` module. 5111e18
 - [x] Task: TDD - Implement auto-reconnection logic with exponential backoff. 5111e18
-- [~] Task: TDD - Implement message synchronization on reconnection.
-- [~] Task: Update `MainState` to handle incoming WebSocket messages and update the UI.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Client-Side WebSocket Integration' (Protocol in workflow.md)
+- [x] Task: TDD - Implement message synchronization on reconnection. 458e823
+- [x] Task: Update `MainState` to handle incoming WebSocket messages and update the UI. 458e823
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Client-Side WebSocket Integration' (Protocol in workflow.md) cd09c80
 
 ## Phase 4: Verification and Polish
 Final testing and performance verification.
