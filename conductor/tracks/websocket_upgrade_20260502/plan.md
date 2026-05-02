@@ -8,12 +8,12 @@ Setup the basic WebSocket server and connection management.
 - [x] Task: TDD - Implement ConnectionManager to track active users and their channels. eb24ef0
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Server-Side WebSocket Infrastructure' (Protocol in workflow.md) 78a5b92
 
-## Phase 2: Real-time Broadcasting
+## Phase 2: Real-time Broadcasting [checkpoint: ea6437f]
 Integrate the message sending flow with the WebSocket broadcast mechanism.
 
 - [x] Task: TDD - Update MessageRoutes to trigger broadcast on new message. 093d369
 - [x] Task: TDD - Implement message serialization for WebSocket transmission. 9b76031
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Real-time Broadcasting' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Real-time Broadcasting' (Protocol in workflow.md) ea6437f
 
 ## Phase 3: Client-Side WebSocket Integration
 Implement the WebSocket client in the KMP module and connect it to the UI state.
