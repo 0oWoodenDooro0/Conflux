@@ -21,15 +21,15 @@
     - [x] Write unit tests for the client methods using Ktor `MockEngine`.
 - [x] Task: Conductor - User Manual Verification 'API & Shared Client' (Protocol in workflow.md) c7e2b93
 
-## Phase 3: Frontend State & UI
+## Phase 3: Frontend State & UI [checkpoint: a853139]
 - [x] Task: Update `MainState` for Message Management (TDD) 2d199a1
-    - [ ] **Red**: Write tests for `MainState` message fetching and sending logic.
-    - [ ] **Green**: Implement state updates, error handling, and API integration.
+    - [x] **Red**: Write tests for `MainState` message fetching and sending logic.
+    - [x] **Green**: Implement state updates, error handling, and API integration.
 - [x] Task: Implement Chat Room UI 33d655a
-    - [ ] Create `MessageList` with `LazyColumn`.
-    - [ ] Create `MessageInput` with auto-focus and character limit (2000).
-    - [ ] Implement Auto-Scroll and "Scroll to Bottom" button.
-- [ ] Task: Conductor - User Manual Verification 'Frontend State & UI' (Protocol in workflow.md)
+    - [x] Create `MessageList` with `LazyColumn`.
+    - [x] Create `MessageInput` with auto-focus and character limit (2000).
+    - [x] Implement Auto-Scroll and "Scroll to Bottom" button.
+- [x] Task: Conductor - User Manual Verification 'Frontend State & UI' (Protocol in workflow.md) a853139
 
 ## Phase 4: Final Validation
 - [ ] Task: End-to-End Testing
