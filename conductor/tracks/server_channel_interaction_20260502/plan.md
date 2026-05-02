@@ -14,14 +14,14 @@
     - [x] Run existing tests to confirm functionality
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) a30f75e
 
-## Phase 2: Shared API Client & Models
-- [ ] Task: Update Shared Models (if necessary)
-    - [ ] Ensure `Channel` model includes necessary fields (ID, Name, Type, Description, Metadata)
-- [ ] Task: Implement `ServerApiClient.getChannels(serverId: String)`
-    - [ ] Write failing test in `ServerApiClientTest`
-    - [ ] Implement fetching logic using Ktor Client
-    - [ ] Verify test passes
-- [ ] Task: Conductor - User Manual Verification 'Shared API Client & Models' (Protocol in workflow.md)
+## Phase 2: Shared API Client & Models [checkpoint: bd10531]
+- [x] Task: Update Shared Models (if necessary) 2739a11
+    - [x] Ensure `Channel` model includes necessary fields (ID, Name, Type, Description, Metadata)
+- [x] Task: Implement `ServerApiClient.getChannels(serverId: String)` d814056
+    - [x] Write failing test in `ServerApiClientTest`
+    - [x] Implement fetching logic using Ktor Client
+    - [x] Verify test passes
+- [x] Task: Conductor - User Manual Verification 'Shared API Client & Models' (Protocol in workflow.md) d814056
 
 ## Phase 3: Frontend State & Logic
 - [ ] Task: Update `MainState` to handle server selection and channel list
