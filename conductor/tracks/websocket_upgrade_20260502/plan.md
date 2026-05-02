@@ -5,7 +5,7 @@ Setup the basic WebSocket server and connection management.
 
 - [x] Task: TDD - Implement WebSocket authentication token generation and validation. 73da706
 - [x] Task: TDD - Setup Ktor WebSocket plugin and basic routing. b84ff79
-- [ ] Task: TDD - Implement ConnectionManager to track active users and their channels.
+- [x] Task: TDD - Implement ConnectionManager to track active users and their channels. eb24ef0
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Server-Side WebSocket Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Real-time Broadcasting
