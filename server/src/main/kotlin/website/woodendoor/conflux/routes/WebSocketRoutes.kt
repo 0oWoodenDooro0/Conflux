@@ -5,8 +5,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
+import website.woodendoor.conflux.models.ConfluxEvent
 
 fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionManager: WebSocketConnectionManager) {
     post("/api/auth/ws-token") {
@@ -36,7 +39,7 @@ fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionMan
         connectionManager.addConnection(userId, this)
         
         try {
-            send("Connected as $userId")
+            // No need to send raw text confirmation, use events if needed or just wait
             
             for (frame in incoming) {
                 if (frame is Frame.Text) {
@@ -45,9 +48,9 @@ fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionMan
                     if (text.startsWith("subscribe:")) {
                         val channelId = text.substringAfter("subscribe:")
                         connectionManager.subscribeToChannel(userId, channelId)
-                        send("Subscribed to $channelId")
+                        send(Frame.Text(Json.encodeToString<ConfluxEvent>(ConfluxEvent.SubscriptionSuccess(channelId))))
                     } else {
-                        send("Echo: $text")
+                        // Handle other incoming text or ignore
                     }
                 }
             }

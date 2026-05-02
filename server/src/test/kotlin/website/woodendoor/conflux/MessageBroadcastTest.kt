@@ -46,14 +46,15 @@ class MessageBroadcastTest {
 
         // 3. Connect to WebSocket and subscribe
         client.webSocket("/ws?token=$token") {
-            // Read connection confirmation
-            incoming.receive()
-            
             // Subscribe to the channel
             send("subscribe:$channelId")
-            incoming.receive() // Read subscription confirmation
+            
+            val subFrame = incoming.receive() as Frame.Text
+            val subEvent = Json.decodeFromString<ConfluxEvent>(subFrame.readText())
+            assertTrue(subEvent is ConfluxEvent.SubscriptionSuccess)
+            assertEquals(channelId, subEvent.channelId)
 
-            // 4. Send a message via HTTP POST (using a different "client" call or same one)
+            // 4. Send a message via HTTP POST
             client.post("/api/channels/$channelId/messages") {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
                 setBody(Json.encodeToString(SendMessageRequest(senderId = "default-user", content = "Broadcast test")))
@@ -61,11 +62,11 @@ class MessageBroadcastTest {
 
             // 5. Verify broadcast received over WebSocket
             val broadcastFrame = incoming.receive() as Frame.Text
-            val broadcastText = broadcastFrame.readText()
+            val event = Json.decodeFromString<ConfluxEvent>(broadcastFrame.readText())
             
-            // For now, let's assume it sends the raw message JSON or a specific Event object
-            assertTrue(broadcastText.contains("Broadcast test"), "Broadcast should contain message content")
-            assertTrue(broadcastText.contains("default-user"), "Broadcast should contain sender ID")
+            assertTrue(event is ConfluxEvent.NewMessage)
+            assertEquals("Broadcast test", event.message.content)
+            assertEquals("default-user", event.message.authorId)
         }
     }
 }

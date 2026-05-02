@@ -10,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.MessageRepository
+import website.woodendoor.conflux.models.ConfluxEvent
 import website.woodendoor.conflux.models.SendMessageRequest
 
 fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager: WebSocketConnectionManager) {
@@ -40,10 +41,11 @@ fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager:
                 if (message != null) {
                     // Broadcast to WebSocket subscribers
                     val connections = connectionManager.getConnectionsForChannel(channelId)
-                    val messageJson = Json.encodeToString(message)
+                    val event = ConfluxEvent.NewMessage(message)
+                    val eventJson = Json.encodeToString<ConfluxEvent>(event)
                     connections.forEach { session ->
                         try {
-                            session.send(Frame.Text(messageJson))
+                            session.send(Frame.Text(eventJson))
                         } catch (e: Exception) {
                             // Session might be closed
                         }
