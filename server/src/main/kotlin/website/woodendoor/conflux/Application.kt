@@ -56,6 +56,7 @@ fun Application.module() {
     val userRepository = ExposedUserRepository()
     val serverRepository = ExposedServerRepository(userRepository)
     val channelRepository = ExposedChannelRepository()
+    val messageRepository = ExposedMessageRepository()
 
     routing {
         get("/") {
