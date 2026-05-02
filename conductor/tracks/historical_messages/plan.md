@@ -4,7 +4,7 @@
 - [x] Task: Define `Messages` Table 46a6ec3
     - [ ] Create `Messages.kt` with Exposed DSL.
     - [ ] Register table in `DatabaseFactory`.
-- [ ] Task: Implement `MessageRepository` (TDD)
+- [x] Task: Implement `MessageRepository` (TDD) f9aa5ed
     - [ ] **Red**: Write failing unit tests for `saveMessage` and `getMessagesByChannel`.
     - [ ] **Green**: Implement `MessageRepository` and `ExposedMessageRepository`.
     - [ ] **Verify**: Ensure tests pass and coverage >80%.
