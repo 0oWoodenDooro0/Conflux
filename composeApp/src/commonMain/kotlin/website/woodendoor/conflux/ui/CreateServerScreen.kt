@@ -72,7 +72,13 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
                     scope.launch {
                         isLoading = true
                         try {
-                            val ownerId = LoginState.currentUser?.username ?: "default-user"
+                            val currentUser = LoginState.currentUser
+                            if (currentUser == null) {
+                                message = "Error: You must be logged in to create a server."
+                                isLoading = false
+                                return@launch
+                            }
+                            val ownerId = currentUser.username
                             val server = apiClient.createServer(
                                 name = serverName,
                                 iconUrl = iconUrl.ifBlank { null },

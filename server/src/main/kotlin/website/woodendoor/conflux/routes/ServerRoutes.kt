@@ -28,6 +28,8 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
             try {
                 val request = call.receive<CreateServerRequest>()
                 
+                // TODO: Replace with proper authentication check. 
+                // Currently auto-creates user if not found to facilitate development.
                 // Resolve or create owner with UUID
                 val owner = userRepository.getUser(request.ownerId) ?: userRepository.findByUsername(request.ownerId)
                 val resolvedOwnerId = if (owner == null) {

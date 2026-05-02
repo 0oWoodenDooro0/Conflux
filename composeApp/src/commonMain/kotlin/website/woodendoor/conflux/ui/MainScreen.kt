@@ -20,11 +20,6 @@ fun MainScreen() {
     var error by remember { mutableStateOf<String?>(null) }
     var isCreatingServer by remember { mutableStateOf(false) }
 
-    val refreshServers = {
-        isLoading = true
-        // Launch effect will handle this if we trigger a change or just use a scope
-    }
-
     LaunchedEffect(user.id, isCreatingServer) {
         if (!isCreatingServer) {
             try {
