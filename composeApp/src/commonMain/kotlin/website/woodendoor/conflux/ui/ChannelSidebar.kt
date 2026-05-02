@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -21,6 +22,7 @@ import website.woodendoor.conflux.models.Channel
 fun ChannelSidebar(
     serverName: String,
     channels: List<Channel>,
+    selectedChannelId: String? = null,
     onCreateChannelClick: () -> Unit,
     onChannelClick: (Channel) -> Unit
 ) {
@@ -56,6 +58,7 @@ fun ChannelSidebar(
             items(channels) { channel ->
                 ChannelItem(
                     channel = channel,
+                    isSelected = channel.id == selectedChannelId,
                     onClick = { onChannelClick(channel) }
                 )
             }
@@ -64,11 +67,12 @@ fun ChannelSidebar(
 }
 
 @Composable
-fun ChannelItem(channel: Channel, onClick: () -> Unit) {
+fun ChannelItem(channel: Channel, isSelected: Boolean, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        color = Color.Transparent
+        color = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+        shape = RoundedCornerShape(4.dp)
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
@@ -77,13 +81,14 @@ fun ChannelItem(channel: Channel, onClick: () -> Unit) {
             Text(
                 text = "#",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = channel.name,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
             )
         }
     }

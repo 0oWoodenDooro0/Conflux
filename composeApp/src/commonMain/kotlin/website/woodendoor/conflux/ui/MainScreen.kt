@@ -70,8 +70,13 @@ fun MainScreen() {
                 ChannelSidebar(
                     serverName = selectedServer.name,
                     channels = channels,
+                    selectedChannelId = MainState.selectedChannel?.id,
                     onCreateChannelClick = { isCreatingChannel = true },
-                    onChannelClick = { /* Later: Select channel */ }
+                    onChannelClick = { channel ->
+                        scope.launch {
+                            MainState.selectChannel(channel, apiClient)
+                        }
+                    }
                 )
             }
             // Main content placeholder
@@ -98,6 +103,8 @@ fun MainScreen() {
                             }
                         }
                     )
+                } else if (MainState.selectedChannel != null) {
+                    ChatRoom(apiClient = apiClient)
                 } else {
                     val currentError = error
                     if (currentError != null) {

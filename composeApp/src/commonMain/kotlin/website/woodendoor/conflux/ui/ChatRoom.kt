@@ -1,0 +1,162 @@
+package website.woodendoor.conflux.ui
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.*
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import website.woodendoor.conflux.api.ServerApiClient
+import website.woodendoor.conflux.models.Message
+import website.woodendoor.conflux.state.LoginState
+import website.woodendoor.conflux.state.MainState
+
+@Composable
+fun ChatRoom(apiClient: ServerApiClient) {
+    val channel = MainState.selectedChannel ?: return
+    val messages = MainState.messages
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
+    // Auto-scroll to bottom when new messages arrive
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(messages) { message ->
+                    MessageItem(message)
+                }
+            }
+            
+            // Scroll to Bottom Button
+            if (listState.firstVisibleItemIndex < messages.size - 10 && messages.isNotEmpty()) {
+                SmallFloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(messages.size - 1)
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                ) {
+                    Text("↓")
+                }
+            }
+        }
+
+        MessageInput(
+            onSendMessage = { content ->
+                val user = LoginState.currentUser ?: return@MessageInput
+                scope.launch {
+                    MainState.sendMessage(user.id, content, apiClient)
+                }
+            },
+            sendError = MainState.messageSendError
+        )
+    }
+}
+
+@Composable
+fun MessageItem(message: Message) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = "User ${message.authorId}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = message.content,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+
+@Composable
+fun MessageInput(
+    onSendMessage: (String) -> Unit,
+    sendError: String?
+) {
+    var text by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        if (sendError != null) {
+            Text(
+                text = sendError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { if (it.length <= 2000) text = it },
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester)
+                    .onKeyEvent {
+                        if (it.type == KeyEventType.KeyDown && it.key == Key.Enter) {
+                            if (text.isNotBlank()) {
+                                onSendMessage(text)
+                                text = ""
+                            }
+                            true
+                        } else {
+                            false
+                        }
+                    },
+                placeholder = { Text("Message...") },
+                maxLines = 4
+            )
+            IconButton(
+                onClick = {
+                    if (text.isNotBlank()) {
+                        onSendMessage(text)
+                        text = ""
+                    }
+                },
+                enabled = text.isNotBlank()
+            ) {
+                Icon(Icons.Default.Send, contentDescription = "Send")
+            }
+        }
+        Text(
+            text = "${text.length}/2000",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.align(Alignment.End).padding(top = 4.dp)
+        )
+    }
+}
