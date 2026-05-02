@@ -35,17 +35,17 @@
     - [x] Verify test passes
 - [x] Task: Conductor - User Manual Verification 'Frontend State & Logic' (Protocol in workflow.md) 34e3ac9
 
-## Phase 4: UI Components & Integration
-- [ ] Task: Update `ServerSidebar` to trigger selection
-    - [ ] Add click listener to server icons
-    - [ ] Call `selectServer` on click
-- [ ] Task: Implement `ChannelSidebar` Component
-    - [ ] Display the server name and a "Create Channel" button
-    - [ ] Implement skeleton/shimmer UI for loading
-    - [ ] Render channel list from state
-- [ ] Task: Integrate `ChannelCreationDialog`
-    - [ ] Connect the existing dialog to the "Create Channel" button
-    - [ ] Ensure successful creation refreshes the list or appends to state
-- [ ] Task: Integrate Toast Notification for Errors
-    - [ ] Trigger toast when `channelFetchError` is set
-- [ ] Task: Conductor - User Manual Verification 'UI Components & Integration' (Protocol in workflow.md)
+## Phase 4: UI Components & Integration [checkpoint: 0f2a054]
+- [x] Task: Update `ServerSidebar` to trigger selection 0f2a054
+    - [x] Add click listener to server icons
+    - [x] Call `selectServer` on click
+- [x] Task: Implement `ChannelSidebar` Component 0f2a054
+    - [x] Display the server name and a "Create Channel" button
+    - [x] Implement skeleton/shimmer UI for loading
+    - [x] Render channel list from state
+- [x] Task: Integrate `ChannelCreationDialog` 0f2a054
+    - [x] Connect the existing dialog to the "Create Channel" button
+    - [x] Ensure successful creation refreshes the list or appends to state
+- [x] Task: Integrate Toast Notification for Errors 0f2a054
+    - [x] Trigger toast when `channelFetchError` is set
+- [x] Task: Conductor - User Manual Verification 'UI Components & Integration' (Protocol in workflow.md) 0f2a054
