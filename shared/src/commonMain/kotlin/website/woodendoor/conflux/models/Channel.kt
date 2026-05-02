@@ -13,5 +13,6 @@ data class Channel(
     val serverId: String,
     val name: String,
     val type: ChannelType,
-    val topic: String? = null
+    val topic: String? = null,
+    val metadata: Map<String, String> = emptyMap()
 )

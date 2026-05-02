@@ -16,5 +16,7 @@ data class CreateServerRequest(
 
 @Serializable
 data class CreateChannelRequest(
-    val name: String
+    val name: String,
+    val type: ChannelType = ChannelType.TEXT,
+    val topic: String? = null
 )

@@ -87,8 +87,8 @@ fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: 
                     id = UUID.randomUUID().toString(),
                     serverId = serverId,
                     name = request.name,
-                    type = ChannelType.TEXT, // Default to text for now
-                    topic = null
+                    type = request.type,
+                    topic = request.topic
                 )
                 val created = channelRepository.createChannel(channel)
                 if (created != null) {
