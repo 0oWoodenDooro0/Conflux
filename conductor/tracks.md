@@ -4,3 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [ ] **Track: Static Historical Messages (HTTP-based)**
+*Link: [./tracks/historical_messages/](./tracks/historical_messages/)*
