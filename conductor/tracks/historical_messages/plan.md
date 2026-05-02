@@ -22,7 +22,7 @@
 - [x] Task: Conductor - User Manual Verification 'API & Shared Client' (Protocol in workflow.md) c7e2b93
 
 ## Phase 3: Frontend State & UI
-- [ ] Task: Update `MainState` for Message Management (TDD)
+- [x] Task: Update `MainState` for Message Management (TDD) 2d199a1
     - [ ] **Red**: Write tests for `MainState` message fetching and sending logic.
     - [ ] **Green**: Implement state updates, error handling, and API integration.
 - [ ] Task: Implement Chat Room UI
