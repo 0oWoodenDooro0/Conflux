@@ -67,6 +67,13 @@ class ServerApiClient(
         }.body()
     }
 
+    suspend fun getWsToken(userId: String): String {
+        val response: Map<String, String> = client.post("$baseUrl/api/auth/ws-token") {
+            setBody(userId)
+        }.body()
+        return response["token"] ?: throw Exception("Token not found in response")
+    }
+
     fun close() {
         client.close()
     }

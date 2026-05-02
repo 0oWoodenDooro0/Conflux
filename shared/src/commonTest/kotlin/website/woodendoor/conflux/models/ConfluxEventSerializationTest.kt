@@ -7,6 +7,14 @@ import kotlin.test.*
 class ConfluxEventSerializationTest {
 
     @Test
+    fun `test Connected serialization`() {
+        val event: ConfluxEvent = ConfluxEvent.Connected
+        val json = Json.encodeToString(event)
+        val decoded = Json.decodeFromString<ConfluxEvent>(json)
+        assertEquals(ConfluxEvent.Connected, decoded)
+    }
+
+    @Test
     fun `test NewMessage serialization`() {
         val message = Message(
             id = "msg-1",

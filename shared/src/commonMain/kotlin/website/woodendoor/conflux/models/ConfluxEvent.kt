@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class ConfluxEvent {
     @Serializable
+    data object Connected : ConfluxEvent()
+
+    @Serializable
     data class NewMessage(val message: Message) : ConfluxEvent()
     
     @Serializable
