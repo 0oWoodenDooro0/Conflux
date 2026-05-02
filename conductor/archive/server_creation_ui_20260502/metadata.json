@@ -1,0 +1,8 @@
+{
+  "track_id": "server_creation_ui_20260502",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-02T10:00:00Z",
+  "updated_at": "2026-05-02T10:00:00Z",
+  "description": "現在的ui 沒有創建頻道的按鈕 並且在api的部分沒有傳遞user讓 server知道是誰創建的server"
+}
