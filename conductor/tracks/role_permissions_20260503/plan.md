@@ -42,11 +42,11 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 3: Shared Layer' (Protocol in workflow.md)
 
 ## Phase 4: Frontend State
-- [ ] Task: Manage `currentUserPermissions`
-    - [ ] Create test for state update logic.
-    - [ ] Update `MainState.kt` to store `currentUserPermissions` when switching servers.
-    - [ ] Verify test passes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend State' (Protocol in workflow.md)
+- [x] Task: Manage `currentUserPermissions` [bd102a0]
+    - [x] Create test for state update logic.
+    - [x] Update `MainState.kt` to store `currentUserPermissions` when switching servers.
+    - [x] Verify test passes.
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Frontend State' (Protocol in workflow.md)
 
 ## Phase 5: UI Layer
 - [ ] Task: Channel Management UI Protection
