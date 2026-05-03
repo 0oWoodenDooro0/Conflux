@@ -40,3 +40,11 @@ data class AssignRoleRequest(
     val userId: String,
     val roleId: String
 )
+
+@Serializable
+data class UpdateRoleRequest(
+    val name: String? = null,
+    val permissions: Long? = null,
+    val color: Int? = null,
+    val priorityLevel: Int? = null
+)

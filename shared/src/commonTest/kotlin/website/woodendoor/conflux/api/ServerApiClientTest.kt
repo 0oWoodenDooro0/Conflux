@@ -110,6 +110,15 @@ class ServerApiClientTest {
                         status = HttpStatusCode.OK
                     )
                 }
+                "/api/servers/s1/roles/r1" -> {
+                    assertEquals("u1", request.url.parameters["userId"])
+                    assertEquals(HttpMethod.Patch, request.method)
+                    respond(
+                        content = ByteReadChannel(Json.encodeToString(mockRole.copy(name = "New Name"))),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
                 else -> respond(content = ByteReadChannel("Not Found"), status = HttpStatusCode.NotFound)
             }
         }
@@ -122,6 +131,9 @@ class ServerApiClientTest {
         
         val role = client.createRole("s1", "u1", "Admin", 0x1L, null, 10)
         assertEquals(mockRole, role)
+
+        val updatedRole = client.updateRole("s1", "u1", "r1", name = "New Name")
+        assertEquals("New Name", updatedRole.name)
 
         val assigned = client.assignRole("s1", "u1", "u2", "r1")
         assertTrue(assigned)

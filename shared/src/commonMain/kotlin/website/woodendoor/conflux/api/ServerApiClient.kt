@@ -96,6 +96,22 @@ class ServerApiClient(
         }.body()
     }
 
+    suspend fun updateRole(
+        serverId: String,
+        userId: String,
+        roleId: String,
+        name: String? = null,
+        permissions: Long? = null,
+        color: Int? = null,
+        priority: Int? = null
+    ): Role {
+        return client.patch("$baseUrl/api/servers/$serverId/roles/$roleId") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(UpdateRoleRequest(name, permissions, color, priority))
+        }.body()
+    }
+
     suspend fun assignRole(serverId: String, adminUserId: String, targetUserId: String, roleId: String): Boolean {
         val response = client.post("$baseUrl/api/servers/$serverId/roles/assign") {
             parameter("userId", adminUserId)

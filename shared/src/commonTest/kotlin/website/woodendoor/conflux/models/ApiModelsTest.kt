@@ -18,4 +18,28 @@ class ApiModelsTest {
         assertEquals(request, deserialized)
         assertEquals("test-user", deserialized.ownerId)
     }
+
+    @Test
+    fun testUpdateRoleRequestSerialization() {
+        val request = UpdateRoleRequest(
+            name = "Updated Name",
+            permissions = 100L,
+            color = 0xFF0000,
+            priorityLevel = 5
+        )
+        val json = Json.encodeToString(request)
+        val deserialized = Json.decodeFromString<UpdateRoleRequest>(json)
+        assertEquals(request, deserialized)
+    }
+
+    @Test
+    fun testUpdateRoleRequestPartialSerialization() {
+        val request = UpdateRoleRequest(
+            name = "Only Name"
+        )
+        val json = Json.encodeToString(request)
+        val deserialized = Json.decodeFromString<UpdateRoleRequest>(json)
+        assertEquals("Only Name", deserialized.name)
+        assertEquals(null, deserialized.permissions)
+    }
 }
