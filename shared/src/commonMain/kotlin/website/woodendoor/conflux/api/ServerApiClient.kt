@@ -6,14 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import website.woodendoor.conflux.models.Channel
-import website.woodendoor.conflux.models.CreateChannelRequest
-import website.woodendoor.conflux.models.CreateServerRequest
-import website.woodendoor.conflux.models.Server
-import website.woodendoor.conflux.models.LoginRequest
-import website.woodendoor.conflux.models.User
-import website.woodendoor.conflux.models.Message
-import website.woodendoor.conflux.models.SendMessageRequest
+import website.woodendoor.conflux.models.*
 
 class ServerApiClient(
     private val client: HttpClient,
@@ -52,8 +45,9 @@ class ServerApiClient(
         return response.status.isSuccess()
     }
 
-    suspend fun createChannel(serverId: String, name: String): Channel {
+    suspend fun createChannel(serverId: String, name: String, userId: String): Channel {
         return client.post("$baseUrl/api/servers/$serverId/channels") {
+            parameter("userId", userId)
             contentType(ContentType.Application.Json)
             setBody(CreateChannelRequest(name))
         }.body()
@@ -79,6 +73,28 @@ class ServerApiClient(
             setBody(userId)
         }.body()
         return response["token"] ?: throw Exception("Token not found in response")
+    }
+
+    // Role Management API
+    suspend fun getRoles(serverId: String): List<Role> {
+        return client.get("$baseUrl/api/servers/$serverId/roles").body()
+    }
+
+    suspend fun createRole(serverId: String, userId: String, name: String, permissions: Long = 0, color: Int? = null, priority: Int = 0): Role {
+        return client.post("$baseUrl/api/servers/$serverId/roles") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(CreateRoleRequest(name, permissions, color, priority))
+        }.body()
+    }
+
+    suspend fun assignRole(serverId: String, adminUserId: String, targetUserId: String, roleId: String): Boolean {
+        val response = client.post("$baseUrl/api/servers/$serverId/roles/assign") {
+            parameter("userId", adminUserId)
+            contentType(ContentType.Application.Json)
+            setBody(AssignRoleRequest(targetUserId, roleId))
+        }
+        return response.status.isSuccess()
     }
 
     fun close() {

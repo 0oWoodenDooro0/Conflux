@@ -9,5 +9,6 @@ data class Server(
     val ownerId: String,
     val icon: String? = null,
     val memberIds: List<String> = emptyList(),
-    val roleIds: List<String> = emptyList()
+    val roleIds: List<String> = emptyList(),
+    val roles: List<Role> = emptyList()
 )
