@@ -19,12 +19,12 @@
 - [x] Task: Implement "Save Changes" and "Revert" functionality with TDD tests for state consistency. 3b463d
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Permissions Sub-tab' (Protocol in workflow.md) f52817
 
-## Phase 4: Member Assignment Sub-tab
-- [ ] Task: Implement the `Members` sub-tab in the Role Detail panel (right column).
-- [ ] Task: Implement a searchable dropdown for selecting server members to add to a role.
-- [ ] Task: Implement the list of members currently in the role with a removal ("X") action.
-- [ ] Task: Write TDD tests for adding/removing members from roles.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Member Assignment Sub-tab' (Protocol in workflow.md)
+## Phase 4: Member Assignment Sub-tab [checkpoint: 0a0c35]
+- [x] Task: Implement the `Members` sub-tab in the Role Detail panel (right column). 0a0c35
+- [x] Task: Implement a searchable dropdown for selecting server members to add to a role. 0a0c35
+- [x] Task: Implement the list of members currently in the role with a removal ("X") action. 0a0c35
+- [x] Task: Write TDD tests for adding/removing members from roles. 0a0c35
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Member Assignment Sub-tab' (Protocol in workflow.md) 0a0c35
 
 ## Phase 5: Developer Debug Menu
 - [ ] Task: Implement a reusable component or Modifier for right-click (PointerInput) context menus.
