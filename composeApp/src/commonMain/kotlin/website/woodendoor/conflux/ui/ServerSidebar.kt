@@ -56,7 +56,10 @@ fun ServerSidebar(
         ) {
             items(servers) { server ->
                 DebugContextMenu(
-                    ids = mapOf("Server ID" to server.id),
+                    ids = mapOf(
+                        "Server ID" to server.id,
+                        "My User ID" to (website.woodendoor.conflux.state.MainState.currentUserId ?: "Unknown")
+                    ),
                     onCopy = copyToClipboard
                 ) {
                     ServerIcon(
