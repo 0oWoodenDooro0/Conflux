@@ -1,11 +1,11 @@
 # Implementation Plan: Role and Permission System
 
 ## Phase 1: Database Layer
-- [ ] Task: Create `Role` and `Permission` structures
-    - [ ] Create test for database structures and queries.
-    - [ ] Add `Role` and `Permission` tables/models in `StructuralModels.kt`.
-    - [ ] Verify test passes.
-- [ ] Task: Implement Owner role assignment on Server creation
+- [x] Task: Create `Role` and `Permission` structures [f1f78e1]
+    - [x] Create test for database structures and queries.
+    - [x] Add `Role` and `Permission` tables/models in `StructuralModels.kt`.
+    - [x] Verify test passes.
+- [~] Task: Implement Owner role assignment on Server creation
     - [ ] Create test for Owner role assignment.
     - [ ] Update Server Repository to assign "Owner" role to the creator.
     - [ ] Verify test passes.

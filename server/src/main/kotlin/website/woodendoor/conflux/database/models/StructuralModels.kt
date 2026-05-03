@@ -17,8 +17,17 @@ object Roles : Table("roles") {
     val name = varchar("name", 100)
     val permissions = long("permissions")
     val color = integer("color").nullable()
+    val priorityLevel = integer("priority_level").default(0)
 
     override val primaryKey = PrimaryKey(id)
+}
+
+object MemberRoles : Table("member_roles") {
+    val serverId = varchar("server_id", 36).references(Servers.id)
+    val userId = varchar("user_id", 36).references(Users.id)
+    val roleId = varchar("role_id", 36).references(Roles.id)
+
+    override val primaryKey = PrimaryKey(serverId, userId, roleId)
 }
 
 object Channels : Table("channels") {
