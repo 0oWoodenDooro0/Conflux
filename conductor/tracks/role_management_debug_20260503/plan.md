@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Navigation & State Management' (Protocol in workflow.md) 2f3e2fe
 
 ## Phase 2: Role Management UI & Basic Operations
-- [ ] Task: Define/Update `Role` related models and API client methods in the `shared` module for fetching and creating roles.
+- [x] Task: Define/Update Role related models and API client methods in the shared module for fetching and creating roles. 5d55307
 - [ ] Task: Implement the `RolesAndPermissions` tab layout with a two-column design.
 - [ ] Task: Implement the Role List (left column) showing role names and colors, with an "Add Role" button.
 - [ ] Task: Write TDD tests for role creation and selection logic.
