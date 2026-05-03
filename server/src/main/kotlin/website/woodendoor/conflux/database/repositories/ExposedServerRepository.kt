@@ -54,6 +54,16 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
                 it[priorityLevel] = 100
             }
             
+            // Create Member role
+            Roles.insert {
+                it[id] = UUID.randomUUID().toString()
+                it[this.serverId] = createdServer.id
+                it[name] = "Member"
+                it[permissions] = ConfluxPermission.MESSAGING
+                it[color] = null
+                it[priorityLevel] = 0
+            }
+            
             // Assign Owner role to creator
             MemberRoles.insert {
                 it[this.serverId] = createdServer.id
@@ -131,10 +141,26 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         
         if (isAlreadyMember) return@dbQuery false
 
-        ServerMembers.insert {
+        val inserted = ServerMembers.insert {
             it[this.serverId] = serverId
             it[this.userId] = userId
         }.insertedCount > 0
+
+        if (inserted) {
+            val memberRole = Roles.selectAll()
+                .where { (Roles.serverId eq serverId) and (Roles.name eq "Member") }
+                .singleOrNull()
+            
+            if (memberRole != null) {
+                MemberRoles.insert {
+                    it[this.serverId] = serverId
+                    it[this.userId] = userId
+                    it[this.roleId] = memberRole[Roles.id]
+                }
+            }
+        }
+
+        inserted
     }
 
     override suspend fun createRole(serverId: String, role: Role): Role? = dbQuery {
