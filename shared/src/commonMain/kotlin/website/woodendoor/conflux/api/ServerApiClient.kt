@@ -45,6 +45,10 @@ class ServerApiClient(
         }.body()
     }
 
+    suspend fun joinServer(serverId: String, userId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
     suspend fun createChannel(serverId: String, name: String): Channel {
         return client.post("$baseUrl/api/servers/$serverId/channels") {
             contentType(ContentType.Application.Json)
