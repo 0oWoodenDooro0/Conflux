@@ -75,6 +75,10 @@ class ServerApiClient(
         return response["token"] ?: throw Exception("Token not found in response")
     }
 
+    suspend fun getPermissions(serverId: String, userId: String): Long {
+        return client.get("$baseUrl/api/servers/$serverId/members/$userId/permissions").body()
+    }
+
     // Role Management API
     suspend fun getRoles(serverId: String): List<Role> {
         return client.get("$baseUrl/api/servers/$serverId/roles").body()

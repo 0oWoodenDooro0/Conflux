@@ -67,7 +67,8 @@ fun ChannelCreationDialog(
                         isLoading = true
                         errorMessage = null
                         try {
-                            val channel = apiClient.createChannel(serverId, channelName)
+                            val userId = website.woodendoor.conflux.state.MainState.currentUserId ?: "anonymous"
+                            val channel = apiClient.createChannel(serverId, channelName, userId)
                             onChannelCreated(channel)
                             onDismissRequest()
                         } catch (e: Exception) {

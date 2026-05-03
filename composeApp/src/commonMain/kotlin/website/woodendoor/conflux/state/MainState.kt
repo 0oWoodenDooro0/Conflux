@@ -15,6 +15,9 @@ import website.woodendoor.conflux.models.Message
 import website.woodendoor.conflux.models.Server
 
 object MainState {
+    var currentUserId by mutableStateOf<String?>(null)
+    var currentUserPermissions by mutableStateOf<Long>(0L)
+
     var serverList by mutableStateOf<List<Server>>(emptyList())
     var selectedServer by mutableStateOf<Server?>(null)
     var channelList by mutableStateOf<List<Channel>>(emptyList())
@@ -30,6 +33,7 @@ object MainState {
     private val scope = CoroutineScope(Dispatchers.Main)
 
     fun initializeWebSocket(apiClient: ServerApiClient, userId: String, baseUrl: String) {
+        currentUserId = userId
         if (webSocketClient != null) return
         
         val wsClient = WebSocketClient(io.ktor.client.HttpClient {
@@ -85,9 +89,13 @@ object MainState {
         channelFetchError = null
         selectedChannel = null
         messages = emptyList()
+        currentUserPermissions = 0L
 
         try {
             channelList = apiClient.getChannels(server.id)
+            currentUserId?.let { userId ->
+                currentUserPermissions = apiClient.getPermissions(server.id, userId)
+            }
         } catch (e: Exception) {
             channelFetchError = e.message ?: "Unknown error"
         }

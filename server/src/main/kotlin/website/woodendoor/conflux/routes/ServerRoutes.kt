@@ -79,6 +79,14 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
                 call.respond(HttpStatusCode.Conflict, "Already a member or owner")
             }
         }
+
+        get("/{id}/members/{userId}/permissions") {
+            val serverId = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.parameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            call.respond(HttpStatusCode.OK, permissions)
+        }
     }
 }
 
