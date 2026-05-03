@@ -5,10 +5,10 @@
 - [x] Task: Implement `joinServer` in `ExposedServerRepository.kt` a69a42a
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database & Repository (Backend)' (Protocol in workflow.md) 2d5156e
 
-## Phase 2: Routes (Backend API)
+## Phase 2: Routes (Backend API) [checkpoint: f1c24d1]
 - [x] Task: Write Tests for POST `/servers/{id}/join` endpoint d314523
 - [x] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt` bfe9611
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md) f1c24d1
 
 ## Phase 3: API Client (Shared)
 - [ ] Task: Write Tests for `ServerApiClient.joinServer`
