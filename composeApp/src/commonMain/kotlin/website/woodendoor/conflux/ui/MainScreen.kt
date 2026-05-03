@@ -32,7 +32,7 @@ fun MainScreen() {
     LaunchedEffect(user.id, isCreatingServer) {
         if (!isCreatingServer) {
             try {
-                servers = apiClient.getServers(user.id)
+                MainState.serverList = apiClient.getServers(user.id)
             } catch (e: Exception) {
                 error = "Failed to load servers: ${e.message}"
             } finally {

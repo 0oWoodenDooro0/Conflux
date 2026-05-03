@@ -107,7 +107,22 @@ object MainState {
     }
 
     suspend fun joinServer(serverId: String, userId: String, apiClient: ServerApiClient): Boolean {
-        TODO("Not yet implemented")
+        return try {
+            val success = apiClient.joinServer(serverId, userId)
+            if (success) {
+                serverList = apiClient.getServers(userId)
+                
+                val joinedServer = serverList.find { it.id == serverId }
+                if (joinedServer != null) {
+                    selectServer(joinedServer, apiClient)
+                }
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     suspend fun sendMessage(senderId: String, content: String, apiClient: ServerApiClient) {
