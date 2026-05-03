@@ -17,20 +17,21 @@ import website.woodendoor.conflux.state.MainState
 fun MainScreen() {
     val user = LoginState.currentUser ?: return
     val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
-    var servers by remember { mutableStateOf<List<Server>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var isCreatingServer by remember { mutableStateOf(false) }
+    var isJoiningServer by remember { mutableStateOf(false) }
     var isCreatingChannel by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    val servers = MainState.serverList
     val selectedServer = MainState.selectedServer
     val channels = MainState.channelList
     val channelFetchError = MainState.channelFetchError
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(user.id, isCreatingServer) {
-        if (!isCreatingServer) {
+    LaunchedEffect(user.id, isCreatingServer, isJoiningServer) {
+        if (!isCreatingServer && !isJoiningServer) {
             try {
                 MainState.serverList = apiClient.getServers(user.id)
             } catch (e: Exception) {
@@ -55,18 +56,27 @@ fun MainScreen() {
                 servers = servers,
                 onServerClick = { server ->
                     isCreatingServer = false
+                    isJoiningServer = false
                     scope.launch {
                         MainState.selectServer(server, apiClient)
                     }
                 },
                 onHomeClick = {
                     isCreatingServer = false
+                    isJoiningServer = false
                     MainState.selectedServer = null
                 },
-                onCreateServerClick = { isCreatingServer = true }
+                onCreateServerClick = { 
+                    isCreatingServer = true 
+                    isJoiningServer = false
+                },
+                onJoinServerClick = {
+                    isJoiningServer = true
+                    isCreatingServer = false
+                }
             )
 
-            if (selectedServer != null && !isCreatingServer) {
+            if (selectedServer != null && !isCreatingServer && !isJoiningServer) {
                 ChannelSidebar(
                     serverName = selectedServer.name,
                     channels = channels,
@@ -90,6 +100,14 @@ fun MainScreen() {
                     CreateServerScreen(onServerCreated = {
                         isCreatingServer = false
                     })
+                } else if (isJoiningServer) {
+                    JoinServerDialog(
+                        apiClient = apiClient,
+                        onDismissRequest = { isJoiningServer = false },
+                        onJoined = {
+                            isJoiningServer = false
+                        }
+                    )
                 } else if (isCreatingChannel && selectedServer != null) {
                     ChannelCreationDialog(
                         serverId = selectedServer.id,

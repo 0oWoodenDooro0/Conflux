@@ -21,7 +21,8 @@ fun ServerSidebar(
     servers: List<Server>,
     onServerClick: (Server) -> Unit,
     onHomeClick: () -> Unit,
-    onCreateServerClick: () -> Unit
+    onCreateServerClick: () -> Unit,
+    onJoinServerClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -71,6 +72,16 @@ fun ServerSidebar(
             onClick = onCreateServerClick,
             backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Join Server Button
+        ServerIcon(
+            name = "J",
+            onClick = onJoinServerClick,
+            backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
         )
     }
 }
