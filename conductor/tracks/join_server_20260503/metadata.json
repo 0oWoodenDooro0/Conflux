@@ -1,8 +1,0 @@
-{
-  "track_id": "join_server_20260503",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-03T12:00:00Z",
-  "updated_at": "2026-05-03T12:00:00Z",
-  "description": "步驟一：資料庫層 (Database) —— 建立與確認關聯 確認中介表 (Junction Table) 結構：在 StructuralModels.kt 中檢視是否已有記錄「使用者」與「伺服器」對應關係的資料表。因為使用者與伺服器是多對多關係，必須依賴這個中介表來確認誰在哪個伺服器裡。 實作 Repository 寫入邏輯：在 ExposedServerRepository.kt 中新增處理加入伺服器的功能。這個邏輯需要三個防呆檢查： 目標 Server ID 是否真的存在於資料庫中？ 該 User ID 是否已經加入了這個伺服器？（避免重複寫入） 確認無誤後，才將 User ID 與 Server ID 的關聯寫入中介表。 步驟二：路由層 (Routes) —— 開放後端 API 新增 API 端點：在 ServerRoutes.kt 中規劃一個新的 POST 端點（例如 /servers/{id}/join）。 身分驗證與邏輯串接：從網址路徑中擷取目標 Server ID，並從驗證機制（如 JWT Token）中取得當下操作者的 User ID。接著呼叫 Repository 執行加入操作，並根據執行結果回傳適當的 HTTP 狀態碼（例如成功加入、伺服器找不到、或已在伺服器中）。 步驟三：共享層 (Shared) —— 擴充前端 API 客戶端 封裝網路請求：在 ServerApiClient.kt 中新增一個發送加入請求的方法。 處理回傳結果：讓這個方法發送 POST 請求至後端端點，並負責攔截例外狀況，將後端的回應轉換為前端容易判別的狀態（例如回傳布林值表示是否加入成功）。 步驟四：狀態管理層 (State) —— 串接前端業務邏輯 擴充狀態控制器：在 MainState.kt 中新增一個專門處理「加入伺服器」事件的函式。 觸發重新整理：這個函式負責呼叫 ServerApiClient 發出請求。當確認加入成功後，必須立即觸發「重新獲取伺服器列表」的操作，以確保最新的伺服器名單能同步到前端記憶體中。 步驟五：介面層 (Compose UI) —— 打造使用者互動 建立輸入介面：在 UI 資料夾中規劃一個新的 Dialog 元件，提供一個簡單的文字輸入框，讓使用者可以貼上或輸入 Server ID。 新增操作入口：在目前的 ServerSidebar.kt 中（例如建立伺服器的按鈕附近），增加一個觸發「加入伺服器 Dialog」的按鈕。 綁定動作與回饋：將對話框中輸入的 ID 送出給 MainState 處理，並可考慮加入簡單的 UI 提示機制（例如 Toast 或 Snackbar），告知使用者加入成功或失敗。"
-}
