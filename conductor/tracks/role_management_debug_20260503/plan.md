@@ -12,12 +12,12 @@
 - [x] Task: Write TDD tests for role creation and selection logic. cca0eea
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Role Management UI & Basic Operations' (Protocol in workflow.md) 358f3e
 
-## Phase 3: Permissions Sub-tab [checkpoint: 3b463d]
+## Phase 3: Permissions Sub-tab [checkpoint: f52817]
 - [x] Task: Implement the `Permissions` sub-tab in the Role Detail panel (right column). 3b463d
 - [x] Task: Implement Toggle/Switch components for Messaging, Channel Management, Role Management, and Server Management permissions. 3b463d
 - [x] Task: Implement bitmask manipulation logic for permission updates in the `shared` module. 3b463d
 - [x] Task: Implement "Save Changes" and "Revert" functionality with TDD tests for state consistency. 3b463d
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Permissions Sub-tab' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Permissions Sub-tab' (Protocol in workflow.md) f52817
 
 ## Phase 4: Member Assignment Sub-tab
 - [ ] Task: Implement the `Members` sub-tab in the Role Detail panel (right column).
