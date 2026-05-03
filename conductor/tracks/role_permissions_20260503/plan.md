@@ -17,10 +17,10 @@
     - [x] Create test for querying permissions by Server ID and User ID.
     - [x] Add Repository method for permission queries.
     - [x] Verify test passes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Layer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Database Layer' (Protocol in workflow.md) [753a9a5]
 
 ## Phase 2: Backend Authorization Layer
-- [ ] Task: Implement Permission Interception
+- [~] Task: Implement Permission Interception
     - [ ] Create test for request interception based on permissions (e.g., channel creation).
     - [ ] Implement middleware/check in Ktor routes to verify permissions and return 403.
     - [ ] Verify test passes.

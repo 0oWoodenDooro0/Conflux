@@ -209,14 +209,22 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
 
     override suspend fun getRolesForMember(serverId: String, userId: String): List<Role> = dbQuery {
         (Roles innerJoin MemberRoles)
-            .selectAll().where { (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) }
+            .selectAll().where { 
+                (MemberRoles.serverId eq serverId) and 
+                (MemberRoles.userId eq userId) and 
+                (Roles.id eq MemberRoles.roleId) 
+            }
             .map(::resultRowToRole)
     }
 
     override suspend fun getPermissionsForMember(serverId: String, userId: String): Long = dbQuery {
         (Roles innerJoin MemberRoles)
             .select(Roles.permissions)
-            .where { (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) }
+            .where { 
+                (MemberRoles.serverId eq serverId) and 
+                (MemberRoles.userId eq userId) and 
+                (Roles.id eq MemberRoles.roleId) 
+            }
             .map { it[Roles.permissions] }
             .fold(0L) { acc, p -> acc or p }
     }

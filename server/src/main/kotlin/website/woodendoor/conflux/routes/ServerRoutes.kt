@@ -95,9 +95,17 @@ fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: 
 
         post {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
             if (serverRepository.getServer(serverId) == null) {
                 return@post call.respond(HttpStatusCode.NotFound, "Server not found")
             }
+
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT) == 0L) {
+                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
             try {
                 val request = call.receive<CreateChannelRequest>()
                 val channel = Channel(

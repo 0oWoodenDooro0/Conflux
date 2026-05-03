@@ -83,7 +83,7 @@ fun Application.module() {
         serverRoutes(serverRepository, userRepository)
         channelRoutes(channelRepository, serverRepository)
         userRoutes(userRepository)
-        messageRoutes(messageRepository, connectionManager)
+        messageRoutes(messageRepository, channelRepository, serverRepository, connectionManager)
         webSocketRoutes(tokenManager, connectionManager)
     }
 }

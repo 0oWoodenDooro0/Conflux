@@ -10,11 +10,19 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
+import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.MessageRepository
+import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.ConfluxEvent
 import website.woodendoor.conflux.models.SendMessageRequest
+import website.woodendoor.conflux.models.ConfluxPermission
 
-fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager: WebSocketConnectionManager) {
+fun Route.messageRoutes(
+    messageRepository: MessageRepository,
+    channelRepository: ChannelRepository,
+    serverRepository: ServerRepository,
+    connectionManager: WebSocketConnectionManager
+) {
     route("/api/channels/{channelId}/messages") {
         get {
             val channelId = call.parameters["channelId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing channelId")
@@ -27,6 +35,13 @@ fun Route.messageRoutes(messageRepository: MessageRepository, connectionManager:
             try {
                 val request = call.receive<SendMessageRequest>()
                 
+                // Permission Check
+                val channel = channelRepository.getChannel(channelId) ?: return@post call.respond(HttpStatusCode.NotFound, "Channel not found")
+                val permissions = serverRepository.getPermissionsForMember(channel.serverId, request.senderId)
+                if ((permissions and ConfluxPermission.MESSAGING) == 0L) {
+                    return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+                }
+
                 if (request.content.length > 2000) {
                     return@post call.respond(HttpStatusCode.BadRequest, "Message too long (max 2000 characters)")
                 }

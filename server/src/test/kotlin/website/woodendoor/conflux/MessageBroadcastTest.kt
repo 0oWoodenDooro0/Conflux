@@ -31,6 +31,7 @@ class MessageBroadcastTest {
         val server = Json.decodeFromString<Server>(serverResponse.bodyAsText())
         
         val channelResponse = client.post("/api/servers/${server.id}/channels") {
+            parameter("userId", server.ownerId)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
             setBody(Json.encodeToString(CreateChannelRequest(name = "general")))
         }

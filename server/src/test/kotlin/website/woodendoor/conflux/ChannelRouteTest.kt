@@ -27,6 +27,7 @@ class ChannelRouteTest {
 
         // 2. Create a channel
         val createChannelResponse = client.post("/api/servers/$serverId/channels") {
+            parameter("userId", server.ownerId)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
             setBody(Json.encodeToString(CreateChannelRequest(name = "general")))
         }
