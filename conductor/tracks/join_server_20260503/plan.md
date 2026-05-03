@@ -6,8 +6,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database & Repository (Backend)' (Protocol in workflow.md) 2d5156e
 
 ## Phase 2: Routes (Backend API)
-- [ ] Task: Write Tests for POST `/servers/{id}/join` endpoint
-- [ ] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt`
+- [x] Task: Write Tests for POST `/servers/{id}/join` endpoint d314523
+- [~] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md)
 
 ## Phase 3: API Client (Shared)
