@@ -7,9 +7,9 @@
 
 ## Phase 2: Role Management UI & Basic Operations
 - [x] Task: Define/Update Role related models and API client methods in the shared module for fetching and creating roles. 5d55307
-- [ ] Task: Implement the `RolesAndPermissions` tab layout with a two-column design.
-- [ ] Task: Implement the Role List (left column) showing role names and colors, with an "Add Role" button.
-- [ ] Task: Write TDD tests for role creation and selection logic.
+- [x] Task: Implement the `RolesAndPermissions` tab layout with a two-column design. cca0eea
+- [x] Task: Implement the Role List (left column) showing role names and colors, with an "Add Role" button. cca0eea
+- [x] Task: Write TDD tests for role creation and selection logic. cca0eea
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Role Management UI & Basic Operations' (Protocol in workflow.md)
 
 ## Phase 3: Permissions Sub-tab
