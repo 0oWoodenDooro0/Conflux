@@ -5,11 +5,11 @@
     - [x] Create test for database structures and queries.
     - [x] Add `Role` and `Permission` tables/models in `StructuralModels.kt`.
     - [x] Verify test passes.
-- [~] Task: Implement Owner role assignment on Server creation
-    - [ ] Create test for Owner role assignment.
-    - [ ] Update Server Repository to assign "Owner" role to the creator.
-    - [ ] Verify test passes.
-- [ ] Task: Implement Member role assignment on Server join
+- [x] Task: Implement Owner role assignment on Server creation [fd601e2]
+    - [x] Create test for Owner role assignment.
+    - [x] Update Server Repository to assign "Owner" role to the creator.
+    - [x] Verify test passes.
+- [~] Task: Implement Member role assignment on Server join
     - [ ] Create test for default "Member" role assignment.
     - [ ] Update joining logic to assign "Member" role.
     - [ ] Verify test passes.
