@@ -11,8 +11,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md) f1c24d1
 
 ## Phase 3: API Client (Shared)
-- [ ] Task: Write Tests for `ServerApiClient.joinServer`
-- [ ] Task: Implement `joinServer` in `ServerApiClient.kt`
+- [x] Task: Write Tests for `ServerApiClient.joinServer` 9dbe51b
+- [~] Task: Implement `joinServer` in `ServerApiClient.kt`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md)
 
 ## Phase 4: State Management & UI (Frontend)
