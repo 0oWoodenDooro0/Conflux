@@ -24,4 +24,5 @@ interface ServerRepository {
     
     suspend fun assignRoleToMember(serverId: String, userId: String, roleId: String): Boolean
     suspend fun getRolesForMember(serverId: String, userId: String): List<Role>
+    suspend fun getPermissionsForMember(serverId: String, userId: String): Long
 }

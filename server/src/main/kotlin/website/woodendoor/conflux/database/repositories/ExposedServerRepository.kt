@@ -43,6 +43,12 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         val createdServer = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToServer)
         
         if (createdServer != null) {
+            // Add creator to ServerMembers
+            ServerMembers.insert {
+                it[this.serverId] = createdServer.id
+                it[this.userId] = createdServer.ownerId
+            }
+
             // Create Owner role
             val ownerRoleId = UUID.randomUUID().toString()
             Roles.insert {
@@ -205,5 +211,13 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         (Roles innerJoin MemberRoles)
             .selectAll().where { (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) }
             .map(::resultRowToRole)
+    }
+
+    override suspend fun getPermissionsForMember(serverId: String, userId: String): Long = dbQuery {
+        (Roles innerJoin MemberRoles)
+            .select(Roles.permissions)
+            .where { (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) }
+            .map { it[Roles.permissions] }
+            .fold(0L) { acc, p -> acc or p }
     }
 }
