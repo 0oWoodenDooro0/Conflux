@@ -24,11 +24,11 @@
     - [x] Create test for request interception based on permissions (e.g., channel creation).
     - [x] Implement middleware/check in Ktor routes to verify permissions and return 403.
     - [x] Verify test passes.
-- [~] Task: Implement Management API (UC4)
-    - [ ] Create test for updating/assigning roles via API.
-    - [ ] Add route to update roles, protected by `roleManagementPrivilege`.
-    - [ ] Verify test passes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Authorization Layer' (Protocol in workflow.md)
+- [x] Task: Implement Management API (UC4) [7242f96]
+    - [x] Create test for updating/assigning roles via API.
+    - [x] Add route to update roles, protected by `roleManagementPrivilege`.
+    - [x] Verify test passes.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Backend Authorization Layer' (Protocol in workflow.md)
 
 ## Phase 3: Shared Layer
 - [ ] Task: Update Shared Models
