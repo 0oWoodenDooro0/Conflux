@@ -13,10 +13,10 @@
     - [x] Create test for default "Member" role assignment.
     - [x] Update joining logic to assign "Member" role.
     - [x] Verify test passes.
-- [~] Task: Implement Permission query logic
-    - [ ] Create test for querying permissions by Server ID and User ID.
-    - [ ] Add Repository method for permission queries.
-    - [ ] Verify test passes.
+- [x] Task: Implement Permission query logic [d6bdecd]
+    - [x] Create test for querying permissions by Server ID and User ID.
+    - [x] Add Repository method for permission queries.
+    - [x] Verify test passes.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Layer' (Protocol in workflow.md)
 
 ## Phase 2: Backend Authorization Layer
