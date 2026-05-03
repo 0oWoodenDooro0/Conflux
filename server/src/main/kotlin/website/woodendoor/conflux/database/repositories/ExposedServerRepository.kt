@@ -5,8 +5,10 @@ import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.models.Role
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.User
+import website.woodendoor.conflux.models.ConfluxPermission
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
+import java.util.UUID
 
 class ExposedServerRepository(private val userRepository: UserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
@@ -20,7 +22,8 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         id = row[Roles.id],
         name = row[Roles.name],
         permissions = row[Roles.permissions],
-        color = row[Roles.color]
+        color = row[Roles.color],
+        priorityLevel = row[Roles.priorityLevel]
     )
 
     private fun resultRowToUser(row: ResultRow) = User(
@@ -37,7 +40,29 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             it[ownerId] = server.ownerId
             it[icon] = server.icon
         }
-        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToServer)
+        val createdServer = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToServer)
+        
+        if (createdServer != null) {
+            // Create Owner role
+            val ownerRoleId = UUID.randomUUID().toString()
+            Roles.insert {
+                it[id] = ownerRoleId
+                it[this.serverId] = createdServer.id
+                it[name] = "Owner"
+                it[permissions] = ConfluxPermission.ALL
+                it[color] = null
+                it[priorityLevel] = 100
+            }
+            
+            // Assign Owner role to creator
+            MemberRoles.insert {
+                it[this.serverId] = createdServer.id
+                it[this.userId] = createdServer.ownerId
+                it[this.roleId] = ownerRoleId
+            }
+        }
+        
+        createdServer
     }
 
     override suspend fun getServer(id: String): Server? = dbQuery {
@@ -119,6 +144,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             it[name] = role.name
             it[permissions] = role.permissions
             it[color] = role.color
+            it[priorityLevel] = role.priorityLevel
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToRole)
     }
@@ -128,6 +154,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             it[name] = role.name
             it[permissions] = role.permissions
             it[color] = role.color
+            it[priorityLevel] = role.priorityLevel
         } > 0
     }
 
@@ -137,6 +164,20 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
 
     override suspend fun getRoles(serverId: String): List<Role> = dbQuery {
         Roles.selectAll().where { Roles.serverId eq serverId }
+            .map(::resultRowToRole)
+    }
+
+    override suspend fun assignRoleToMember(serverId: String, userId: String, roleId: String): Boolean = dbQuery {
+        MemberRoles.insert {
+            it[this.serverId] = serverId
+            it[this.userId] = userId
+            it[this.roleId] = roleId
+        }.insertedCount > 0
+    }
+
+    override suspend fun getRolesForMember(serverId: String, userId: String): List<Role> = dbQuery {
+        (Roles innerJoin MemberRoles)
+            .selectAll().where { (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) }
             .map(::resultRowToRole)
     }
 }
