@@ -10,10 +10,10 @@
 - [x] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt` bfe9611
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md) f1c24d1
 
-## Phase 3: API Client (Shared)
+## Phase 3: API Client (Shared) [checkpoint: b068239]
 - [x] Task: Write Tests for `ServerApiClient.joinServer` 9dbe51b
 - [x] Task: Implement `joinServer` in `ServerApiClient.kt` 8bb0db0
-- [~] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md) b068239
 
 ## Phase 4: State Management & UI (Frontend)
 - [ ] Task: Write Tests for `MainState` join server logic
