@@ -31,15 +31,15 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Backend Authorization Layer' (Protocol in workflow.md)
 
 ## Phase 3: Shared Layer
-- [ ] Task: Update Shared Models
-    - [ ] Create test for updated models serialization/deserialization.
-    - [ ] Add Role/Permission data to `Server` and `User` data classes.
-    - [ ] Verify test passes.
-- [ ] Task: Update API Client
-    - [ ] Create test for new API client methods.
-    - [ ] Add methods in the KMP API Client to call the Management API.
-    - [ ] Verify test passes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Shared Layer' (Protocol in workflow.md)
+- [x] Task: Update Shared Models [95966dc]
+    - [x] Create test for updated models serialization/deserialization.
+    - [x] Add Role/Permission data to `Server` and `User` data classes.
+    - [x] Verify test passes.
+- [x] Task: Update API Client [95966dc]
+    - [x] Create test for new API client methods.
+    - [x] Add methods in the KMP API Client to call the Management API.
+    - [x] Verify test passes.
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Shared Layer' (Protocol in workflow.md)
 
 ## Phase 4: Frontend State
 - [ ] Task: Manage `currentUserPermissions`
