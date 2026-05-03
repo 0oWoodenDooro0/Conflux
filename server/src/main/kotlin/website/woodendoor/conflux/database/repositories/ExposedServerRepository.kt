@@ -94,6 +94,8 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             .map(::resultRowToUser)
     }
 
+    override suspend fun joinServer(userId: String, serverId: String): Boolean = TODO("Not yet implemented")
+
     override suspend fun createRole(serverId: String, role: Role): Role? = dbQuery {
         val insertStatement = Roles.insert {
             it[id] = role.id

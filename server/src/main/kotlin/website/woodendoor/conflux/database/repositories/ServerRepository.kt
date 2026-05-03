@@ -15,6 +15,8 @@ interface ServerRepository {
     suspend fun removeMember(serverId: String, userId: String): Boolean
     suspend fun getMembers(serverId: String): List<User>
     
+    suspend fun joinServer(userId: String, serverId: String): Boolean
+    
     suspend fun createRole(serverId: String, role: Role): Role?
     suspend fun updateRole(role: Role): Boolean
     suspend fun deleteRole(roleId: String): Boolean
