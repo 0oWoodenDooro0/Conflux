@@ -30,5 +30,5 @@
 - [x] Task: Implement a reusable component or Modifier for right-click (PointerInput) context menus. e22cae1
 - [ ] Task: Integrate the debug menu into the Server Sidebar, Channel Sidebar, and User components to display relevant IDs.
 - [ ] Task: Integrate the debug menu into Message and Role list items.
-- [ ] Task: Implement the "Copy to Clipboard" functionality for IDs.
+- [x] Task: Implement the "Copy to Clipboard" functionality for IDs. 0d9d9a0
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Developer Debug Menu' (Protocol in workflow.md)
