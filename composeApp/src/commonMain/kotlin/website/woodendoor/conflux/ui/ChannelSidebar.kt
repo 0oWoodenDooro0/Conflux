@@ -30,6 +30,8 @@ fun ChannelSidebar(
     onSettingsClick: () -> Unit,
     onChannelClick: (Channel) -> Unit
 ) {
+    val copyToClipboard = rememberClipboardHelper()
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -68,11 +70,19 @@ fun ChannelSidebar(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(channels) { channel ->
-                ChannelItem(
-                    channel = channel,
-                    isSelected = channel.id == selectedChannelId,
-                    onClick = { onChannelClick(channel) }
-                )
+                DebugContextMenu(
+                    ids = mapOf(
+                        "Channel ID" to channel.id,
+                        "Server ID" to channel.serverId
+                    ),
+                    onCopy = copyToClipboard
+                ) {
+                    ChannelItem(
+                        channel = channel,
+                        isSelected = channel.id == selectedChannelId,
+                        onClick = { onChannelClick(channel) }
+                    )
+                }
             }
         }
     }

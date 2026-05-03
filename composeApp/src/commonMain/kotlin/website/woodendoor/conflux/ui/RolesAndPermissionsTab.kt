@@ -8,21 +8,30 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.models.Role
+import website.woodendoor.conflux.models.User
 
 @Composable
 fun RolesAndPermissionsTab(
     state: RolesAndPermissionsState,
+    allServerMembers: List<User>,
     onAddRole: () -> Unit,
-    onSaveChanges: (Role, Long) -> Unit
+    onSaveChanges: (Role, Long) -> Unit,
+    onAssignRole: (Role, User) -> Unit,
+    onRemoveRole: (Role, User) -> Unit
 ) {
+    val copyToClipboard = rememberClipboardHelper()
+
     Row(modifier = Modifier.fillMaxSize()) {
         // Left Column: Role List
         Column(
@@ -45,25 +54,30 @@ fun RolesAndPermissionsTab(
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(state.roles) { role ->
-                    NavigationDrawerItem(
-                        label = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                val roleColor = role.color
-                                if (roleColor != null) {
-                                    Surface(
-                                        color = Color(roleColor),
-                                        shape = CircleShape,
-                                        modifier = Modifier.size(12.dp)
-                                    ) {}
-                                    Spacer(Modifier.width(8.dp))
+                    DebugContextMenu(
+                        ids = mapOf("Role ID" to role.id),
+                        onCopy = copyToClipboard
+                    ) {
+                        NavigationDrawerItem(
+                            label = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    val roleColor = role.color
+                                    if (roleColor != null) {
+                                        Surface(
+                                            color = Color(roleColor),
+                                            shape = CircleShape,
+                                            modifier = Modifier.size(12.dp)
+                                        ) {}
+                                        Spacer(Modifier.width(8.dp))
+                                    }
+                                    Text(role.name)
                                 }
-                                Text(role.name)
-                            }
-                        },
-                        selected = state.selectedRole?.id == role.id,
-                        onClick = { state.selectRole(role) },
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
+                            },
+                            selected = state.selectedRole?.id == role.id,
+                            onClick = { state.selectRole(role) },
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                    }
                 }
             }
         }
@@ -125,8 +139,102 @@ fun RolesAndPermissionsTab(
                         )
                     }
                     1 -> {
-                        Text("Members management will be implemented in Phase 4.")
+                        MemberAssignmentView(
+                            allMembers = allServerMembers,
+                            roleMembers = state.roleMembers,
+                            onAddMember = { onAddMember -> onAssignRole(selectedRole, onAddMember) },
+                            onRemoveMember = { onRemoveMember -> onRemoveRole(selectedRole, onRemoveMember) }
+                        )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MemberAssignmentView(
+    allMembers: List<User>,
+    roleMembers: List<User>,
+    onAddMember: (User) -> Unit,
+    onRemoveMember: (User) -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val copyToClipboard = rememberClipboardHelper()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Search and Add
+        Box(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { 
+                    searchQuery = it
+                    isDropdownExpanded = it.isNotEmpty()
+                },
+                label = { Text("Add Member") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = ""; isDropdownExpanded = false }) {
+                            Icon(Icons.Default.Close, contentDescription = null)
+                        }
+                    }
+                }
+            )
+
+            DropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false },
+                properties = PopupProperties(focusable = false),
+                modifier = Modifier.fillMaxWidth(0.6f)
+            ) {
+                val filteredMembers = allMembers.filter { 
+                    it.username.contains(searchQuery, ignoreCase = true) && 
+                    roleMembers.none { rm -> rm.id == it.id }
+                }
+                
+                if (filteredMembers.isEmpty()) {
+                    DropdownMenuItem(
+                        text = { Text("No members found") },
+                        onClick = { isDropdownExpanded = false }
+                    )
+                } else {
+                    filteredMembers.forEach { user ->
+                        DropdownMenuItem(
+                            text = { Text("${user.username}#${user.discriminator}") },
+                            onClick = {
+                                onAddMember(user)
+                                searchQuery = ""
+                                isDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        Text(
+            "Members in this role",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(roleMembers) { member ->
+                DebugContextMenu(
+                    ids = mapOf("User ID" to member.id),
+                    onCopy = copyToClipboard
+                ) {
+                    ListItem(
+                        headlineContent = { Text("${member.username}#${member.discriminator}") },
+                        trailingContent = {
+                            IconButton(onClick = { onRemoveMember(member) }) {
+                                Icon(Icons.Default.Close, contentDescription = "Remove")
+                            }
+                        }
+                    )
                 }
             }
         }

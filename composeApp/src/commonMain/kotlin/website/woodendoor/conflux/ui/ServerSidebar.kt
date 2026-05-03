@@ -24,6 +24,8 @@ fun ServerSidebar(
     onCreateServerClick: () -> Unit,
     onJoinServerClick: () -> Unit
 ) {
+    val copyToClipboard = rememberClipboardHelper()
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -53,10 +55,15 @@ fun ServerSidebar(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(servers) { server ->
-                ServerIcon(
-                    name = server.name.take(1).uppercase(),
-                    onClick = { onServerClick(server) }
-                )
+                DebugContextMenu(
+                    ids = mapOf("Server ID" to server.id),
+                    onCopy = copyToClipboard
+                ) {
+                    ServerIcon(
+                        name = server.name.take(1).uppercase(),
+                        onClick = { onServerClick(server) }
+                    )
+                }
             }
         }
 

@@ -27,6 +27,7 @@ fun ChatRoom(apiClient: ServerApiClient) {
     val messages = MainState.messages
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val copyToClipboard = rememberClipboardHelper()
 
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
@@ -44,7 +45,15 @@ fun ChatRoom(apiClient: ServerApiClient) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
-                    MessageItem(message)
+                    DebugContextMenu(
+                        ids = mapOf(
+                            "Message ID" to message.id,
+                            "Author ID" to message.authorId
+                        ),
+                        onCopy = copyToClipboard
+                    ) {
+                        MessageItem(message)
+                    }
                 }
             }
             
