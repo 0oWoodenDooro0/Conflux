@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Message
+import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.state.LoginState
 import website.woodendoor.conflux.state.MainState
 
@@ -69,7 +70,8 @@ fun ChatRoom(apiClient: ServerApiClient) {
                     MainState.sendMessage(user.id, content, apiClient)
                 }
             },
-            sendError = MainState.messageSendError
+            sendError = MainState.messageSendError,
+            enabled = (MainState.currentUserPermissions and ConfluxPermission.MESSAGING) != 0L
         )
     }
 }
@@ -99,13 +101,16 @@ fun MessageItem(message: Message) {
 @Composable
 fun MessageInput(
     onSendMessage: (String) -> Unit,
-    sendError: String?
+    sendError: String?,
+    enabled: Boolean = true
 ) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(enabled) {
+        if (enabled) {
+            focusRequester.requestFocus()
+        }
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -128,7 +133,7 @@ fun MessageInput(
                     .weight(1f)
                     .focusRequester(focusRequester)
                     .onKeyEvent {
-                        if (it.type == KeyEventType.KeyDown && it.key == Key.Enter) {
+                        if (enabled && it.type == KeyEventType.KeyDown && it.key == Key.Enter) {
                             if (text.isNotBlank()) {
                                 onSendMessage(text)
                                 text = ""
@@ -138,8 +143,9 @@ fun MessageInput(
                             false
                         }
                     },
-                placeholder = { Text("Message...") },
-                maxLines = 4
+                placeholder = { Text(if (enabled) "Message..." else "You do not have permission to send messages here.") },
+                maxLines = 4,
+                enabled = enabled
             )
             IconButton(
                 onClick = {
@@ -148,7 +154,7 @@ fun MessageInput(
                         text = ""
                     }
                 },
-                enabled = text.isNotBlank()
+                enabled = enabled && text.isNotBlank()
             ) {
                 Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
             }

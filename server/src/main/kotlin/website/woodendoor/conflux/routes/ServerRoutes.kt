@@ -24,6 +24,12 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
             call.respond(HttpStatusCode.OK, servers)
         }
 
+        get("/{id}/members") {
+            val serverId = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val members = serverRepository.getMembers(serverId)
+            call.respond(HttpStatusCode.OK, members)
+        }
+
         post {
             try {
                 val request = call.receive<CreateServerRequest>()

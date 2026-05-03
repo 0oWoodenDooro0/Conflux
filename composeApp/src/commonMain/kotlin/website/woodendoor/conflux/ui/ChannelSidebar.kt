@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,10 @@ fun ChannelSidebar(
     serverName: String,
     channels: List<Channel>,
     selectedChannelId: String? = null,
+    canCreateChannel: Boolean = false,
+    canManageRoles: Boolean = false,
     onCreateChannelClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onChannelClick: (Channel) -> Unit
 ) {
     Column(
@@ -42,10 +46,18 @@ fun ChannelSidebar(
                 text = serverName,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                maxLines = 1
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = onCreateChannelClick) {
-                Icon(Icons.Default.Add, contentDescription = "Create Channel")
+            if (canManageRoles) {
+                IconButton(onClick = onSettingsClick) {
+                    Icon(Icons.Default.Settings, contentDescription = "Server Settings")
+                }
+            }
+            if (canCreateChannel) {
+                IconButton(onClick = onCreateChannelClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Create Channel")
+                }
             }
         }
 

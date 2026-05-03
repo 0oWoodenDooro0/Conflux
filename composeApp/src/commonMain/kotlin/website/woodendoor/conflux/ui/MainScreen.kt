@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import website.woodendoor.conflux.DEFAULT_BASE_URL
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.state.LoginState
 import website.woodendoor.conflux.state.MainState
 
@@ -22,6 +23,7 @@ fun MainScreen() {
     var isCreatingServer by remember { mutableStateOf(false) }
     var isJoiningServer by remember { mutableStateOf(false) }
     var isCreatingChannel by remember { mutableStateOf(false) }
+    var isShowingSettings by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     val servers = MainState.serverList
@@ -81,7 +83,10 @@ fun MainScreen() {
                     serverName = selectedServer.name,
                     channels = channels,
                     selectedChannelId = MainState.selectedChannel?.id,
+                    canCreateChannel = (MainState.currentUserPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L,
+                    canManageRoles = (MainState.currentUserPermissions and ConfluxPermission.ROLE_MANAGEMENT) != 0L,
                     onCreateChannelClick = { isCreatingChannel = true },
+                    onSettingsClick = { isShowingSettings = true },
                     onChannelClick = { channel ->
                         scope.launch {
                             MainState.selectChannel(channel, apiClient)
@@ -120,6 +125,12 @@ fun MainScreen() {
                                 MainState.selectServer(selectedServer, apiClient)
                             }
                         }
+                    )
+                } else if (isShowingSettings && selectedServer != null) {
+                    ServerSettingsDialog(
+                        server = selectedServer,
+                        apiClient = apiClient,
+                        onDismissRequest = { isShowingSettings = false }
                     )
                 } else if (MainState.selectedChannel != null) {
                     ChatRoom(apiClient = apiClient)

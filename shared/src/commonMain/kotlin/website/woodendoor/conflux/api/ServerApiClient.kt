@@ -57,6 +57,10 @@ class ServerApiClient(
         return client.get("$baseUrl/api/servers/$serverId/channels").body()
     }
 
+    suspend fun getMembers(serverId: String): List<User> {
+        return client.get("$baseUrl/api/servers/$serverId/members").body()
+    }
+
     suspend fun getMessages(channelId: String): List<Message> {
         return client.get("$baseUrl/api/channels/$channelId/messages").body()
     }
