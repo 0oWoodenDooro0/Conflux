@@ -121,6 +121,19 @@ class ServerApiClient(
         return response.status.isSuccess()
     }
 
+    suspend fun removeRole(serverId: String, adminUserId: String, targetUserId: String, roleId: String): Boolean {
+        val response = client.post("$baseUrl/api/servers/$serverId/roles/remove") {
+            parameter("userId", adminUserId)
+            contentType(ContentType.Application.Json)
+            setBody(AssignRoleRequest(targetUserId, roleId))
+        }
+        return response.status.isSuccess()
+    }
+
+    suspend fun getRoleMembers(serverId: String, roleId: String): List<User> {
+        return client.get("$baseUrl/api/servers/$serverId/roles/$roleId/members").body()
+    }
+
     fun close() {
         client.close()
     }

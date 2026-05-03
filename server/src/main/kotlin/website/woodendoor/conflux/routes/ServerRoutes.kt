@@ -185,7 +185,7 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             val roleId = call.parameters["roleId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing roleId")
 
             val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+            if (!website.woodendoor.conflux.models.ConfluxPermission.hasPermission(permissions, website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT)) {
                 return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
@@ -231,6 +231,36 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
+        }
+
+        post("/remove") {
+            val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val request = call.receive<website.woodendoor.conflux.models.AssignRoleRequest>()
+                val result = serverRepository.removeRoleFromMember(serverId, request.userId, request.roleId)
+                if (result) {
+                    call.respond(HttpStatusCode.OK, "Role removed successfully")
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to remove role")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
+
+        get("/{roleId}/members") {
+            val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val roleId = call.parameters["roleId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing roleId")
+            
+            val members = serverRepository.getMembersWithRole(serverId, roleId)
+            call.respond(HttpStatusCode.OK, members)
         }
     }
 }

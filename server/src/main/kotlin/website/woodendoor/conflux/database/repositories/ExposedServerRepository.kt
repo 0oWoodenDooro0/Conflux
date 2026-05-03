@@ -13,7 +13,7 @@ import java.util.UUID
 import website.woodendoor.conflux.DEFAULT_ROLE_NAME_OWNER
 import website.woodendoor.conflux.DEFAULT_ROLE_NAME_MEMBER
 
-class ExposedServerRepository(private val userRepository: UserRepository) : ServerRepository {
+class ExposedServerRepository(private val userRepository: ExposedUserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
         name = row[Servers.name],
@@ -216,6 +216,12 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         }.insertedCount > 0
     }
 
+    override suspend fun removeRoleFromMember(serverId: String, userId: String, roleId: String): Boolean = dbQuery {
+        MemberRoles.deleteWhere { 
+            (MemberRoles.serverId eq serverId) and (MemberRoles.userId eq userId) and (MemberRoles.roleId eq roleId)
+        } > 0
+    }
+
     override suspend fun getRolesForMember(serverId: String, userId: String): List<Role> = dbQuery {
         (Roles innerJoin MemberRoles)
             .selectAll().where { 
@@ -236,5 +242,15 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             }
             .map { it[Roles.permissions] }
             .fold(0L) { acc, p -> acc or p }
+    }
+
+    override suspend fun getMembersWithRole(serverId: String, roleId: String): List<User> = dbQuery {
+        (Users innerJoin MemberRoles)
+            .selectAll().where { 
+                (MemberRoles.serverId eq serverId) and 
+                (MemberRoles.roleId eq roleId) and
+                (Users.id eq MemberRoles.userId)
+            }
+            .map(::resultRowToUser)
     }
 }

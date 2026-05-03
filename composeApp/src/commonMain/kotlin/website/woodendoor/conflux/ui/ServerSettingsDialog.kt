@@ -53,6 +53,18 @@ fun ServerSettingsDialog(
         refreshData()
     }
 
+    LaunchedEffect(rolesState.selectedRole?.id) {
+        val selectedRole = rolesState.selectedRole
+        if (selectedRole != null) {
+            try {
+                val roleMembers = apiClient.getRoleMembers(server.id, selectedRole.id)
+                rolesState.updateRoleMembers(roleMembers)
+            } catch (e: Exception) {
+                // Silently fail or log
+            }
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -113,17 +125,46 @@ fun ServerSettingsDialog(
                             ServerSettingsTab.Roles -> {
                                 RolesAndPermissionsTab(
                                     state = rolesState,
+                                    allServerMembers = members,
                                     onAddRole = { isAddingRole = true },
                                     onSaveChanges = { role, newPermissions ->
                                         scope.launch {
-                                            val adminId = MainState.currentUserId ?: return@launch
-                                            apiClient.updateRole(
-                                                serverId = server.id,
-                                                userId = adminId,
-                                                roleId = role.id,
-                                                permissions = newPermissions
-                                            )
-                                            refreshData()
+                                            try {
+                                                val adminId = MainState.currentUserId ?: return@launch
+                                                apiClient.updateRole(
+                                                    serverId = server.id,
+                                                    userId = adminId,
+                                                    roleId = role.id,
+                                                    permissions = newPermissions
+                                                )
+                                                refreshData()
+                                            } catch (e: Exception) {
+                                                errorMessage = "Failed to save changes: ${e.message}"
+                                            }
+                                        }
+                                    },
+                                    onAssignRole = { role, user ->
+                                        scope.launch {
+                                            try {
+                                                val adminId = MainState.currentUserId ?: return@launch
+                                                apiClient.assignRole(server.id, adminId, user.id, role.id)
+                                                val updatedMembers = apiClient.getRoleMembers(server.id, role.id)
+                                                rolesState.updateRoleMembers(updatedMembers)
+                                            } catch (e: Exception) {
+                                                errorMessage = "Failed to assign role: ${e.message}"
+                                            }
+                                        }
+                                    },
+                                    onRemoveRole = { role, user ->
+                                        scope.launch {
+                                            try {
+                                                val adminId = MainState.currentUserId ?: return@launch
+                                                apiClient.removeRole(server.id, adminId, user.id, role.id)
+                                                val updatedMembers = apiClient.getRoleMembers(server.id, role.id)
+                                                rolesState.updateRoleMembers(updatedMembers)
+                                            } catch (e: Exception) {
+                                                errorMessage = "Failed to remove role: ${e.message}"
+                                            }
                                         }
                                     }
                                 )
@@ -210,14 +251,13 @@ fun RoleCreationDialog(
                     label = { Text("Priority Level") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(Modifier.height(8.dp))
-                Text("Permissions: $permissions (Bitmask)")
-                // Simplified: Just a text field for bitmask for now
-                TextField(
-                    value = permissions.toString(),
-                    onValueChange = { permissions = it.toLongOrNull() ?: 0L },
-                    label = { Text("Permissions Bitmask") },
-                    modifier = Modifier.fillMaxWidth()
+                Spacer(Modifier.height(16.dp))
+                Text("Permissions", style = MaterialTheme.typography.titleSmall)
+                PermissionList(
+                    permissions = permissions,
+                    onPermissionChange = { permission, enabled ->
+                        permissions = website.woodendoor.conflux.models.ConfluxPermission.setPermission(permissions, permission, enabled)
+                    }
                 )
             }
         },
