@@ -15,6 +15,7 @@ import website.woodendoor.conflux.models.Message
 import website.woodendoor.conflux.models.Server
 
 object MainState {
+    var serverList by mutableStateOf<List<Server>>(emptyList())
     var selectedServer by mutableStateOf<Server?>(null)
     var channelList by mutableStateOf<List<Channel>>(emptyList())
     var channelFetchError by mutableStateOf<String?>(null)
@@ -105,6 +106,10 @@ object MainState {
         }
     }
 
+    suspend fun joinServer(serverId: String, userId: String, apiClient: ServerApiClient): Boolean {
+        TODO("Not yet implemented")
+    }
+
     suspend fun sendMessage(senderId: String, content: String, apiClient: ServerApiClient) {
         val channelId = selectedChannel?.id ?: return
         messageSendError = null
@@ -120,6 +125,7 @@ object MainState {
     }
 
     fun reset() {
+        serverList = emptyList()
         selectedServer = null
         channelList = emptyList()
         channelFetchError = null
