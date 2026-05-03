@@ -7,8 +7,8 @@
 
 ## Phase 2: Routes (Backend API)
 - [x] Task: Write Tests for POST `/servers/{id}/join` endpoint d314523
-- [~] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md)
+- [x] Task: Implement POST `/servers/{id}/join` endpoint in `ServerRoutes.kt` bfe9611
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Routes (Backend API)' (Protocol in workflow.md)
 
 ## Phase 3: API Client (Shared)
 - [ ] Task: Write Tests for `ServerApiClient.joinServer`
