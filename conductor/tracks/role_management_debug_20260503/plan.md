@@ -5,12 +5,12 @@
 - [x] Task: Implement a content switcher in `ServerSettingsDialog.kt` that displays placeholders for "Overview", "Channel Management", and "Members". 68ac841
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Navigation & State Management' (Protocol in workflow.md) 2f3e2fe
 
-## Phase 2: Role Management UI & Basic Operations
+## Phase 2: Role Management UI & Basic Operations [checkpoint: 358f3e]
 - [x] Task: Define/Update Role related models and API client methods in the shared module for fetching and creating roles. 5d55307
 - [x] Task: Implement the `RolesAndPermissions` tab layout with a two-column design. cca0eea
 - [x] Task: Implement the Role List (left column) showing role names and colors, with an "Add Role" button. cca0eea
 - [x] Task: Write TDD tests for role creation and selection logic. cca0eea
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Role Management UI & Basic Operations' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Role Management UI & Basic Operations' (Protocol in workflow.md) 358f3e
 
 ## Phase 3: Permissions Sub-tab
 - [ ] Task: Implement the `Permissions` sub-tab in the Role Detail panel (right column).
