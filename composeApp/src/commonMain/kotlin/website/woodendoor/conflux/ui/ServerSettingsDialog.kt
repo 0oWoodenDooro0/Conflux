@@ -26,7 +26,7 @@ fun ServerSettingsDialog(
     var members by remember { mutableStateOf<List<User>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var tabIndex by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(ServerSettingsTab.Roles) }
     var userToAssignRole by remember { mutableStateOf<User?>(null) }
     var isAddingRole by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -52,55 +52,78 @@ fun ServerSettingsDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Server Settings: ${server.name}") },
         text = {
-            Column(modifier = Modifier.fillMaxWidth().heightIn(min = 300.dp, max = 500.dp)) {
-                TabRow(selectedTabIndex = tabIndex) {
-                    Tab(selected = tabIndex == 0, onClick = { tabIndex = 0 }, text = { Text("Roles") })
-                    Tab(selected = tabIndex == 1, onClick = { tabIndex = 1 }, text = { Text("Members") })
+            Row(modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp, max = 600.dp)) {
+                Column(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .fillMaxHeight()
+                ) {
+                    ServerSettingsTab.entries.forEach { tab ->
+                        NavigationDrawerItem(
+                            label = { Text(tab.name) },
+                            selected = selectedTab == tab,
+                            onClick = { selectedTab = tab },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                    }
                 }
-                
-                Spacer(modifier = Modifier.height(16.dp))
 
-                if (isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    if (errorMessage != null) {
-                        Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
-                    }
+                VerticalDivider(modifier = Modifier.fillMaxHeight().width(1.dp))
 
-                    when (tabIndex) {
-                        0 -> {
-                            LazyColumn(modifier = Modifier.weight(1f)) {
-                                items(roles) { role ->
-                                    ListItem(
-                                        headlineContent = { Text(role.name) },
-                                        supportingContent = { Text("Permissions: ${role.permissions}") },
-                                        trailingContent = { Text("Priority: ${role.priorityLevel}") }
-                                    )
+                Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+                    if (isLoading) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        if (errorMessage != null) {
+                            Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
+                        }
+
+                        when (selectedTab) {
+                            ServerSettingsTab.Overview -> {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                    Text("Overview Placeholder")
                                 }
                             }
-                            Button(
-                                onClick = { isAddingRole = true },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Add Role")
+                            ServerSettingsTab.Channels -> {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                    Text("Channel Management Placeholder")
+                                }
                             }
-                        }
-                        1 -> {
-                            LazyColumn(modifier = Modifier.weight(1f)) {
-                                items(members) { user ->
-                                    ListItem(
-                                        headlineContent = { Text("${user.username}#${user.discriminator}") },
-                                        supportingContent = { Text("ID: ${user.id}") },
-                                        trailingContent = {
-                                            TextButton(onClick = { userToAssignRole = user }) {
-                                                Text("Assign Role")
+                            ServerSettingsTab.Roles -> {
+                                LazyColumn(modifier = Modifier.weight(1f)) {
+                                    items(roles) { role ->
+                                        ListItem(
+                                            headlineContent = { Text(role.name) },
+                                            supportingContent = { Text("Permissions: ${role.permissions}") },
+                                            trailingContent = { Text("Priority: ${role.priorityLevel}") }
+                                        )
+                                    }
+                                }
+                                Button(
+                                    onClick = { isAddingRole = true },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null)
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("Add Role")
+                                }
+                            }
+                            ServerSettingsTab.Members -> {
+                                LazyColumn(modifier = Modifier.weight(1f)) {
+                                    items(members) { user ->
+                                        ListItem(
+                                            headlineContent = { Text("${user.username}#${user.discriminator}") },
+                                            supportingContent = { Text("ID: ${user.id}") },
+                                            trailingContent = {
+                                                TextButton(onClick = { userToAssignRole = user }) {
+                                                    Text("Assign Role")
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }
