@@ -30,7 +30,7 @@
     - [x] Verify test passes.
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Backend Authorization Layer' (Protocol in workflow.md)
 
-## Phase 3: Shared Layer
+## Phase 3: Shared Layer [checkpoint: b3d39b3]
 - [x] Task: Update Shared Models [95966dc]
     - [x] Create test for updated models serialization/deserialization.
     - [x] Add Role/Permission data to `Server` and `User` data classes.
