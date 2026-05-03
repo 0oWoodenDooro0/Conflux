@@ -84,12 +84,12 @@ fun ServerSettingsDialog(
                         when (selectedTab) {
                             ServerSettingsTab.Overview -> {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                                    Text("Overview Placeholder")
+                                    Text("Overview Placeholder", style = MaterialTheme.typography.headlineSmall)
                                 }
                             }
                             ServerSettingsTab.Channels -> {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                                    Text("Channel Management Placeholder")
+                                    Text("Channel Management Placeholder", style = MaterialTheme.typography.headlineSmall)
                                 }
                             }
                             ServerSettingsTab.Roles -> {
