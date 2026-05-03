@@ -12,8 +12,8 @@
 
 ## Phase 3: API Client (Shared)
 - [x] Task: Write Tests for `ServerApiClient.joinServer` 9dbe51b
-- [~] Task: Implement `joinServer` in `ServerApiClient.kt`
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md)
+- [x] Task: Implement `joinServer` in `ServerApiClient.kt` 8bb0db0
+- [~] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md)
 
 ## Phase 4: State Management & UI (Frontend)
 - [ ] Task: Write Tests for `MainState` join server logic
