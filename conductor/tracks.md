@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Join Server (加入伺服器)**
+- [x] **Track: Join Server (加入伺服器)**
 *Link: [./tracks/join_server_20260503/](./tracks/join_server_20260503/)*
