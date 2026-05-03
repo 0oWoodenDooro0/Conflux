@@ -29,12 +29,14 @@ fun ServerSettingsDialog(
     var selectedTab by remember { mutableStateOf(ServerSettingsTab.Roles) }
     var userToAssignRole by remember { mutableStateOf<User?>(null) }
     var isAddingRole by remember { mutableStateOf(false) }
+    val rolesState = remember { RolesAndPermissionsState() }
     val scope = rememberCoroutineScope()
 
     fun refreshData() {
         scope.launch {
             try {
                 roles = apiClient.getRoles(server.id)
+                rolesState.updateRoles(roles)
                 members = apiClient.getMembers(server.id)
             } catch (e: Exception) {
                 errorMessage = "Failed to load settings: ${e.message}"
@@ -93,23 +95,10 @@ fun ServerSettingsDialog(
                                 }
                             }
                             ServerSettingsTab.Roles -> {
-                                LazyColumn(modifier = Modifier.weight(1f)) {
-                                    items(roles) { role ->
-                                        ListItem(
-                                            headlineContent = { Text(role.name) },
-                                            supportingContent = { Text("Permissions: ${role.permissions}") },
-                                            trailingContent = { Text("Priority: ${role.priorityLevel}") }
-                                        )
-                                    }
-                                }
-                                Button(
-                                    onClick = { isAddingRole = true },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = null)
-                                    Spacer(Modifier.width(8.dp))
-                                    Text("Add Role")
-                                }
+                                RolesAndPermissionsTab(
+                                    state = rolesState,
+                                    onAddRole = { isAddingRole = true }
+                                )
                             }
                             ServerSettingsTab.Members -> {
                                 LazyColumn(modifier = Modifier.weight(1f)) {
