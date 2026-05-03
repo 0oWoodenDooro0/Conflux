@@ -48,7 +48,7 @@
     - [x] Verify test passes.
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend State' (Protocol in workflow.md) [cc69921]
 
-## Phase 5: UI Layer
+## Phase 5: UI Layer [checkpoint: b7be06d]
 - [x] Task: Channel Management UI Protection [cc69921]
     - [x] Create test/composable preview for disabled channel button.
     - [x] Update `ChannelSidebar.kt` to hide/disable "+ (New Channel)" button based on `channelManagementPrivilege`.
@@ -61,4 +61,4 @@
     - [x] Create test/composable preview for server settings UI.
     - [x] Create UI for viewing members and adjusting roles (for users with `roleManagementPrivilege`).
     - [x] Verify test passes.
-- [~] Task: Conductor - User Manual Verification 'Phase 5: UI Layer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: UI Layer' (Protocol in workflow.md) [b7be06d]
