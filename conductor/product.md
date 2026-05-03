@@ -16,7 +16,7 @@ To provide a core, pure communication space for personal users and professional 
 
 # Key Features (In Progress)
 - **Simplified User Onboarding**: Fast, username-based login flow for immediate access.
-- **Server & Channel Management**: End-to-end flow for creating and managing servers and channels. Includes reactive server-channel linkage, allowing users to switch contexts and create structured discussion spaces effortlessly.
+- **Server & Channel Management**: End-to-end flow for creating, joining, and managing servers and channels. Users can join existing communities using a Server ID. Includes reactive server-channel linkage, allowing users to switch contexts and create structured discussion spaces effortlessly.
 - **Persistent Text Messaging**: Robust message delivery and history retrieval with character limits and automatic scrolling.
 - **Real-time Messaging**: Low-latency, WebSocket-based delivery with robust synchronization and auto-reconnection logic.
 - **Roles & Permissions**: Fine-grained access control for server security and order.
