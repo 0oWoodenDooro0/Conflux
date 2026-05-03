@@ -2,8 +2,8 @@
 
 ## Phase 1: Database & Repository (Backend)
 - [x] Task: Write Tests for Server Repository `joinServer` cb188a5
-- [~] Task: Implement `joinServer` in `ExposedServerRepository.kt`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Database & Repository (Backend)' (Protocol in workflow.md)
+- [x] Task: Implement `joinServer` in `ExposedServerRepository.kt` a69a42a
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Database & Repository (Backend)' (Protocol in workflow.md)
 
 ## Phase 2: Routes (Backend API)
 - [ ] Task: Write Tests for POST `/servers/{id}/join` endpoint
