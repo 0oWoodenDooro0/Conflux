@@ -42,9 +42,13 @@ fun Application.module() {
     install(CORS) {
         anyHost() // In production, replace with specific hosts
         allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Delete)
     }
     DatabaseFactory.init()
     transaction {

@@ -184,6 +184,12 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToRole)
     }
 
+    override suspend fun getRole(roleId: String): Role? = dbQuery {
+        Roles.selectAll().where { Roles.id eq roleId }
+            .map(::resultRowToRole)
+            .singleOrNull()
+    }
+
     override suspend fun updateRole(role: Role): Boolean = dbQuery {
         Roles.update({ Roles.id eq role.id }) {
             it[name] = role.name

@@ -18,6 +18,7 @@ interface ServerRepository {
     suspend fun joinServer(userId: String, serverId: String): Boolean
     
     suspend fun createRole(serverId: String, role: Role): Role?
+    suspend fun getRole(roleId: String): Role?
     suspend fun updateRole(role: Role): Boolean
     suspend fun deleteRole(roleId: String): Boolean
     suspend fun getRoles(serverId: String): List<Role>

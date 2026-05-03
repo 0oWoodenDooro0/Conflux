@@ -178,6 +178,38 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
         }
+
+        patch("/{roleId}") {
+            val serverId = call.parameters["serverId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val roleId = call.parameters["roleId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing roleId")
+
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+                return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val request = call.receive<website.woodendoor.conflux.models.UpdateRoleRequest>()
+                val existingRole = serverRepository.getRole(roleId) ?: return@patch call.respond(HttpStatusCode.NotFound, "Role not found")
+                
+                val updatedRole = existingRole.copy(
+                    name = request.name ?: existingRole.name,
+                    permissions = request.permissions ?: existingRole.permissions,
+                    color = if (request.color != null) request.color else existingRole.color,
+                    priorityLevel = request.priorityLevel ?: existingRole.priorityLevel
+                )
+                
+                val success = serverRepository.updateRole(updatedRole)
+                if (success) {
+                    call.respond(HttpStatusCode.OK, updatedRole)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to update role")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
         
         post("/assign") {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
