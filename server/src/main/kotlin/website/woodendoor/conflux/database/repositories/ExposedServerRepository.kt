@@ -10,6 +10,9 @@ import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import java.util.UUID
 
+import website.woodendoor.conflux.DEFAULT_ROLE_NAME_OWNER
+import website.woodendoor.conflux.DEFAULT_ROLE_NAME_MEMBER
+
 class ExposedServerRepository(private val userRepository: UserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
@@ -54,7 +57,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             Roles.insert {
                 it[id] = ownerRoleId
                 it[this.serverId] = createdServer.id
-                it[name] = "Owner"
+                it[name] = DEFAULT_ROLE_NAME_OWNER
                 it[permissions] = ConfluxPermission.ALL
                 it[color] = null
                 it[priorityLevel] = 100
@@ -64,7 +67,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             Roles.insert {
                 it[id] = UUID.randomUUID().toString()
                 it[this.serverId] = createdServer.id
-                it[name] = "Member"
+                it[name] = DEFAULT_ROLE_NAME_MEMBER
                 it[permissions] = ConfluxPermission.MESSAGING
                 it[color] = null
                 it[priorityLevel] = 0
@@ -154,7 +157,7 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
 
         if (inserted) {
             val memberRole = Roles.selectAll()
-                .where { (Roles.serverId eq serverId) and (Roles.name eq "Member") }
+                .where { (Roles.serverId eq serverId) and (Roles.name eq DEFAULT_ROLE_NAME_MEMBER) }
                 .singleOrNull()
             
             if (memberRole != null) {

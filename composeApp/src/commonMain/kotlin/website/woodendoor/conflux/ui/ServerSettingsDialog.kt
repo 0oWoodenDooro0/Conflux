@@ -28,17 +28,24 @@ fun ServerSettingsDialog(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var tabIndex by remember { mutableStateOf(0) }
     var userToAssignRole by remember { mutableStateOf<User?>(null) }
+    var isAddingRole by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(server.id) {
-        try {
-            roles = apiClient.getRoles(server.id)
-            members = apiClient.getMembers(server.id)
-        } catch (e: Exception) {
-            errorMessage = "Failed to load settings: ${e.message}"
-        } finally {
-            isLoading = false
+    fun refreshData() {
+        scope.launch {
+            try {
+                roles = apiClient.getRoles(server.id)
+                members = apiClient.getMembers(server.id)
+            } catch (e: Exception) {
+                errorMessage = "Failed to load settings: ${e.message}"
+            } finally {
+                isLoading = false
+            }
         }
+    }
+
+    LaunchedEffect(server.id) {
+        refreshData()
     }
 
     AlertDialog(
@@ -74,7 +81,7 @@ fun ServerSettingsDialog(
                                 }
                             }
                             Button(
-                                onClick = { /* Simplified: Owner can add role via API if implemented in UI */ },
+                                onClick = { isAddingRole = true },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Icon(Icons.Default.Add, contentDescription = null)
@@ -118,10 +125,79 @@ fun ServerSettingsDialog(
                     val adminId = MainState.currentUserId ?: return@launch
                     apiClient.assignRole(server.id, adminId, userToAssignRole!!.id, roleId)
                     userToAssignRole = null
+                    refreshData()
                 }
             }
         )
     }
+
+    if (isAddingRole) {
+        RoleCreationDialog(
+            onDismiss = { isAddingRole = false },
+            onAdd = { name, permissions, priority ->
+                scope.launch {
+                    val adminId = MainState.currentUserId ?: return@launch
+                    apiClient.createRole(server.id, adminId, name, permissions, priority = priority)
+                    isAddingRole = false
+                    refreshData()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun RoleCreationDialog(
+    onDismiss: () -> Unit,
+    onAdd: (String, Long, Int) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var permissions by remember { mutableStateOf(0L) }
+    var priority by remember { mutableStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Create New Role") },
+        text = {
+            Column {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Role Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                TextField(
+                    value = priority.toString(),
+                    onValueChange = { priority = it.toIntOrNull() ?: 0 },
+                    label = { Text("Priority Level") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                Text("Permissions: $permissions (Bitmask)")
+                // Simplified: Just a text field for bitmask for now
+                TextField(
+                    value = permissions.toString(),
+                    onValueChange = { permissions = it.toLongOrNull() ?: 0L },
+                    label = { Text("Permissions Bitmask") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onAdd(name, permissions, priority) },
+                enabled = name.isNotBlank()
+            ) {
+                Text("Create")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
