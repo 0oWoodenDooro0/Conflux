@@ -62,3 +62,6 @@
     - [x] Create UI for viewing members and adjusting roles (for users with `roleManagementPrivilege`).
     - [x] Verify test passes.
 - [x] Task: Conductor - User Manual Verification 'Phase 5: UI Layer' (Protocol in workflow.md) [b7be06d]
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions [1b02459]
