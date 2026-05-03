@@ -9,11 +9,11 @@
     - [x] Create test for Owner role assignment.
     - [x] Update Server Repository to assign "Owner" role to the creator.
     - [x] Verify test passes.
-- [~] Task: Implement Member role assignment on Server join
-    - [ ] Create test for default "Member" role assignment.
-    - [ ] Update joining logic to assign "Member" role.
-    - [ ] Verify test passes.
-- [ ] Task: Implement Permission query logic
+- [x] Task: Implement Member role assignment on Server join [16d3e9e]
+    - [x] Create test for default "Member" role assignment.
+    - [x] Update joining logic to assign "Member" role.
+    - [x] Verify test passes.
+- [~] Task: Implement Permission query logic
     - [ ] Create test for querying permissions by Server ID and User ID.
     - [ ] Add Repository method for permission queries.
     - [ ] Verify test passes.
