@@ -1,9 +1,9 @@
 # Implementation Plan: Server Role Management & Developer Debug Tools
 
-## Phase 1: Navigation & State Management
+## Phase 1: Navigation & State Management [checkpoint: 2f3e2fe]
 - [x] Task: Create `ServerSettingsTab` enum and update `ServerSettingsDialog.kt` to include a vertical sidebar for tab selection. 9ea61f0
 - [x] Task: Implement a content switcher in `ServerSettingsDialog.kt` that displays placeholders for "Overview", "Channel Management", and "Members". 68ac841
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Navigation & State Management' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Navigation & State Management' (Protocol in workflow.md) 2f3e2fe
 
 ## Phase 2: Role Management UI & Basic Operations
 - [ ] Task: Define/Update `Role` related models and API client methods in the `shared` module for fetching and creating roles.
