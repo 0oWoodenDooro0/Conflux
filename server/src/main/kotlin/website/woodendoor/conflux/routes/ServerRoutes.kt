@@ -127,3 +127,64 @@ fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: 
         }
     }
 }
+
+fun Route.roleRoutes(serverRepository: ServerRepository) {
+    route("/api/servers/{serverId}/roles") {
+        get {
+            val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val roles = serverRepository.getRoles(serverId)
+            call.respond(HttpStatusCode.OK, roles)
+        }
+
+        post {
+            val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val request = call.receive<website.woodendoor.conflux.models.CreateRoleRequest>()
+                val role = website.woodendoor.conflux.models.Role(
+                    id = UUID.randomUUID().toString(),
+                    name = request.name,
+                    permissions = request.permissions,
+                    color = request.color,
+                    priorityLevel = request.priorityLevel
+                )
+                val created = serverRepository.createRole(serverId, role)
+                if (created != null) {
+                    call.respond(HttpStatusCode.Created, created)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to create role")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
+        
+        post("/assign") {
+            val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
+            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val request = call.receive<website.woodendoor.conflux.models.AssignRoleRequest>()
+                val result = serverRepository.assignRoleToMember(serverId, request.userId, request.roleId)
+                if (result) {
+                    call.respond(HttpStatusCode.OK, "Role assigned successfully")
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to assign role")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
+    }
+}

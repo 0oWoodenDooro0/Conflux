@@ -26,3 +26,17 @@ data class SendMessageRequest(
     val senderId: String,
     val content: String
 )
+
+@Serializable
+data class CreateRoleRequest(
+    val name: String,
+    val permissions: Long = 0,
+    val color: Int? = null,
+    val priorityLevel: Int = 0
+)
+
+@Serializable
+data class AssignRoleRequest(
+    val userId: String,
+    val roleId: String
+)

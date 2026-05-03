@@ -19,6 +19,7 @@ import website.woodendoor.conflux.database.repositories.ExposedUserRepository
 import website.woodendoor.conflux.database.repositories.ExposedMessageRepository
 import website.woodendoor.conflux.routes.channelRoutes
 import website.woodendoor.conflux.routes.serverRoutes
+import website.woodendoor.conflux.routes.roleRoutes
 import website.woodendoor.conflux.routes.userRoutes
 import website.woodendoor.conflux.routes.messageRoutes
 import website.woodendoor.conflux.routes.webSocketRoutes
@@ -82,6 +83,7 @@ fun Application.module() {
         }
         serverRoutes(serverRepository, userRepository)
         channelRoutes(channelRepository, serverRepository)
+        roleRoutes(serverRepository)
         userRoutes(userRepository)
         messageRoutes(messageRepository, channelRepository, serverRepository, connectionManager)
         webSocketRoutes(tokenManager, connectionManager)
