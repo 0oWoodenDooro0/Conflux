@@ -18,6 +18,6 @@
 ## Phase 4: State Management & UI (Frontend)
 - [x] Task: Write Tests for `MainState` join server logic e0692fe
 - [x] Task: Implement join server state handling and list refresh in `MainState.kt` b476799
-- [~] Task: Write Tests for Join Server Dialog UI components
-- [ ] Task: Implement Join Server Dialog and Trigger Button in Compose UI
+- [x] Task: Write Tests for Join Server Dialog UI components afdbd08
+- [~] Task: Implement Join Server Dialog and Trigger Button in Compose UI
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: State Management & UI (Frontend)' (Protocol in workflow.md)
