@@ -46,19 +46,19 @@
     - [x] Create test for state update logic.
     - [x] Update `MainState.kt` to store `currentUserPermissions` when switching servers.
     - [x] Verify test passes.
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Frontend State' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend State' (Protocol in workflow.md) [cc69921]
 
 ## Phase 5: UI Layer
-- [ ] Task: Channel Management UI Protection
-    - [ ] Create test/composable preview for disabled channel button.
-    - [ ] Update `ChannelSidebar.kt` to hide/disable "+ (New Channel)" button based on `channelManagementPrivilege`.
-    - [ ] Verify test passes.
-- [ ] Task: Messaging UI Protection
-    - [ ] Create test/composable preview for disabled chat input.
-    - [ ] Update `ChatRoom.kt` to disable input and show text based on `messagingPrivilege`.
-    - [ ] Verify test passes.
-- [ ] Task: Server Settings UI
-    - [ ] Create test/composable preview for server settings UI.
-    - [ ] Create UI for viewing members and adjusting roles (for users with `roleManagementPrivilege`).
-    - [ ] Verify test passes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: UI Layer' (Protocol in workflow.md)
+- [x] Task: Channel Management UI Protection [cc69921]
+    - [x] Create test/composable preview for disabled channel button.
+    - [x] Update `ChannelSidebar.kt` to hide/disable "+ (New Channel)" button based on `channelManagementPrivilege`.
+    - [x] Verify test passes.
+- [x] Task: Messaging UI Protection [cc69921]
+    - [x] Create test/composable preview for disabled chat input.
+    - [x] Update `ChatRoom.kt` to disable input and show text based on `messagingPrivilege`.
+    - [x] Verify test passes.
+- [x] Task: Server Settings UI [cc69921]
+    - [x] Create test/composable preview for server settings UI.
+    - [x] Create UI for viewing members and adjusting roles (for users with `roleManagementPrivilege`).
+    - [x] Verify test passes.
+- [~] Task: Conductor - User Manual Verification 'Phase 5: UI Layer' (Protocol in workflow.md)
