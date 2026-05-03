@@ -26,9 +26,9 @@
 - [x] Task: Write TDD tests for adding/removing members from roles. 0a0c35
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Member Assignment Sub-tab' (Protocol in workflow.md) 0a0c35
 
-## Phase 5: Developer Debug Menu [checkpoint: 2027a1]
+## Phase 5: Developer Debug Menu [checkpoint: 5e7581]
 - [x] Task: Implement a reusable component or Modifier for right-click (PointerInput) context menus. e22cae1
 - [x] Task: Integrate the debug menu into the Server Sidebar, Channel Sidebar, and User components to display relevant IDs. 2027a14
 - [x] Task: Integrate the debug menu into Message and Role list items. 2027a14
 - [x] Task: Implement the "Copy to Clipboard" functionality for IDs. 0d9d9a0
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Developer Debug Menu' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Developer Debug Menu' (Protocol in workflow.md) 5e7581
