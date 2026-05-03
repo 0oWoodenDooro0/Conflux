@@ -13,8 +13,13 @@
 - **Kotlinx Serialization**: Standard library for JSON serialization across backend, shared, and frontend modules.
 - **Coroutines**: Leveraged for high-concurrency message synchronization and async I/O.
 - **JetBrains Exposed**: Type-safe SQL framework for database access.
-- **H2 Database**: In-memory database used for initial development and testing.
+- H2 Database: In-memory database used for initial development and testing.
+
+## Security & Authorization
+- **Bitmask Permissions**: High-performance, bitwise-combinable permission system for efficient access control.
+- **Role Hierarchy**: Priority-based ordering of roles to manage administrative capabilities and UI state.
 
 ## Build & Tooling
+
 - **Gradle (Kotlin DSL)**: Unified build system for all modules.
 - **Version Catalog**: Centralized dependency management via `libs.versions.toml`.
