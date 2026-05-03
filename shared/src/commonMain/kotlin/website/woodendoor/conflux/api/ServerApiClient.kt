@@ -46,7 +46,10 @@ class ServerApiClient(
     }
 
     suspend fun joinServer(serverId: String, userId: String): Boolean {
-        TODO("Not yet implemented")
+        val response = client.post("$baseUrl/api/servers/$serverId/join") {
+            parameter("userId", userId)
+        }
+        return response.status.isSuccess()
     }
 
     suspend fun createChannel(serverId: String, name: String): Channel {
