@@ -20,11 +20,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database Layer' (Protocol in workflow.md) [753a9a5]
 
 ## Phase 2: Backend Authorization Layer
-- [~] Task: Implement Permission Interception
-    - [ ] Create test for request interception based on permissions (e.g., channel creation).
-    - [ ] Implement middleware/check in Ktor routes to verify permissions and return 403.
-    - [ ] Verify test passes.
-- [ ] Task: Implement Management API (UC4)
+- [x] Task: Implement Permission Interception [e91ab94]
+    - [x] Create test for request interception based on permissions (e.g., channel creation).
+    - [x] Implement middleware/check in Ktor routes to verify permissions and return 403.
+    - [x] Verify test passes.
+- [~] Task: Implement Management API (UC4)
     - [ ] Create test for updating/assigning roles via API.
     - [ ] Add route to update roles, protected by `roleManagementPrivilege`.
     - [ ] Verify test passes.
