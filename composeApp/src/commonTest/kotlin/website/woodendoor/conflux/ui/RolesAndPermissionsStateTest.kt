@@ -4,6 +4,7 @@ import website.woodendoor.conflux.models.Role
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RolesAndPermissionsStateTest {
     @Test
@@ -32,13 +33,32 @@ class RolesAndPermissionsStateTest {
     }
 
     @Test
-    fun testUpdateRolesClearsSelectionIfMissing() {
-        val role1 = Role("r1", "Admin", 1L)
-        val state = RolesAndPermissionsState(listOf(role1))
+    fun testPendingPermissions() {
+        val role = Role("r1", "Admin", 1L)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
         
-        state.selectRole(role1)
-        state.updateRoles(emptyList())
+        assertEquals(1L, state.pendingPermissions)
+        state.updatePendingPermission(1L shl 1, true)
+        assertEquals(1L or (1L shl 1), state.pendingPermissions)
+        assertTrue(state.hasChanges)
         
-        assertNull(state.selectedRole)
+        state.revertChanges()
+        assertEquals(1L, state.pendingPermissions)
+        assertEquals(1L, state.selectedRole?.permissions)
+    }
+
+    @Test
+    fun testHasChanges() {
+        val role = Role("r1", "Admin", 1L)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
+        
+        assertTrue(!state.hasChanges)
+        state.updatePendingPermission(1L, false)
+        assertTrue(state.hasChanges)
+        
+        state.updatePendingPermission(1L, true) // Back to original
+        assertTrue(!state.hasChanges)
     }
 }

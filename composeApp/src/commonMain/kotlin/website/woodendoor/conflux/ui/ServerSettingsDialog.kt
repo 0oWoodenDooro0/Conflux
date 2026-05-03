@@ -113,7 +113,19 @@ fun ServerSettingsDialog(
                             ServerSettingsTab.Roles -> {
                                 RolesAndPermissionsTab(
                                     state = rolesState,
-                                    onAddRole = { isAddingRole = true }
+                                    onAddRole = { isAddingRole = true },
+                                    onSaveChanges = { role, newPermissions ->
+                                        scope.launch {
+                                            val adminId = MainState.currentUserId ?: return@launch
+                                            apiClient.updateRole(
+                                                serverId = server.id,
+                                                userId = adminId,
+                                                roleId = role.id,
+                                                permissions = newPermissions
+                                            )
+                                            refreshData()
+                                        }
+                                    }
                                 )
                             }
                             ServerSettingsTab.Members -> {
