@@ -16,8 +16,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: API Client (Shared)' (Protocol in workflow.md) b068239
 
 ## Phase 4: State Management & UI (Frontend)
-- [ ] Task: Write Tests for `MainState` join server logic
-- [ ] Task: Implement join server state handling and list refresh in `MainState.kt`
+- [x] Task: Write Tests for `MainState` join server logic e0692fe
+- [~] Task: Implement join server state handling and list refresh in `MainState.kt`
 - [ ] Task: Write Tests for Join Server Dialog UI components
 - [ ] Task: Implement Join Server Dialog and Trigger Button in Compose UI
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: State Management & UI (Frontend)' (Protocol in workflow.md)
