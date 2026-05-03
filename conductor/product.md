@@ -19,4 +19,5 @@ To provide a core, pure communication space for personal users and professional 
 - **Server & Channel Management**: End-to-end flow for creating, joining, and managing servers and channels. Users can join existing communities using a Server ID. Includes reactive server-channel linkage, allowing users to switch contexts and create structured discussion spaces effortlessly.
 - **Persistent Text Messaging**: Robust message delivery and history retrieval with character limits and automatic scrolling.
 - **Real-time Messaging**: Low-latency, WebSocket-based delivery with robust synchronization and auto-reconnection logic.
-- **Roles & Permissions**: Comprehensive, Discord-like identity management system. Supports custom roles with colors, bitmask-based permissions (messaging, channel management, role management), and a priority-based hierarchy for administrative order.
+- **Roles & Permissions**: Comprehensive, Discord-like identity management system. Supports custom roles with colors, bitmask-based permissions (messaging, channel, role, and server management), and a priority-based hierarchy for administrative order.
+- **Developer Tools**: Built-in developer debug menus for quick access to internal system IDs (Servers, Channels, Users, Roles, Messages).
