@@ -1,7 +1,7 @@
 # Implementation Plan: Server Role Management & Developer Debug Tools
 
 ## Phase 1: Navigation & State Management
-- [ ] Task: Create `ServerSettingsTab` enum and update `ServerSettingsDialog.kt` to include a vertical sidebar for tab selection.
+- [x] Task: Create `ServerSettingsTab` enum and update `ServerSettingsDialog.kt` to include a vertical sidebar for tab selection. 9ea61f0
 - [ ] Task: Implement a content switcher in `ServerSettingsDialog.kt` that displays placeholders for "Overview", "Channel Management", and "Members".
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Navigation & State Management' (Protocol in workflow.md)
 
