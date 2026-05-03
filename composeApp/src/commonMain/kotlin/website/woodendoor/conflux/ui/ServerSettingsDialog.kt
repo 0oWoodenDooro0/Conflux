@@ -5,10 +5,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Role
@@ -52,12 +55,25 @@ fun ServerSettingsDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Server Settings: ${server.name}") },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        title = { 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Server Settings: ${server.name}")
+                IconButton(onClick = onDismissRequest) {
+                    Icon(Icons.Default.Close, contentDescription = "Close")
+                }
+            }
+        },
         text = {
-            Row(modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp, max = 600.dp)) {
+            Row(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
-                        .width(160.dp)
+                        .width(240.dp)
                         .fillMaxHeight()
                 ) {
                     ServerSettingsTab.entries.forEach { tab ->
@@ -73,9 +89,9 @@ fun ServerSettingsDialog(
 
                 VerticalDivider(modifier = Modifier.fillMaxHeight().width(1.dp))
 
-                Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+                Column(modifier = Modifier.weight(1f).padding(start = 24.dp)) {
                     if (isLoading) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
                     } else {
@@ -85,12 +101,12 @@ fun ServerSettingsDialog(
 
                         when (selectedTab) {
                             ServerSettingsTab.Overview -> {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text("Overview Placeholder", style = MaterialTheme.typography.headlineSmall)
                                 }
                             }
                             ServerSettingsTab.Channels -> {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text("Channel Management Placeholder", style = MaterialTheme.typography.headlineSmall)
                                 }
                             }
@@ -120,11 +136,8 @@ fun ServerSettingsDialog(
                 }
             }
         },
-        confirmButton = {
-            Button(onClick = onDismissRequest) {
-                Text("Close")
-            }
-        }
+        confirmButton = {},
+        dismissButton = {}
     )
 
     if (userToAssignRole != null) {

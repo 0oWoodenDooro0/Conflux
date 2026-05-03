@@ -23,13 +23,16 @@ fun RolesAndPermissionsTab(
         // Left Column: Role List
         Column(
             modifier = Modifier
-                .weight(1f)
+                .width(240.dp)
                 .fillMaxHeight()
-                .padding(end = 8.dp)
+                .padding(end = 16.dp)
         ) {
             Button(
                 onClick = onAddRole,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
