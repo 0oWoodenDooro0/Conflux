@@ -21,3 +21,6 @@
 - [x] Task: Write Tests for Join Server Dialog UI components afdbd08
 - [x] Task: Implement Join Server Dialog and Trigger Button in Compose UI 5fabd64
 - [x] Task: Conductor - User Manual Verification 'Phase 4: State Management & UI (Frontend)' (Protocol in workflow.md) c284985
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 93ac8e1
