@@ -1,8 +1,8 @@
 # Implementation Plan: Join Server
 
 ## Phase 1: Database & Repository (Backend)
-- [ ] Task: Write Tests for Server Repository `joinServer`
-- [ ] Task: Implement `joinServer` in `ExposedServerRepository.kt`
+- [x] Task: Write Tests for Server Repository `joinServer` cb188a5
+- [~] Task: Implement `joinServer` in `ExposedServerRepository.kt`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database & Repository (Backend)' (Protocol in workflow.md)
 
 ## Phase 2: Routes (Backend API)
