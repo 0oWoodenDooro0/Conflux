@@ -1,7 +1,7 @@
 # Implementation Plan: Role and Permission System
 
 ## Phase 1: Database Layer
-- [x] Task: Create `Role` and `Permission` structures [f1f78e1]
+- [x] Task: Create `Role` and `Permission` structures [6091918]
     - [x] Create test for database structures and queries.
     - [x] Add `Role` and `Permission` tables/models in `StructuralModels.kt`.
     - [x] Verify test passes.
