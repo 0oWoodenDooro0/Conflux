@@ -62,6 +62,23 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
         }
+
+        post("/{id}/join") {
+            val serverId = call.parameters["id"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            
+            val server = serverRepository.getServer(serverId)
+            if (server == null) {
+                return@post call.respond(HttpStatusCode.NotFound, "Server not found")
+            }
+
+            val result = serverRepository.joinServer(userId, serverId)
+            if (result) {
+                call.respond(HttpStatusCode.Created, "Joined successfully")
+            } else {
+                call.respond(HttpStatusCode.Conflict, "Already a member or owner")
+            }
+        }
     }
 }
 
