@@ -94,7 +94,23 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
             .map(::resultRowToUser)
     }
 
-    override suspend fun joinServer(userId: String, serverId: String): Boolean = TODO("Not yet implemented")
+    override suspend fun joinServer(userId: String, serverId: String): Boolean = dbQuery {
+        val server = Servers.selectAll().where { Servers.id eq serverId }.singleOrNull()
+        if (server == null) return@dbQuery false
+
+        if (server[Servers.ownerId] == userId) return@dbQuery false
+
+        val isAlreadyMember = ServerMembers.selectAll()
+            .where { (ServerMembers.serverId eq serverId) and (ServerMembers.userId eq userId) }
+            .any()
+        
+        if (isAlreadyMember) return@dbQuery false
+
+        ServerMembers.insert {
+            it[this.serverId] = serverId
+            it[this.userId] = userId
+        }.insertedCount > 0
+    }
 
     override suspend fun createRole(serverId: String, role: Role): Role? = dbQuery {
         val insertStatement = Roles.insert {
