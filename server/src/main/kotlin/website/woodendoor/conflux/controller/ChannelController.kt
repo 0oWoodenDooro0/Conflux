@@ -32,15 +32,15 @@ class ChannelController(
 
         val success = channelRepository.updateChannel(updatedChannel)
         return if (success) {
-            broadcastChannelUpdated(channelId, updatedChannel)
+            broadcastChannelUpdated(updatedChannel.serverId, updatedChannel)
             OperationResult.Success(updatedChannel)
         } else {
             OperationResult.Failure.InternalError("Failed to update channel")
         }
     }
 
-    private suspend fun broadcastChannelUpdated(channelId: String, channel: Channel) {
-        val connections = connectionManager.getConnectionsForChannel(channelId)
+    private suspend fun broadcastChannelUpdated(serverId: String, channel: Channel) {
+        val connections = connectionManager.getConnectionsForServer(serverId)
         val event = ConfluxEvent.ChannelUpdated(channel)
         val eventJson = Json.encodeToString<ConfluxEvent>(event)
         
@@ -63,15 +63,15 @@ class ChannelController(
 
         val success = channelRepository.deleteChannel(channelId)
         return if (success) {
-            broadcastChannelDeleted(channelId, existingChannel.serverId)
+            broadcastChannelDeleted(existingChannel.serverId, channelId)
             OperationResult.Success(Unit)
         } else {
             OperationResult.Failure.InternalError("Failed to delete channel")
         }
     }
 
-    private suspend fun broadcastChannelDeleted(channelId: String, serverId: String) {
-        val connections = connectionManager.getConnectionsForChannel(channelId)
+    private suspend fun broadcastChannelDeleted(serverId: String, channelId: String) {
+        val connections = connectionManager.getConnectionsForServer(serverId)
         val event = ConfluxEvent.ChannelDeleted(channelId, serverId)
         val eventJson = Json.encodeToString<ConfluxEvent>(event)
         

@@ -49,6 +49,9 @@ fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionMan
                         val channelId = text.substringAfter("subscribe:")
                         connectionManager.subscribeToChannel(userId, channelId)
                         send(Frame.Text(Json.encodeToString<ConfluxEvent>(ConfluxEvent.SubscriptionSuccess(channelId))))
+                    } else if (text.startsWith("subscribe_server:")) {
+                        val serverId = text.substringAfter("subscribe_server:")
+                        connectionManager.subscribeToServer(userId, serverId)
                     } else {
                         // Handle other incoming text or ignore
                     }

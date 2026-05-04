@@ -120,6 +120,8 @@ object MainState {
         messages = emptyList()
         currentUserPermissions = 0L
 
+        webSocketClient?.subscribeServer(server.id)
+
         try {
             channelList = apiClient.getChannels(server.id)
             currentUserId?.let { userId ->

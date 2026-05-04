@@ -24,6 +24,7 @@ class WebSocketClient(
     private var isClosedManually = false
     private var lastToken: String? = null
     private val subscribedChannels = mutableSetOf<String>()
+    private var subscribedServer: String? = null
 
     fun connect(token: String) {
         lastToken = token
@@ -39,7 +40,8 @@ class WebSocketClient(
                     
                     _events.emit(ConfluxEvent.Connected)
 
-                    // Re-subscribe to previously subscribed channels
+                    // Re-subscribe
+                    subscribedServer?.let { subscribeServer(it) }
                     subscribedChannels.forEach { subscribe(it) }
 
                     for (frame in session!!.incoming) {
@@ -68,6 +70,11 @@ class WebSocketClient(
     suspend fun subscribe(channelId: String) {
         subscribedChannels.add(channelId)
         session?.send(Frame.Text("subscribe:$channelId"))
+    }
+
+    suspend fun subscribeServer(serverId: String) {
+        subscribedServer = serverId
+        session?.send(Frame.Text("subscribe_server:$serverId"))
     }
 
     fun close() {

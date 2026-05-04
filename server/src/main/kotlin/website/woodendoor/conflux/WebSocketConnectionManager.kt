@@ -11,6 +11,9 @@ class WebSocketConnectionManager {
     // channelId -> set of userIds subscribed to it
     private val channelSubscriptions = ConcurrentHashMap<String, MutableSet<String>>()
 
+    // serverId -> set of userIds subscribed to it
+    private val serverSubscriptions = ConcurrentHashMap<String, MutableSet<String>>()
+
     fun addConnection(userId: String, session: DefaultWebSocketServerSession) {
         userSessions.computeIfAbsent(userId) { CopyOnWriteArraySet() }.add(session)
     }
@@ -19,8 +22,6 @@ class WebSocketConnectionManager {
         userSessions[userId]?.remove(session)
         if (userSessions[userId]?.isEmpty() == true) {
             userSessions.remove(userId)
-            // Optionally unsubscribe from all channels if user has no more sessions
-            // But for now, let's keep subscriptions linked to userId
         }
     }
 
@@ -32,8 +33,23 @@ class WebSocketConnectionManager {
         channelSubscriptions[channelId]?.remove(userId)
     }
 
+    fun subscribeToServer(userId: String, serverId: String) {
+        serverSubscriptions.computeIfAbsent(serverId) { CopyOnWriteArraySet() }.add(userId)
+    }
+
+    fun unsubscribeFromServer(userId: String, serverId: String) {
+        serverSubscriptions[serverId]?.remove(userId)
+    }
+
     fun getConnectionsForChannel(channelId: String): List<DefaultWebSocketServerSession> {
         val userIds = channelSubscriptions[channelId] ?: return emptyList()
+        return userIds.flatMap { userId ->
+            userSessions[userId] ?: emptyList()
+        }
+    }
+
+    fun getConnectionsForServer(serverId: String): List<DefaultWebSocketServerSession> {
+        val userIds = serverSubscriptions[serverId] ?: return emptyList()
         return userIds.flatMap { userId ->
             userSessions[userId] ?: emptyList()
         }
