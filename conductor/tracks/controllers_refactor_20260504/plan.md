@@ -26,7 +26,7 @@ Refactor server and channel logic into their respective controllers.
 ## Phase 4: ChatController & WebSocket Integration
 Refactor messaging and history retrieval.
 
-- [ ] Task: Write Unit Tests for `ChatController` (Red Phase).
+- [x] Task: Write Unit Tests for `ChatController` (Red Phase). 1b99abd
 - [ ] Task: Implement `ChatController` handling messages and history (Green Phase).
 - [ ] Task: Refactor `MessageRoutes` and `WebSocket` logic to delegate to `ChatController`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: ChatController & WebSocket Integration' (Protocol in workflow.md)
