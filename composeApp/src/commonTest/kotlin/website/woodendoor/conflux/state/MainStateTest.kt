@@ -14,6 +14,7 @@ import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.ChannelType
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.Message
+import website.woodendoor.conflux.models.ConfluxEvent
 import kotlin.test.*
 
 class MainStateTest {
@@ -21,6 +22,22 @@ class MainStateTest {
     @BeforeTest
     fun setup() {
         MainState.reset()
+    }
+
+    @Test
+    fun testHandleChannelUpdatedEvent() = runTest {
+        val originalChannel = Channel("c1", "s1", "general", ChannelType.TEXT)
+        MainState.channelList = listOf(originalChannel)
+        MainState.selectedChannel = originalChannel
+
+        val updatedChannel = originalChannel.copy(name = "renamed-general")
+        val mockEngine = MockEngine { request -> respond(content = ByteReadChannel(""), status = HttpStatusCode.OK) }
+        val apiClient = ServerApiClient(HttpClient(mockEngine) { install(ContentNegotiation) { json() } }, "http://localhost")
+
+        MainState.handleWebSocketEvent(ConfluxEvent.ChannelUpdated(updatedChannel), apiClient)
+
+        assertEquals("renamed-general", MainState.channelList.first().name)
+        assertEquals("renamed-general", MainState.selectedChannel?.name)
     }
 
     @Test

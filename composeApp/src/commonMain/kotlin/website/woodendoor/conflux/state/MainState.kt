@@ -44,32 +44,7 @@ object MainState {
         wsClient.events.onEach { event ->
             // Ensure state updates happen on the Main thread for Compose to see them
             withContext(Dispatchers.Main) {
-                when (event) {
-                    is ConfluxEvent.Connected -> {
-                        // Sync messages for current channel if selected
-                        selectedChannel?.let { channel ->
-                            try {
-                                messages = apiClient.getMessages(channel.id)
-                            } catch (e: Exception) {
-                                messageFetchError = "Sync failed: ${e.message}"
-                            }
-                        }
-                    }
-                    is ConfluxEvent.NewMessage -> {
-                        if (event.message.channelId == selectedChannel?.id) {
-                            // Avoid duplicates
-                            if (messages.none { it.id == event.message.id }) {
-                                messages = messages + event.message
-                            }
-                        }
-                    }
-                    is ConfluxEvent.Error -> {
-                        // Log or handle error
-                    }
-                    is ConfluxEvent.SubscriptionSuccess -> {
-                        // OK
-                    }
-                }
+                handleWebSocketEvent(event, apiClient)
             }
         }.launchIn(scope)
 
@@ -79,6 +54,50 @@ object MainState {
                 wsClient.connect(token)
             } catch (e: Exception) {
                 // Handle token error
+            }
+        }
+    }
+
+    suspend fun handleWebSocketEvent(event: ConfluxEvent, apiClient: ServerApiClient) {
+        when (event) {
+            is ConfluxEvent.Connected -> {
+                // Sync messages for current channel if selected
+                selectedChannel?.let { channel ->
+                    try {
+                        messages = apiClient.getMessages(channel.id)
+                    } catch (e: Exception) {
+                        messageFetchError = "Sync failed: ${e.message}"
+                    }
+                }
+            }
+            is ConfluxEvent.NewMessage -> {
+                if (event.message.channelId == selectedChannel?.id) {
+                    // Avoid duplicates
+                    if (messages.none { it.id == event.message.id }) {
+                        messages = messages + event.message
+                    }
+                }
+            }
+            is ConfluxEvent.Error -> {
+                // Log or handle error
+            }
+            is ConfluxEvent.SubscriptionSuccess -> {
+                // OK
+            }
+            is ConfluxEvent.ChannelUpdated -> {
+                // Update channel list
+                channelList = channelList.map {
+                    if (it.id == event.channel.id) event.channel else it
+                }
+                // Update selected channel if it's the one being edited
+                if (selectedChannel?.id == event.channel.id) {
+                    selectedChannel = event.channel
+                }
+            }
+            is ConfluxEvent.ChannelDeleted -> {
+                // Remove channel from list
+                channelList = channelList.filter { it.id != event.channelId }
+                // Redirect logic will be handled later
             }
         }
     }
