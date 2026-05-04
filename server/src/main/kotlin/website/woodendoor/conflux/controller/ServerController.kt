@@ -53,6 +53,16 @@ class ServerController(
         return OperationResult.Success(servers)
     }
 
+    suspend fun getMembers(serverId: String): OperationResult<List<User>> {
+        val members = serverRepository.getMembers(serverId)
+        return OperationResult.Success(members)
+    }
+
+    suspend fun getPermissionsForMember(serverId: String, userId: String): OperationResult<Long> {
+        val permissions = serverRepository.getPermissionsForMember(serverId, userId)
+        return OperationResult.Success(permissions)
+    }
+
     suspend fun joinServer(userId: String, serverId: String): OperationResult<Unit> {
         val server = serverRepository.getServer(serverId) ?: return OperationResult.Failure.NotFound("Server not found")
         

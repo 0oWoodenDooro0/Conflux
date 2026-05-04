@@ -52,6 +52,27 @@ class ServerControllerTest {
     }
 
     @Test
+    fun `test getMembers`() = runBlocking {
+        val members = listOf(User("user-1", "user", "1234"))
+        coEvery { serverRepository.getMembers("server-1") } returns members
+        
+        val result = controller.getMembers("server-1")
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(members, (result as OperationResult.Success<List<User>>).data)
+    }
+
+    @Test
+    fun `test getPermissionsForMember`() = runBlocking {
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns 0b11L
+        
+        val result = controller.getPermissionsForMember("server-1", "user-1")
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(0b11L, (result as OperationResult.Success<Long>).data)
+    }
+
+    @Test
     fun `test joinServer success`() = runBlocking {
         coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
         coEvery { serverRepository.joinServer("user-1", "server-1") } returns true

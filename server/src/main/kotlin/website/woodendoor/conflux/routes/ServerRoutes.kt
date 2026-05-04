@@ -12,8 +12,7 @@ import website.woodendoor.conflux.models.*
 import java.util.*
 
 fun Route.serverRoutes(
-    serverController: ServerController,
-    serverRepository: ServerRepository
+    serverController: ServerController
 ) {
     route("/api/servers") {
         get {
@@ -24,8 +23,8 @@ fun Route.serverRoutes(
 
         get("/{id}/members") {
             val serverId = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
-            val members = serverRepository.getMembers(serverId)
-            call.respond(HttpStatusCode.OK, members)
+            val result = serverController.getMembers(serverId)
+            call.respond(result)
         }
 
         post {
@@ -34,14 +33,14 @@ fun Route.serverRoutes(
                 val result = serverController.createServer(request)
                 call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+                call.respond(status = HttpStatusCode.BadRequest, message = "Invalid request: ${e.message}")
             }
         }
 
         post("/{id}/join") {
             val serverId = call.parameters["id"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
-            
+
             val result = serverController.joinServer(userId, serverId)
             call.respond(result, HttpStatusCode.Created)
         }
@@ -49,12 +48,12 @@ fun Route.serverRoutes(
         get("/{id}/members/{userId}/permissions") {
             val serverId = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.parameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
-            
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            call.respond(HttpStatusCode.OK, permissions)
+            val result = serverController.getPermissionsForMember(serverId, userId)
+            call.respond(result)
         }
     }
 }
+
 
 fun Route.channelRoutes(
     channelController: ChannelController,
@@ -122,12 +121,11 @@ fun Route.roleRoutes(roleController: RoleController) {
 
             try {
                 val request = call.receive<UpdateRoleRequest>()
-                val getResult = roleController.getRole(roleId)
-                if (getResult is OperationResult.Failure) {
-                    return@patch call.respond(getResult)
+                val existingRole = when (val getResult = roleController.getRole(roleId)) {
+                    is OperationResult.Success -> getResult.data
+                    is OperationResult.Failure -> return@patch call.respond(getResult)
                 }
                 
-                val existingRole = (getResult as OperationResult.Success<Role>).data
                 val updatedRole = existingRole.copy(
                     name = request.name ?: existingRole.name,
                     permissions = request.permissions ?: existingRole.permissions,

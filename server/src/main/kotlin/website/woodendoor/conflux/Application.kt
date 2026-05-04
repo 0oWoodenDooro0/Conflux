@@ -96,7 +96,7 @@ fun Application.module() {
                 call.respondText("Database connection failed: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
             }
         }
-        serverRoutes(serverController, serverRepository)
+        serverRoutes(serverController)
         channelRoutes(channelController, roleController)
         roleRoutes(roleController)
         userRoutes(userController)
