@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import website.woodendoor.conflux.controller.OperationResult
 import website.woodendoor.conflux.models.*
 import kotlin.test.*
 
@@ -59,5 +60,15 @@ class ChannelManagementApiTest {
             parameter("userId", memberId)
         }
         assertEquals(HttpStatusCode.Forbidden, memberDeleteChannelResponse.status, "Member without permission should be rejected on delete")
+
+        // 6. Owner should be able to edit channel
+        val ownerEditChannelResponse = client.patch("/api/servers/$serverId/channels/$channelId") {
+            parameter("userId", ownerId)
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            setBody(Json.encodeToString(UpdateChannelRequest(name = "owner-renamed-channel")))
+        }
+        assertEquals(HttpStatusCode.OK, ownerEditChannelResponse.status, "Owner should be able to edit channel")
+        val updatedChannel = Json.decodeFromString<Channel>(ownerEditChannelResponse.bodyAsText())
+        assertEquals("owner-renamed-channel", updatedChannel.name)
     }
 }

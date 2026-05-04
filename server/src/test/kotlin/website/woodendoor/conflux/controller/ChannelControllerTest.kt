@@ -7,7 +7,9 @@ import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.CreateChannelRequest
+import website.woodendoor.conflux.models.UpdateChannelRequest
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.WebSocketConnectionManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,7 +17,36 @@ import kotlin.test.assertTrue
 class ChannelControllerTest {
     private val channelRepository = mockk<ChannelRepository>()
     private val serverRepository = mockk<ServerRepository>()
-    private val controller = ChannelController(channelRepository, serverRepository)
+    private val connectionManager = mockk<WebSocketConnectionManager>(relaxed = true)
+    private val controller = ChannelController(channelRepository, serverRepository, connectionManager)
+
+    @Test
+    fun `test editChannel success`() = runBlocking {
+        val channelId = "channel-1"
+        val request = UpdateChannelRequest("renamed-general")
+        val existingChannel = Channel(channelId, "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        val updatedChannel = existingChannel.copy(name = "renamed-general")
+        
+        coEvery { channelRepository.getChannel(channelId) } returns existingChannel
+        coEvery { channelRepository.updateChannel(any()) } returns true
+        
+        val result = controller.editChannel(channelId, request)
+        
+        assertTrue(result is OperationResult.Success<*>)
+        assertEquals(updatedChannel, (result as OperationResult.Success<Channel>).data)
+    }
+
+    @Test
+    fun `test editChannel not found`() = runBlocking {
+        val channelId = "channel-1"
+        val request = UpdateChannelRequest("renamed-general")
+        
+        coEvery { channelRepository.getChannel(channelId) } returns null
+        
+        val result = controller.editChannel(channelId, request)
+        
+        assertTrue(result is OperationResult.Failure.NotFound)
+    }
 
     @Test
     fun `test createChannel success`() = runBlocking {

@@ -77,7 +77,7 @@ fun Application.module() {
     val connectionManager = WebSocketConnectionManager()
 
     val serverController = ServerController(serverRepository, userRepository)
-    val channelController = ChannelController(channelRepository, serverRepository)
+    val channelController = ChannelController(channelRepository, serverRepository, connectionManager)
     val roleController = RoleController(serverRepository)
     val chatController = ChatController(messageRepository, channelRepository, roleController, connectionManager)
     val userController = UserController(userRepository)

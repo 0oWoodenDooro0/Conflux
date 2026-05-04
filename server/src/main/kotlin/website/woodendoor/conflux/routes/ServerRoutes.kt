@@ -92,7 +92,13 @@ fun Route.channelRoutes(
                 return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
-            call.respond(HttpStatusCode.NotImplemented, "Not implemented yet")
+            try {
+                val request = call.receive<UpdateChannelRequest>()
+                val result = channelController.editChannel(channelId, request)
+                call.respond(result)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
         }
 
         delete("/{channelId}") {
