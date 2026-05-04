@@ -4,9 +4,9 @@
 - [x] Task: Implement backend authorization logic [0baed80]
     - [x] Write failing test for missing `CHANNEL_MANAGEMENT` permission on Edit/Delete Channel routes.
     - [x] Implement permission check in `ChannelController` or relevant routing layer.
-- [ ] Task: Implement Edit Channel API
-    - [ ] Write failing test for renaming a channel via API.
-    - [ ] Implement Edit API in `ChannelController` (update DB, broadcast WebSocket event).
+- [x] Task: Implement Edit Channel API [cc288e4]
+    - [x] Write failing test for renaming a channel via API.
+    - [x] Implement Edit API in `ChannelController` (update DB, broadcast WebSocket event).
 - [ ] Task: Implement Delete Channel API
     - [ ] Write failing test for deleting a channel via API.
     - [ ] Implement Delete API in `ChannelController` (remove from DB, broadcast WebSocket event).
