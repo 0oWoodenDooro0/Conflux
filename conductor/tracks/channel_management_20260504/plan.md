@@ -1,9 +1,9 @@
 # Implementation Plan: Channel Management
 
 ## Phase 1: Backend API & Authorization
-- [ ] Task: Implement backend authorization logic
-    - [ ] Write failing test for missing `CHANNEL_MANAGEMENT` permission on Edit/Delete Channel routes.
-    - [ ] Implement permission check in `ChannelController` or relevant routing layer.
+- [x] Task: Implement backend authorization logic [0baed80]
+    - [x] Write failing test for missing `CHANNEL_MANAGEMENT` permission on Edit/Delete Channel routes.
+    - [x] Implement permission check in `ChannelController` or relevant routing layer.
 - [ ] Task: Implement Edit Channel API
     - [ ] Write failing test for renaming a channel via API.
     - [ ] Implement Edit API in `ChannelController` (update DB, broadcast WebSocket event).
