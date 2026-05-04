@@ -39,4 +39,35 @@ class ServerControllerTest {
         
         assertTrue(result is OperationResult.Failure.NotFound)
     }
+
+    @Test
+    fun `test getServersForUser`() = runBlocking {
+        val servers = listOf(Server("server-1", "Test Server", "owner-1"))
+        coEvery { serverRepository.getServersForUser("user-1") } returns servers
+        
+        val result = controller.getServersForUser("user-1")
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(servers, (result as OperationResult.Success<List<Server>>).data)
+    }
+
+    @Test
+    fun `test joinServer success`() = runBlocking {
+        coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
+        coEvery { serverRepository.joinServer("user-1", "server-1") } returns true
+        
+        val result = controller.joinServer("user-1", "server-1")
+        
+        assertTrue(result is OperationResult.Success)
+    }
+
+    @Test
+    fun `test joinServer already member`() = runBlocking {
+        coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
+        coEvery { serverRepository.joinServer("user-1", "server-1") } returns false
+        
+        val result = controller.joinServer("user-1", "server-1")
+        
+        assertTrue(result is OperationResult.Failure.Conflict)
+    }
 }

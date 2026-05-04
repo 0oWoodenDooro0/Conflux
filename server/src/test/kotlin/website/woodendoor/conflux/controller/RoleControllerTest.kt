@@ -46,4 +46,49 @@ class RoleControllerTest {
         assertTrue(controller.hasPermission("server-1", "user-1", 0b10L))
         assertTrue(!controller.hasPermission("server-1", "user-1", 0b100L))
     }
+
+    @Test
+    fun `test getRoles`() = runBlocking {
+        val roles = listOf(Role("role-1", "Admin", 1L))
+        coEvery { serverRepository.getRoles("server-1") } returns roles
+        
+        val result = controller.getRoles("server-1")
+        assertTrue(result is OperationResult.Success)
+        assertEquals(roles, (result as OperationResult.Success<List<Role>>).data)
+    }
+
+    @Test
+    fun `test getRole success`() = runBlocking {
+        val role = Role("role-1", "Admin", 1L)
+        coEvery { serverRepository.getRole("role-1") } returns role
+        
+        val result = controller.getRole("role-1")
+        assertTrue(result is OperationResult.Success)
+        assertEquals(role, (result as OperationResult.Success<Role>).data)
+    }
+
+    @Test
+    fun `test updateRole success`() = runBlocking {
+        val role = Role("role-1", "Admin", 1L)
+        coEvery { serverRepository.updateRole(role) } returns true
+        
+        val result = controller.updateRole(role)
+        assertTrue(result is OperationResult.Success)
+    }
+
+    @Test
+    fun `test assignRoleToMember success`() = runBlocking {
+        coEvery { serverRepository.assignRoleToMember("server-1", "user-1", "role-1") } returns true
+        
+        val result = controller.assignRoleToMember("server-1", "user-1", "role-1")
+        assertTrue(result is OperationResult.Success)
+    }
+
+    @Test
+    fun `test removeRoleFromMember success`() = runBlocking {
+        coEvery { serverRepository.removeRoleFromMember("server-1", "user-1", "role-1") } returns true
+        
+        val result = controller.removeRoleFromMember("server-1", "user-1", "role-1")
+        assertTrue(result is OperationResult.Success)
+    }
 }

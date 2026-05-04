@@ -53,6 +53,26 @@ class ChannelControllerTest {
         val result = controller.getChannelsByServer("server-1")
         
         assertTrue(result is OperationResult.Success)
-        assertEquals(channels, result.data)
+        assertEquals(channels, (result as OperationResult.Success<List<Channel>>).data)
+    }
+
+    @Test
+    fun `test getChannel success`() = runBlocking {
+        val channel = Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        coEvery { channelRepository.getChannel("channel-1") } returns channel
+        
+        val result = controller.getChannel("channel-1")
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(channel, (result as OperationResult.Success<Channel>).data)
+    }
+
+    @Test
+    fun `test getChannel not found`() = runBlocking {
+        coEvery { channelRepository.getChannel("channel-1") } returns null
+        
+        val result = controller.getChannel("channel-1")
+        
+        assertTrue(result is OperationResult.Failure.NotFound)
     }
 }

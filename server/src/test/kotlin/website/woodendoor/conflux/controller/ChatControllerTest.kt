@@ -56,6 +56,37 @@ class ChatControllerTest {
         val result = controller.getMessagesByChannel("channel-1")
         
         assertTrue(result is OperationResult.Success)
-        assertEquals(messages, result.data)
+        assertEquals(messages, (result as OperationResult.Success<List<Message>>).data)
+    }
+
+    @Test
+    fun `test sendMessage channel not found`() = runBlocking {
+        val request = SendMessageRequest("user-1", "Hello")
+        coEvery { channelRepository.getChannel("channel-1") } returns null
+        
+        val result = controller.sendMessage("channel-1", request)
+        assertTrue(result is OperationResult.Failure.NotFound)
+    }
+
+    @Test
+    fun `test sendMessage too long`() = runBlocking {
+        val request = SendMessageRequest("user-1", "a".repeat(2001))
+        val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
+        coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
+        
+        val result = controller.sendMessage("channel-1", request)
+        assertTrue(result is OperationResult.Failure.BadRequest)
+    }
+
+    @Test
+    fun `test sendMessage blank content`() = runBlocking {
+        val request = SendMessageRequest("user-1", "   ")
+        val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
+        coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
+        
+        val result = controller.sendMessage("channel-1", request)
+        assertTrue(result is OperationResult.Failure.BadRequest)
     }
 }
