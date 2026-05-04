@@ -4,7 +4,7 @@
 Establish the common error handling and result patterns used by all controllers.
 
 - [x] Task: Define `OperationResult` sealed class for business logic errors. ec4acc1
-- [ ] Task: Implement base DTO mapping utilities.
+- [x] Task: Implement base DTO mapping utilities. ddae0d4
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Result Types' (Protocol in workflow.md)
 
 ## Phase 2: RoleController & Permissions
