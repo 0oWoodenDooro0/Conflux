@@ -13,14 +13,14 @@
 - [x] Task: Conductor - User Manual Verification 'Backend API & Authorization' (Protocol in workflow.md) [e953171]
 
 ## Phase 2: Frontend State & WebSocket Handling
-- [~] Task: Handle Edit Channel WebSocket Event
-    - [ ] Write unit test for frontend state update on channel renamed event.
-    - [ ] Implement frontend state logic to update channel list upon receiving edit event.
-- [ ] Task: Handle Delete Channel WebSocket Event & Redirection
-    - [ ] Write unit test for frontend state update on channel deleted event.
-    - [ ] Implement frontend state logic to remove channel from list.
-    - [ ] Implement redirection logic: if active channel is deleted, switch to the first available channel in the server.
-- [ ] Task: Conductor - User Manual Verification 'Frontend State & WebSocket Handling' (Protocol in workflow.md)
+- [x] Task: Handle Edit Channel WebSocket Event [07e51eb]
+    - [x] Write unit test for frontend state update on channel renamed event.
+    - [x] Implement frontend state logic to update channel list upon receiving edit event.
+- [x] Task: Handle Delete Channel WebSocket Event & Redirection [7c80691]
+    - [x] Write unit test for frontend state update on channel deleted event.
+    - [x] Implement frontend state logic to remove channel from list.
+    - [x] Implement redirection logic: if active channel is deleted, switch to the first available channel in the server.
+- [~] Task: Conductor - User Manual Verification 'Frontend State & WebSocket Handling' (Protocol in workflow.md)
 
 ## Phase 3: UI Implementation
 - [ ] Task: Implement ChannelSidebar Gear Icon
