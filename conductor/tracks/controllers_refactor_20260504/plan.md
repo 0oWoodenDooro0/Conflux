@@ -12,7 +12,7 @@ Focus on the new `RoleController` and moving permission logic.
 
 - [x] Task: Write Unit Tests for `RoleController` (Red Phase). d1d1a81
 - [x] Task: Implement `RoleController` with Role management and Permission checks (Green Phase). 418d3a8
-- [ ] Task: Refactor existing permission checks to use `RoleController` logic.
+- [x] Task: Refactor existing permission checks to use `RoleController` logic. f80b24b
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: RoleController & Permissions' (Protocol in workflow.md)
 
 ## Phase 3: Server & Channel Controllers
