@@ -7,13 +7,13 @@ Establish the common error handling and result patterns used by all controllers.
 - [x] Task: Implement base DTO mapping utilities. ddae0d4
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Result Types' (Protocol in workflow.md) 3c51e9d
 
-## Phase 2: RoleController & Permissions
+## Phase 2: RoleController & Permissions [checkpoint: e602138]
 Focus on the new `RoleController` and moving permission logic.
 
 - [x] Task: Write Unit Tests for `RoleController` (Red Phase). d1d1a81
 - [x] Task: Implement `RoleController` with Role management and Permission checks (Green Phase). 418d3a8
 - [x] Task: Refactor existing permission checks to use `RoleController` logic. f80b24b
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: RoleController & Permissions' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: RoleController & Permissions' (Protocol in workflow.md) e602138
 
 ## Phase 3: Server & Channel Controllers
 Refactor server and channel logic into their respective controllers.
