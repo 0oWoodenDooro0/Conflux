@@ -3,7 +3,7 @@
 ## Phase 1: Foundation & Result Types
 Establish the common error handling and result patterns used by all controllers.
 
-- [ ] Task: Define `OperationResult` sealed class for business logic errors.
+- [x] Task: Define `OperationResult` sealed class for business logic errors. ec4acc1
 - [ ] Task: Implement base DTO mapping utilities.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Result Types' (Protocol in workflow.md)
 
