@@ -35,3 +35,6 @@
     - [x] Implement Rename input and hook to Edit Channel API.
     - [x] Implement Delete button, confirmation dialog, and hook to Delete Channel API.
 - [x] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md) [397506e]
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions: Expand WebSocket broadcasting scope to server-level [cde8d43]
