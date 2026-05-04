@@ -15,13 +15,13 @@ Focus on the new `RoleController` and moving permission logic.
 - [x] Task: Refactor existing permission checks to use `RoleController` logic. f80b24b
 - [x] Task: Conductor - User Manual Verification 'Phase 2: RoleController & Permissions' (Protocol in workflow.md) e602138
 
-## Phase 3: Server & Channel Controllers
+## Phase 3: Server & Channel Controllers [checkpoint: 056f1fd]
 Refactor server and channel logic into their respective controllers.
 
 - [x] Task: Write Unit Tests for `ServerController` and `ChannelController` (Red Phase). 2693f8a
 - [x] Task: Implement `ServerController` and `ChannelController` (Green Phase). b05bff6
 - [x] Task: Refactor `ServerRoutes` and `ChannelRoutes` to delegate to controllers. 3ef21f1
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Server & Channel Controllers' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Server & Channel Controllers' (Protocol in workflow.md) 056f1fd
 
 ## Phase 4: ChatController & WebSocket Integration
 Refactor messaging and history retrieval.
