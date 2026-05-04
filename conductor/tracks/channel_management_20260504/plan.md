@@ -22,7 +22,7 @@
     - [x] Implement redirection logic: if active channel is deleted, switch to the first available channel in the server.
 - [x] Task: Conductor - User Manual Verification 'Frontend State & WebSocket Handling' (Protocol in workflow.md) [9273f75]
 
-## Phase 3: UI Implementation
+## Phase 3: UI Implementation [checkpoint: 397506e]
 - [x] Task: Implement ChannelSidebar Gear Icon [5efe2b7]
     - [x] Write unit test/UI test for gear icon visibility based on `CHANNEL_MANAGEMENT` permission.
     - [x] Implement UI for gear icon in `ChannelSidebar`.
@@ -34,4 +34,4 @@
     - [x] Write UI test for Delete button and confirmation dialog.
     - [x] Implement Rename input and hook to Edit Channel API.
     - [x] Implement Delete button, confirmation dialog, and hook to Delete Channel API.
-- [~] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md) [397506e]
