@@ -28,7 +28,8 @@ fun ChannelSidebar(
     canManageRoles: Boolean = false,
     onCreateChannelClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onChannelClick: (Channel) -> Unit
+    onChannelClick: (Channel) -> Unit,
+    onChannelSettingsClick: (Channel) -> Unit = {}
 ) {
     val copyToClipboard = rememberClipboardHelper()
 
@@ -80,7 +81,9 @@ fun ChannelSidebar(
                     ChannelItem(
                         channel = channel,
                         isSelected = channel.id == selectedChannelId,
-                        onClick = { onChannelClick(channel) }
+                        canManage = canCreateChannel,
+                        onClick = { onChannelClick(channel) },
+                        onSettingsClick = { onChannelSettingsClick(channel) }
                     )
                 }
             }
@@ -89,7 +92,13 @@ fun ChannelSidebar(
 }
 
 @Composable
-fun ChannelItem(channel: Channel, isSelected: Boolean, onClick: () -> Unit) {
+fun ChannelItem(
+    channel: Channel,
+    isSelected: Boolean,
+    canManage: Boolean = false,
+    onClick: () -> Unit,
+    onSettingsClick: () -> Unit = {}
+) {
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -97,7 +106,7 @@ fun ChannelItem(channel: Channel, isSelected: Boolean, onClick: () -> Unit) {
         shape = RoundedCornerShape(4.dp)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -110,8 +119,22 @@ fun ChannelItem(channel: Channel, isSelected: Boolean, onClick: () -> Unit) {
                 text = channel.name,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface
+                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
             )
+            if (canManage && isSelected) {
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Settings,
+                        contentDescription = "Channel Settings",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

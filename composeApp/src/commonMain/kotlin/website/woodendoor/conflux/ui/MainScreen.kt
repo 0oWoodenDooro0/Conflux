@@ -24,6 +24,7 @@ fun MainScreen() {
     var isJoiningServer by remember { mutableStateOf(false) }
     var isCreatingChannel by remember { mutableStateOf(false) }
     var isShowingSettings by remember { mutableStateOf(false) }
+    var channelToEdit by remember { mutableStateOf<website.woodendoor.conflux.models.Channel?>(null) }
     val scope = rememberCoroutineScope()
 
     val servers = MainState.serverList
@@ -91,6 +92,9 @@ fun MainScreen() {
                         scope.launch {
                             MainState.selectChannel(channel, apiClient)
                         }
+                    },
+                    onChannelSettingsClick = { channel ->
+                        channelToEdit = channel
                     }
                 )
             }
@@ -131,6 +135,12 @@ fun MainScreen() {
                         server = selectedServer,
                         apiClient = apiClient,
                         onDismissRequest = { isShowingSettings = false }
+                    )
+                } else if (channelToEdit != null) {
+                    ChannelSettingsDialog(
+                        channel = channelToEdit!!,
+                        apiClient = apiClient,
+                        onDismissRequest = { channelToEdit = null }
                     )
                 } else if (MainState.selectedChannel != null) {
                     ChatRoom(apiClient = apiClient)

@@ -57,6 +57,21 @@ class ServerApiClient(
         return client.get("$baseUrl/api/servers/$serverId/channels").body()
     }
 
+    suspend fun updateChannel(serverId: String, channelId: String, userId: String, name: String? = null, type: ChannelType? = null, topic: String? = null): Channel {
+        return client.patch("$baseUrl/api/servers/$serverId/channels/$channelId") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(UpdateChannelRequest(name, type, topic))
+        }.body()
+    }
+
+    suspend fun deleteChannel(serverId: String, channelId: String, userId: String): Boolean {
+        val response = client.delete("$baseUrl/api/servers/$serverId/channels/$channelId") {
+            parameter("userId", userId)
+        }
+        return response.status.isSuccess()
+    }
+
     suspend fun getMembers(serverId: String): List<User> {
         return client.get("$baseUrl/api/servers/$serverId/members").body()
     }
