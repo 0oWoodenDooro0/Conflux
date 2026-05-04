@@ -33,11 +33,13 @@ class ServerController(private val serverRepository: ServerRepository) {
     }
 
     suspend fun joinServer(userId: String, serverId: String): OperationResult<Unit> {
+        val server = serverRepository.getServer(serverId) ?: return OperationResult.Failure.NotFound("Server not found")
+        
         val joined = serverRepository.joinServer(userId, serverId)
         return if (joined) {
             OperationResult.Success(Unit)
         } else {
-            OperationResult.Failure.BadRequest("Failed to join server")
+            OperationResult.Failure.Conflict("Already a member or owner")
         }
     }
 }

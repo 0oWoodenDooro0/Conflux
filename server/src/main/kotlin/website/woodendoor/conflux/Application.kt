@@ -12,6 +12,9 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 
 import website.woodendoor.conflux.database.DatabaseFactory
+import website.woodendoor.conflux.controller.ChannelController
+import website.woodendoor.conflux.controller.RoleController
+import website.woodendoor.conflux.controller.ServerController
 import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
 import website.woodendoor.conflux.database.repositories.ExposedServerRepository
@@ -71,6 +74,10 @@ fun Application.module() {
     val tokenManager = WebSocketAuthTokenManager()
     val connectionManager = WebSocketConnectionManager()
 
+    val serverController = ServerController(serverRepository)
+    val channelController = ChannelController(channelRepository, serverRepository)
+    val roleController = RoleController(serverRepository)
+
     routing {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}")
@@ -85,9 +92,9 @@ fun Application.module() {
                 call.respondText("Database connection failed: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
             }
         }
-        serverRoutes(serverRepository, userRepository)
-        channelRoutes(channelRepository, serverRepository)
-        roleRoutes(serverRepository)
+        serverRoutes(serverController, userRepository, serverRepository)
+        channelRoutes(channelController, roleController)
+        roleRoutes(roleController)
         userRoutes(userRepository)
         messageRoutes(messageRepository, channelRepository, serverRepository, connectionManager)
         webSocketRoutes(tokenManager, connectionManager)

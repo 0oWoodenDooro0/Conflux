@@ -5,23 +5,22 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import website.woodendoor.conflux.database.repositories.ChannelRepository
+import website.woodendoor.conflux.controller.*
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.database.repositories.UserRepository
-import website.woodendoor.conflux.models.Channel
-import website.woodendoor.conflux.models.ChannelType
-import website.woodendoor.conflux.models.CreateChannelRequest
-import website.woodendoor.conflux.models.CreateServerRequest
-import website.woodendoor.conflux.models.Server
-import website.woodendoor.conflux.models.User
-import java.util.UUID
+import website.woodendoor.conflux.models.*
+import java.util.*
 
-fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserRepository) {
+fun Route.serverRoutes(
+    serverController: ServerController,
+    userRepository: UserRepository,
+    serverRepository: ServerRepository
+) {
     route("/api/servers") {
         get {
             val userId = call.request.queryParameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
-            val servers = serverRepository.getServersForUser(userId)
-            call.respond(HttpStatusCode.OK, servers)
+            val result = serverController.getServersForUser(userId)
+            call.respond(result)
         }
 
         get("/{id}/members") {
@@ -34,9 +33,7 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
             try {
                 val request = call.receive<CreateServerRequest>()
                 
-                // TODO: Replace with proper authentication check. 
-                // Currently auto-creates user if not found to facilitate development.
-                // Resolve or create owner with UUID
+                // Keep the owner resolution logic here for now as it involves UserRepository
                 val owner = userRepository.getUser(request.ownerId) ?: userRepository.findByUsername(request.ownerId)
                 val resolvedOwnerId = if (owner == null) {
                     val newUserId = UUID.randomUUID().toString()
@@ -52,18 +49,9 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
                     owner.id
                 }
 
-                val server = Server(
-                    id = UUID.randomUUID().toString(),
-                    name = request.name,
-                    ownerId = resolvedOwnerId,
-                    icon = request.iconUrl
-                )
-                val created = serverRepository.createServer(server)
-                if (created != null) {
-                    call.respond(HttpStatusCode.Created, created)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create server")
-                }
+                val finalRequest = request.copy(ownerId = resolvedOwnerId)
+                val result = serverController.createServer(finalRequest)
+                call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -73,17 +61,8 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
             val serverId = call.parameters["id"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            val server = serverRepository.getServer(serverId)
-            if (server == null) {
-                return@post call.respond(HttpStatusCode.NotFound, "Server not found")
-            }
-
-            val result = serverRepository.joinServer(userId, serverId)
-            if (result) {
-                call.respond(HttpStatusCode.Created, "Joined successfully")
-            } else {
-                call.respond(HttpStatusCode.Conflict, "Already a member or owner")
-            }
+            val result = serverController.joinServer(userId, serverId)
+            call.respond(result, HttpStatusCode.Created)
         }
 
         get("/{id}/members/{userId}/permissions") {
@@ -96,45 +75,29 @@ fun Route.serverRoutes(serverRepository: ServerRepository, userRepository: UserR
     }
 }
 
-fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: ServerRepository) {
+fun Route.channelRoutes(
+    channelController: ChannelController,
+    roleController: RoleController
+) {
     route("/api/servers/{serverId}/channels") {
         get {
             val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
-            if (serverRepository.getServer(serverId) == null) {
-                return@get call.respond(HttpStatusCode.NotFound, "Server not found")
-            }
-            val channels = channelRepository.getChannelsByServer(serverId)
-            call.respond(HttpStatusCode.OK, channels)
+            val result = channelController.getChannelsByServer(serverId)
+            call.respond(result)
         }
 
         post {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            if (serverRepository.getServer(serverId) == null) {
-                return@post call.respond(HttpStatusCode.NotFound, "Server not found")
-            }
-
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT) == 0L) {
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
                 return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
             try {
                 val request = call.receive<CreateChannelRequest>()
-                val channel = Channel(
-                    id = UUID.randomUUID().toString(),
-                    serverId = serverId,
-                    name = request.name,
-                    type = request.type,
-                    topic = request.topic
-                )
-                val created = channelRepository.createChannel(channel)
-                if (created != null) {
-                    call.respond(HttpStatusCode.Created, created)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create channel")
-                }
+                val result = channelController.createChannel(serverId, request)
+                call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -142,38 +105,26 @@ fun Route.channelRoutes(channelRepository: ChannelRepository, serverRepository: 
     }
 }
 
-fun Route.roleRoutes(serverRepository: ServerRepository) {
+fun Route.roleRoutes(roleController: RoleController) {
     route("/api/servers/{serverId}/roles") {
         get {
             val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
-            val roles = serverRepository.getRoles(serverId)
-            call.respond(HttpStatusCode.OK, roles)
+            val result = roleController.getRoles(serverId)
+            call.respond(result)
         }
 
         post {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
                 return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
             try {
-                val request = call.receive<website.woodendoor.conflux.models.CreateRoleRequest>()
-                val role = website.woodendoor.conflux.models.Role(
-                    id = UUID.randomUUID().toString(),
-                    name = request.name,
-                    permissions = request.permissions,
-                    color = request.color,
-                    priorityLevel = request.priorityLevel
-                )
-                val created = serverRepository.createRole(serverId, role)
-                if (created != null) {
-                    call.respond(HttpStatusCode.Created, created)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create role")
-                }
+                val request = call.receive<CreateRoleRequest>()
+                val result = roleController.createRole(serverId, request)
+                call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -184,15 +135,18 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val roleId = call.parameters["roleId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing roleId")
 
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if (!website.woodendoor.conflux.models.ConfluxPermission.hasPermission(permissions, website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT)) {
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
                 return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
             try {
-                val request = call.receive<website.woodendoor.conflux.models.UpdateRoleRequest>()
-                val existingRole = serverRepository.getRole(roleId) ?: return@patch call.respond(HttpStatusCode.NotFound, "Role not found")
+                val request = call.receive<UpdateRoleRequest>()
+                val getResult = roleController.getRole(roleId)
+                if (getResult is OperationResult.Failure) {
+                    return@patch call.respond(getResult)
+                }
                 
+                val existingRole = (getResult as OperationResult.Success<Role>).data
                 val updatedRole = existingRole.copy(
                     name = request.name ?: existingRole.name,
                     permissions = request.permissions ?: existingRole.permissions,
@@ -200,12 +154,8 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
                     priorityLevel = request.priorityLevel ?: existingRole.priorityLevel
                 )
                 
-                val success = serverRepository.updateRole(updatedRole)
-                if (success) {
-                    call.respond(HttpStatusCode.OK, updatedRole)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to update role")
-                }
+                val result = roleController.updateRole(updatedRole)
+                call.respond(result)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -215,19 +165,14 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
                 return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
             try {
-                val request = call.receive<website.woodendoor.conflux.models.AssignRoleRequest>()
-                val result = serverRepository.assignRoleToMember(serverId, request.userId, request.roleId)
-                if (result) {
-                    call.respond(HttpStatusCode.OK, "Role assigned successfully")
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to assign role")
-                }
+                val request = call.receive<AssignRoleRequest>()
+                val result = roleController.assignRoleToMember(serverId, request.userId, request.roleId)
+                call.respond(result)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -237,19 +182,14 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            val permissions = serverRepository.getPermissionsForMember(serverId, userId)
-            if ((permissions and website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT) == 0L) {
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
                 return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
             try {
-                val request = call.receive<website.woodendoor.conflux.models.AssignRoleRequest>()
-                val result = serverRepository.removeRoleFromMember(serverId, request.userId, request.roleId)
-                if (result) {
-                    call.respond(HttpStatusCode.OK, "Role removed successfully")
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to remove role")
-                }
+                val request = call.receive<AssignRoleRequest>()
+                val result = roleController.removeRoleFromMember(serverId, request.userId, request.roleId)
+                call.respond(result)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
@@ -259,8 +199,8 @@ fun Route.roleRoutes(serverRepository: ServerRepository) {
             val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val roleId = call.parameters["roleId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing roleId")
             
-            val members = serverRepository.getMembersWithRole(serverId, roleId)
-            call.respond(HttpStatusCode.OK, members)
+            val result = roleController.getMembersWithRole(serverId, roleId)
+            call.respond(result)
         }
     }
 }

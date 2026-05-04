@@ -8,6 +8,7 @@ sealed class OperationResult<out T> {
         class Unauthorized(message: String) : Failure(message)
         class Forbidden(message: String) : Failure(message)
         class BadRequest(message: String) : Failure(message)
+        class Conflict(message: String) : Failure(message)
         class InternalError(message: String) : Failure(message)
     }
 }
