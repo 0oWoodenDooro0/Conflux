@@ -28,7 +28,7 @@ Refactor messaging and history retrieval.
 
 - [x] Task: Write Unit Tests for `ChatController` (Red Phase). 1b99abd
 - [x] Task: Implement `ChatController` handling messages and history (Green Phase). c02d642
-- [~] Task: Refactor `MessageRoutes` and `WebSocket` logic to delegate to `ChatController`.
+- [x] Task: Refactor `MessageRoutes` and `WebSocket` logic to delegate to `ChatController`. e55bd79
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: ChatController & WebSocket Integration' (Protocol in workflow.md)
 
 ## Phase 5: Final Integration & Cleanup
