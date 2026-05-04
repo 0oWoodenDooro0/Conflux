@@ -13,6 +13,7 @@ import io.ktor.server.websocket.*
 
 import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.controller.ChannelController
+import website.woodendoor.conflux.controller.ChatController
 import website.woodendoor.conflux.controller.RoleController
 import website.woodendoor.conflux.controller.ServerController
 import website.woodendoor.conflux.database.models.*
@@ -77,6 +78,7 @@ fun Application.module() {
     val serverController = ServerController(serverRepository)
     val channelController = ChannelController(channelRepository, serverRepository)
     val roleController = RoleController(serverRepository)
+    val chatController = ChatController(messageRepository, channelRepository, roleController, connectionManager)
 
     routing {
         get("/") {
@@ -96,7 +98,7 @@ fun Application.module() {
         channelRoutes(channelController, roleController)
         roleRoutes(roleController)
         userRoutes(userRepository)
-        messageRoutes(messageRepository, channelRepository, serverRepository, connectionManager)
+        messageRoutes(chatController)
         webSocketRoutes(tokenManager, connectionManager)
     }
 }
