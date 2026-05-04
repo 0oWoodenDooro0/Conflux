@@ -1,11 +1,11 @@
 # Implementation Plan: Application Layer Controllers
 
-## Phase 1: Foundation & Result Types
+## Phase 1: Foundation & Result Types [checkpoint: 3c51e9d]
 Establish the common error handling and result patterns used by all controllers.
 
 - [x] Task: Define `OperationResult` sealed class for business logic errors. ec4acc1
 - [x] Task: Implement base DTO mapping utilities. ddae0d4
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Result Types' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Result Types' (Protocol in workflow.md) 3c51e9d
 
 ## Phase 2: RoleController & Permissions
 Focus on the new `RoleController` and moving permission logic.
