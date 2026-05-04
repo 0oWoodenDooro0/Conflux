@@ -36,6 +36,13 @@ data class CreateRoleRequest(
 )
 
 @Serializable
+data class UpdateChannelRequest(
+    val name: String? = null,
+    val type: ChannelType? = null,
+    val topic: String? = null
+)
+
+@Serializable
 data class AssignRoleRequest(
     val userId: String,
     val roleId: String

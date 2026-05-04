@@ -82,6 +82,30 @@ fun Route.channelRoutes(
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
         }
+
+        patch("/{channelId}") {
+            val serverId = call.parameters["serverId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+            
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+                return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            call.respond(HttpStatusCode.NotImplemented, "Not implemented yet")
+        }
+
+        delete("/{channelId}") {
+            val serverId = call.parameters["serverId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+            
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            call.respond(HttpStatusCode.NotImplemented, "Not implemented yet")
+        }
     }
 }
 
