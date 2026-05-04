@@ -10,7 +10,7 @@ Establish the common error handling and result patterns used by all controllers.
 ## Phase 2: RoleController & Permissions
 Focus on the new `RoleController` and moving permission logic.
 
-- [ ] Task: Write Unit Tests for `RoleController` (Red Phase).
+- [x] Task: Write Unit Tests for `RoleController` (Red Phase). d1d1a81
 - [ ] Task: Implement `RoleController` with Role management and Permission checks (Green Phase).
 - [ ] Task: Refactor existing permission checks to use `RoleController` logic.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: RoleController & Permissions' (Protocol in workflow.md)
