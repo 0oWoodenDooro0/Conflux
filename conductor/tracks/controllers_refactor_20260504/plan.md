@@ -19,7 +19,7 @@ Focus on the new `RoleController` and moving permission logic.
 Refactor server and channel logic into their respective controllers.
 
 - [x] Task: Write Unit Tests for `ServerController` and `ChannelController` (Red Phase). 2693f8a
-- [ ] Task: Implement `ServerController` and `ChannelController` (Green Phase).
+- [x] Task: Implement `ServerController` and `ChannelController` (Green Phase). b05bff6
 - [ ] Task: Refactor `ServerRoutes` and `ChannelRoutes` to delegate to controllers.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Server & Channel Controllers' (Protocol in workflow.md)
 
