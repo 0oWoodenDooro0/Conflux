@@ -38,3 +38,4 @@
 
 ## Phase: Review Fixes
 - [x] Task: Apply review suggestions: Expand WebSocket broadcasting scope to server-level [cde8d43]
+- [x] Task: Apply review suggestions: Add server-wide broadcasting for channel creation [b0c1cc0]
