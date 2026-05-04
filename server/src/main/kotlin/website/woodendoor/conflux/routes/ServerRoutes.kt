@@ -13,7 +13,6 @@ import java.util.*
 
 fun Route.serverRoutes(
     serverController: ServerController,
-    userRepository: UserRepository,
     serverRepository: ServerRepository
 ) {
     route("/api/servers") {
@@ -32,25 +31,7 @@ fun Route.serverRoutes(
         post {
             try {
                 val request = call.receive<CreateServerRequest>()
-                
-                // Keep the owner resolution logic here for now as it involves UserRepository
-                val owner = userRepository.getUser(request.ownerId) ?: userRepository.findByUsername(request.ownerId)
-                val resolvedOwnerId = if (owner == null) {
-                    val newUserId = UUID.randomUUID().toString()
-                    userRepository.createUser(
-                        User(
-                            id = newUserId,
-                            username = request.ownerId,
-                            discriminator = "0000"
-                        )
-                    )
-                    newUserId
-                } else {
-                    owner.id
-                }
-
-                val finalRequest = request.copy(ownerId = resolvedOwnerId)
-                val result = serverController.createServer(finalRequest)
+                val result = serverController.createServer(request)
                 call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")

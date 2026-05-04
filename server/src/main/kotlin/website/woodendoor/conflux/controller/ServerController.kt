@@ -1,14 +1,35 @@
 package website.woodendoor.conflux.controller
 
 import website.woodendoor.conflux.database.repositories.ServerRepository
+import website.woodendoor.conflux.database.repositories.UserRepository
 import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.User
 import java.util.*
 
-class ServerController(private val serverRepository: ServerRepository) {
+class ServerController(
+    private val serverRepository: ServerRepository,
+    private val userRepository: UserRepository
+) {
 
     suspend fun createServer(request: CreateServerRequest): OperationResult<Server> {
-        val server = request.toDomain(id = UUID.randomUUID().toString())
+        val owner = userRepository.getUser(request.ownerId) ?: userRepository.findByUsername(request.ownerId)
+        val resolvedOwnerId = if (owner == null) {
+            val newUserId = UUID.randomUUID().toString()
+            userRepository.createUser(
+                User(
+                    id = newUserId,
+                    username = request.ownerId,
+                    discriminator = "0000"
+                )
+            )
+            newUserId
+        } else {
+            owner.id
+        }
+
+        val finalRequest = request.copy(ownerId = resolvedOwnerId)
+        val server = finalRequest.toDomain(id = UUID.randomUUID().toString())
         val created = serverRepository.createServer(server)
         
         return if (created != null) {

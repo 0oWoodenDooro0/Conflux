@@ -34,6 +34,6 @@ Refactor messaging and history retrieval.
 ...
 Ensure all routes are consistent and legacy logic is removed.
 
-- [ ] Task: Audit all routes to ensure zero direct business logic.
+- [~] Task: Audit all routes to ensure zero direct business logic.
 - [ ] Task: Verify >80% coverage across all new controller logic.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Final Integration & Cleanup' (Protocol in workflow.md)

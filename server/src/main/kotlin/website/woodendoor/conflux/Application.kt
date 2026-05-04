@@ -16,6 +16,7 @@ import website.woodendoor.conflux.controller.ChannelController
 import website.woodendoor.conflux.controller.ChatController
 import website.woodendoor.conflux.controller.RoleController
 import website.woodendoor.conflux.controller.ServerController
+import website.woodendoor.conflux.controller.UserController
 import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
 import website.woodendoor.conflux.database.repositories.ExposedServerRepository
@@ -75,10 +76,11 @@ fun Application.module() {
     val tokenManager = WebSocketAuthTokenManager()
     val connectionManager = WebSocketConnectionManager()
 
-    val serverController = ServerController(serverRepository)
+    val serverController = ServerController(serverRepository, userRepository)
     val channelController = ChannelController(channelRepository, serverRepository)
     val roleController = RoleController(serverRepository)
     val chatController = ChatController(messageRepository, channelRepository, roleController, connectionManager)
+    val userController = UserController(userRepository)
 
     routing {
         get("/") {
@@ -94,10 +96,10 @@ fun Application.module() {
                 call.respondText("Database connection failed: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
             }
         }
-        serverRoutes(serverController, userRepository, serverRepository)
+        serverRoutes(serverController, serverRepository)
         channelRoutes(channelController, roleController)
         roleRoutes(roleController)
-        userRoutes(userRepository)
+        userRoutes(userController)
         messageRoutes(chatController)
         webSocketRoutes(tokenManager, connectionManager)
     }
