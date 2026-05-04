@@ -57,6 +57,37 @@ class ChannelController(
         }
     }
 
+    suspend fun deleteChannel(channelId: String): OperationResult<Unit> {
+        val existingChannel = channelRepository.getChannel(channelId)
+            ?: return OperationResult.Failure.NotFound("Channel not found")
+
+        val success = channelRepository.deleteChannel(channelId)
+        return if (success) {
+            broadcastChannelDeleted(channelId, existingChannel.serverId)
+            OperationResult.Success(Unit)
+        } else {
+            OperationResult.Failure.InternalError("Failed to delete channel")
+        }
+    }
+
+    private suspend fun broadcastChannelDeleted(channelId: String, serverId: String) {
+        val connections = connectionManager.getConnectionsForChannel(channelId)
+        val event = ConfluxEvent.ChannelDeleted(channelId, serverId)
+        val eventJson = Json.encodeToString<ConfluxEvent>(event)
+        
+        coroutineScope {
+            connections.forEach { session ->
+                launch {
+                    try {
+                        session.send(Frame.Text(eventJson))
+                    } catch (e: Exception) {
+                        // Session might be closed
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun createChannel(serverId: String, request: CreateChannelRequest): OperationResult<Channel> {
         if (serverRepository.getServer(serverId) == null) {
             return OperationResult.Failure.NotFound("Server not found")

@@ -70,5 +70,16 @@ class ChannelManagementApiTest {
         assertEquals(HttpStatusCode.OK, ownerEditChannelResponse.status, "Owner should be able to edit channel")
         val updatedChannel = Json.decodeFromString<Channel>(ownerEditChannelResponse.bodyAsText())
         assertEquals("owner-renamed-channel", updatedChannel.name)
+
+        // 7. Owner should be able to delete channel
+        val ownerDeleteChannelResponse = client.delete("/api/servers/$serverId/channels/$channelId") {
+            parameter("userId", ownerId)
+        }
+        assertEquals(HttpStatusCode.OK, ownerDeleteChannelResponse.status, "Owner should be able to delete channel")
+        
+        // 8. Verify the channel is actually deleted
+        val getChannelResponse = client.get("/api/servers/$serverId/channels")
+        val channels = Json.decodeFromString<List<Channel>>(getChannelResponse.bodyAsText())
+        assertTrue(channels.none { it.id == channelId }, "Channel should no longer exist in the server")
     }
 }

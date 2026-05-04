@@ -49,6 +49,31 @@ class ChannelControllerTest {
     }
 
     @Test
+    fun `test deleteChannel success`() = runBlocking {
+        val channelId = "channel-1"
+        val existingChannel = Channel(channelId, "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        
+        coEvery { channelRepository.getChannel(channelId) } returns existingChannel
+        coEvery { channelRepository.deleteChannel(channelId) } returns true
+        
+        val result = controller.deleteChannel(channelId)
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(Unit, result.data)
+    }
+
+    @Test
+    fun `test deleteChannel not found`() = runBlocking {
+        val channelId = "channel-1"
+        
+        coEvery { channelRepository.getChannel(channelId) } returns null
+        
+        val result = controller.deleteChannel(channelId)
+        
+        assertTrue(result is OperationResult.Failure.NotFound)
+    }
+
+    @Test
     fun `test createChannel success`() = runBlocking {
         val request = CreateChannelRequest("general")
         val channel = Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
