@@ -95,9 +95,19 @@ object MainState {
                 }
             }
             is ConfluxEvent.ChannelDeleted -> {
+                val wasSelected = selectedChannel?.id == event.channelId
                 // Remove channel from list
                 channelList = channelList.filter { it.id != event.channelId }
-                // Redirect logic will be handled later
+                
+                if (wasSelected) {
+                    val nextChannel = channelList.firstOrNull()
+                    if (nextChannel != null) {
+                        selectChannel(nextChannel, apiClient)
+                    } else {
+                        selectedChannel = null
+                        messages = emptyList()
+                    }
+                }
             }
         }
     }

@@ -41,6 +41,29 @@ class MainStateTest {
     }
 
     @Test
+    fun testHandleChannelDeletedEvent() = runTest {
+        val c1 = Channel("c1", "s1", "general", ChannelType.TEXT)
+        val c2 = Channel("c2", "s1", "other", ChannelType.TEXT)
+        MainState.channelList = listOf(c1, c2)
+        MainState.selectedChannel = c1
+
+        val mockEngine = MockEngine { request ->
+            if (request.url.encodedPath.contains("/messages")) {
+                respond(content = ByteReadChannel("[]"), status = HttpStatusCode.OK, headers = headersOf(HttpHeaders.ContentType, "application/json"))
+            } else {
+                respond(content = ByteReadChannel(""), status = HttpStatusCode.OK)
+            }
+        }
+        val apiClient = ServerApiClient(HttpClient(mockEngine) { install(ContentNegotiation) { json() } }, "http://localhost")
+
+        MainState.handleWebSocketEvent(ConfluxEvent.ChannelDeleted("c1", "s1"), apiClient)
+
+        assertEquals(1, MainState.channelList.size)
+        assertEquals("c2", MainState.channelList.first().id)
+        assertEquals("c2", MainState.selectedChannel?.id, "Should redirect to the next available channel")
+    }
+
+    @Test
     fun testInitialState() {
         assertNull(MainState.selectedServer)
         assertTrue(MainState.channelList.isEmpty())
