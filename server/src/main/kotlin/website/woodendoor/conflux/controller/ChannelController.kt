@@ -97,9 +97,28 @@ class ChannelController(
         val created = channelRepository.createChannel(channel)
         
         return if (created != null) {
+            broadcastChannelCreated(serverId, created)
             OperationResult.Success(created)
         } else {
             OperationResult.Failure.InternalError("Failed to create channel")
+        }
+    }
+
+    private suspend fun broadcastChannelCreated(serverId: String, channel: Channel) {
+        val connections = connectionManager.getConnectionsForServer(serverId)
+        val event = ConfluxEvent.ChannelCreated(channel)
+        val eventJson = Json.encodeToString<ConfluxEvent>(event)
+        
+        coroutineScope {
+            connections.forEach { session ->
+                launch {
+                    try {
+                        session.send(Frame.Text(eventJson))
+                    } catch (e: Exception) {
+                        // Session might be closed
+                    }
+                }
+            }
         }
     }
 

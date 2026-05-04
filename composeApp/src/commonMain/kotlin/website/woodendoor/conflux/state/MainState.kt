@@ -84,6 +84,13 @@ object MainState {
             is ConfluxEvent.SubscriptionSuccess -> {
                 // OK
             }
+            is ConfluxEvent.ChannelCreated -> {
+                if (event.channel.serverId == selectedServer?.id) {
+                    if (channelList.none { it.id == event.channel.id }) {
+                        channelList = channelList + event.channel
+                    }
+                }
+            }
             is ConfluxEvent.ChannelUpdated -> {
                 // Update channel list
                 channelList = channelList.map {

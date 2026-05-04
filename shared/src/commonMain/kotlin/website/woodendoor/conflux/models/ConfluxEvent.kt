@@ -14,6 +14,9 @@ sealed class ConfluxEvent {
     data class SubscriptionSuccess(val channelId: String) : ConfluxEvent()
     
     @Serializable
+    data class ChannelCreated(val channel: Channel) : ConfluxEvent()
+
+    @Serializable
     data class ChannelUpdated(val channel: Channel) : ConfluxEvent()
 
     @Serializable
