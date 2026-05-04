@@ -37,4 +37,13 @@ class RoleControllerTest {
         
         assertTrue(result is OperationResult.Failure.InternalError)
     }
+
+    @Test
+    fun `test hasPermission`() = runBlocking {
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns 0b11L
+        
+        assertTrue(controller.hasPermission("server-1", "user-1", 0b01L))
+        assertTrue(controller.hasPermission("server-1", "user-1", 0b10L))
+        assertTrue(!controller.hasPermission("server-1", "user-1", 0b100L))
+    }
 }
