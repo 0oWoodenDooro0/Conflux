@@ -1,11 +1,11 @@
 # Implementation Plan: Real-time Permissions & Auto-General Channel
 
-## Phase 1: Backend Infrastructure (Auto-Channel & WS Events)
+## Phase 1: Backend Infrastructure (Auto-Channel & WS Events) [checkpoint: c047a26]
 - [x] Task: Update Server Creation logic to include default `#general` channel generation. f3d9f3b
 - [x] Task: Define `PERMISSION_UPDATE` WebSocket event model in shared module. 581e924
 - [x] Task: Implement permission change detection in Role/Member controllers. c6297c1
 - [x] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members. 6ba4ca4
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Reactive Logic
 - [ ] Task: Update Frontend WebSocket listener to handle `PERMISSION_UPDATE` events.
