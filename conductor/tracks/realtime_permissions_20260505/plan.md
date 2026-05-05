@@ -1,7 +1,7 @@
 # Implementation Plan: Real-time Permissions & Auto-General Channel
 
 ## Phase 1: Backend Infrastructure (Auto-Channel & WS Events)
-- [ ] Task: Update Server Creation logic to include default `#general` channel generation.
+- [~] Task: Update Server Creation logic to include default `#general` channel generation.
 - [ ] Task: Define `PERMISSION_UPDATE` WebSocket event model in shared module.
 - [ ] Task: Implement permission change detection in Role/Member controllers.
 - [ ] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members.

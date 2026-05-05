@@ -1,7 +1,10 @@
 package website.woodendoor.conflux.controller
 
+import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.database.repositories.UserRepository
+import website.woodendoor.conflux.models.Channel
+import website.woodendoor.conflux.models.ChannelType
 import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.User
@@ -9,7 +12,8 @@ import java.util.*
 
 class ServerController(
     private val serverRepository: ServerRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val channelRepository: ChannelRepository
 ) {
 
     suspend fun createServer(request: CreateServerRequest): OperationResult<Server> {
@@ -32,10 +36,20 @@ class ServerController(
         val server = finalRequest.toDomain(id = UUID.randomUUID().toString())
         val created = serverRepository.createServer(server)
         
-        return if (created != null) {
-            OperationResult.Success(created)
+        if (created != null) {
+            // Create default #general channel
+            channelRepository.createChannel(
+                Channel(
+                    id = UUID.randomUUID().toString(),
+                    serverId = created.id,
+                    name = "general",
+                    type = ChannelType.TEXT,
+                    topic = "Welcome to ${created.name}!"
+                )
+            )
+            return OperationResult.Success(created)
         } else {
-            OperationResult.Failure.InternalError("Failed to create server")
+            return OperationResult.Failure.InternalError("Failed to create server")
         }
     }
 

@@ -3,6 +3,7 @@ package website.woodendoor.conflux.controller
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.database.repositories.UserRepository
 import website.woodendoor.conflux.models.CreateServerRequest
@@ -15,7 +16,8 @@ import kotlin.test.assertTrue
 class ServerControllerTest {
     private val serverRepository = mockk<ServerRepository>()
     private val userRepository = mockk<UserRepository>()
-    private val controller = ServerController(serverRepository, userRepository)
+    private val channelRepository = mockk<ChannelRepository>()
+    private val controller = ServerController(serverRepository, userRepository, channelRepository)
 
     @Test
     fun `test createServer success`() = runBlocking {
@@ -24,6 +26,7 @@ class ServerControllerTest {
         
         coEvery { userRepository.getUser("owner-1") } returns User("owner-1", "owner", "1234")
         coEvery { serverRepository.createServer(any()) } returns server
+        coEvery { channelRepository.createChannel(any()) } returns mockk()
         
         val result = controller.createServer(request)
         
