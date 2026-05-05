@@ -1,7 +1,11 @@
 package website.woodendoor.conflux
 
 import io.ktor.server.websocket.*
+import io.ktor.websocket.*
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
+import website.woodendoor.conflux.models.ConfluxEvent
 import kotlin.test.*
 
 class WebSocketConnectionManagerTest {
@@ -55,5 +59,20 @@ class WebSocketConnectionManagerTest {
         
         val connections = connectionManager.getConnectionsForChannel(channelB)
         assertTrue(connections.isEmpty())
+    }
+
+    @Test
+    fun `should broadcast to server`() = runBlocking {
+        val userId = "user-1"
+        val serverId = "server-1"
+        val session = mockk<DefaultWebSocketServerSession>(relaxed = true)
+        val event = ConfluxEvent.PermissionUpdate(serverId, userId = userId)
+
+        connectionManager.addConnection(userId, session)
+        connectionManager.subscribeToServer(userId, serverId)
+        
+        connectionManager.broadcastToServer(serverId, event)
+        
+        coVerify { session.send(any<Frame.Text>()) }
     }
 }

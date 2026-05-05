@@ -1,6 +1,12 @@
 package website.woodendoor.conflux
 
 import io.ktor.server.websocket.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import website.woodendoor.conflux.models.ConfluxEvent
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -52,6 +58,23 @@ class WebSocketConnectionManager {
         val userIds = serverSubscriptions[serverId] ?: return emptyList()
         return userIds.flatMap { userId ->
             userSessions[userId] ?: emptyList()
+        }
+    }
+
+    suspend fun broadcastToServer(serverId: String, event: ConfluxEvent) {
+        val connections = getConnectionsForServer(serverId)
+        val eventJson = Json.encodeToString<ConfluxEvent>(event)
+        
+        coroutineScope {
+            connections.forEach { session ->
+                launch {
+                    try {
+                        session.send(Frame.Text(eventJson))
+                    } catch (e: Exception) {
+                        // Session might be closed
+                    }
+                }
+            }
         }
     }
 }
