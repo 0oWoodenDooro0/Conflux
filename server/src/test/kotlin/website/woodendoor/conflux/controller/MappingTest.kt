@@ -45,9 +45,10 @@ class MappingTest {
             color = 0xFF0000,
             priorityLevel = 10
         )
-        val role = request.toDomain(id = "role-1")
+        val role = request.toDomain(id = "role-1", serverId = "server-1")
         
         assertEquals("role-1", role.id)
+        assertEquals("server-1", role.serverId)
         assertEquals("Admin", role.name)
         assertEquals(0b111L, role.permissions)
         assertEquals(0xFF0000, role.color)

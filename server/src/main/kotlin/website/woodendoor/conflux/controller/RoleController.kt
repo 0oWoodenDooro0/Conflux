@@ -1,12 +1,17 @@
 package website.woodendoor.conflux.controller
 
+import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ServerRepository
+import website.woodendoor.conflux.models.ConfluxEvent
 import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.models.CreateRoleRequest
 import website.woodendoor.conflux.models.Role
 import java.util.*
 
-class RoleController(private val serverRepository: ServerRepository) {
+class RoleController(
+    private val serverRepository: ServerRepository,
+    private val connectionManager: WebSocketConnectionManager
+) {
 
     suspend fun hasPermission(serverId: String, userId: String, permission: Long): Boolean {
         val userPermissions = serverRepository.getPermissionsForMember(serverId, userId)
@@ -14,7 +19,7 @@ class RoleController(private val serverRepository: ServerRepository) {
     }
 
     suspend fun createRole(serverId: String, request: CreateRoleRequest): OperationResult<Role> {
-        val role = request.toDomain(id = UUID.randomUUID().toString())
+        val role = request.toDomain(id = UUID.randomUUID().toString(), serverId = serverId)
         val created = serverRepository.createRole(serverId, role)
         
         return if (created != null) {
@@ -41,6 +46,7 @@ class RoleController(private val serverRepository: ServerRepository) {
     suspend fun updateRole(role: Role): OperationResult<Role> {
         val success = serverRepository.updateRole(role)
         return if (success) {
+            connectionManager.broadcastToServer(role.serverId, ConfluxEvent.PermissionUpdate(role.serverId, roleId = role.id))
             OperationResult.Success(role)
         } else {
             OperationResult.Failure.InternalError("Failed to update role")
@@ -50,6 +56,7 @@ class RoleController(private val serverRepository: ServerRepository) {
     suspend fun assignRoleToMember(serverId: String, userId: String, roleId: String): OperationResult<Unit> {
         val success = serverRepository.assignRoleToMember(serverId, userId, roleId)
         return if (success) {
+            connectionManager.broadcastToServer(serverId, ConfluxEvent.PermissionUpdate(serverId, userId = userId))
             OperationResult.Success(Unit)
         } else {
             OperationResult.Failure.InternalError("Failed to assign role")
@@ -59,6 +66,7 @@ class RoleController(private val serverRepository: ServerRepository) {
     suspend fun removeRoleFromMember(serverId: String, userId: String, roleId: String): OperationResult<Unit> {
         val success = serverRepository.removeRoleFromMember(serverId, userId, roleId)
         return if (success) {
+            connectionManager.broadcastToServer(serverId, ConfluxEvent.PermissionUpdate(serverId, userId = userId))
             OperationResult.Success(Unit)
         } else {
             OperationResult.Failure.InternalError("Failed to remove role")

@@ -91,7 +91,7 @@ class ServerApiClientTest {
 
     @Test
     fun testRoleManagement() = runTest {
-        val mockRole = Role("r1", "Admin", 0x1L, null, 10)
+        val mockRole = Role("r1", "s1", "Admin", 0x1L, null, 10)
 
         val mockEngine = MockEngine { request ->
             when (request.url.encodedPath) {

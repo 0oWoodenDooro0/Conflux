@@ -10,7 +10,7 @@ class ModelSerializationTest {
 
     @Test
     fun testServerWithRolesSerialization() {
-        val role = Role("r1", "Admin", ConfluxPermission.ALL, 0xFF0000, 100)
+        val role = Role("r1", "s1", "Admin", ConfluxPermission.ALL, 0xFF0000, 100)
         val server = Server("s1", "Test", "owner1", null, emptyList(), listOf("r1"), listOf(role))
         
         val json = Json.encodeToString(server)

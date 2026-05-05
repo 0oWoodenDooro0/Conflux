@@ -78,7 +78,7 @@ fun Application.module() {
 
     val serverController = ServerController(serverRepository, userRepository, channelRepository)
     val channelController = ChannelController(channelRepository, serverRepository, connectionManager)
-    val roleController = RoleController(serverRepository)
+    val roleController = RoleController(serverRepository, connectionManager)
     val chatController = ChatController(messageRepository, channelRepository, roleController, connectionManager)
     val userController = UserController(userRepository)
 

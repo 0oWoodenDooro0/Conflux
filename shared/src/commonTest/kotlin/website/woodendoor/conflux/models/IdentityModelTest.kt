@@ -24,6 +24,7 @@ class IdentityModelTest {
     fun testRoleSerialization() {
         val role = Role(
             id = "role-456",
+            serverId = "server-1",
             name = "Admin",
             permissions = 0xFFFFFFFFL,
             color = 0xFF0000

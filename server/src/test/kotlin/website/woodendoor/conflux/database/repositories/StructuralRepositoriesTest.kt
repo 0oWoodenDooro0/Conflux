@@ -43,7 +43,7 @@ class StructuralRepositoriesTest {
         val server = Server("s1", "Test Server", owner.id)
         serverRepository.createServer(server)
 
-        val role = Role("r1", "Admin", 1L, 0xFF0000)
+        val role = Role("r1", "s1", "Admin", 1L, 0xFF0000)
         serverRepository.createRole("s1", role)
         
         val roles = serverRepository.getRoles("s1")

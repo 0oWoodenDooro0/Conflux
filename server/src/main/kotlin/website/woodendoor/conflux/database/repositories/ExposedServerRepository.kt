@@ -23,6 +23,7 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
 
     private fun resultRowToRole(row: ResultRow) = Role(
         id = row[Roles.id],
+        serverId = row[Roles.serverId],
         name = row[Roles.name],
         permissions = row[Roles.permissions],
         color = row[Roles.color],

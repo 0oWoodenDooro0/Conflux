@@ -1,8 +1,10 @@
 package website.woodendoor.conflux.controller
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.CreateRoleRequest
 import website.woodendoor.conflux.models.Role
@@ -12,12 +14,13 @@ import kotlin.test.assertTrue
 
 class RoleControllerTest {
     private val serverRepository = mockk<ServerRepository>()
-    private val controller = RoleController(serverRepository)
+    private val connectionManager = mockk<WebSocketConnectionManager>(relaxed = true)
+    private val controller = RoleController(serverRepository, connectionManager)
 
     @Test
     fun `test createRole success`() = runBlocking {
         val request = CreateRoleRequest("Admin", 1L)
-        val role = Role("role-1", "Admin", 1L)
+        val role = Role("role-1", "server-1", "Admin", 1L)
         
         coEvery { serverRepository.createRole("server-1", any()) } returns role
         
@@ -49,7 +52,7 @@ class RoleControllerTest {
 
     @Test
     fun `test getRoles`() = runBlocking {
-        val roles = listOf(Role("role-1", "Admin", 1L))
+        val roles = listOf(Role("role-1", "server-1", "Admin", 1L))
         coEvery { serverRepository.getRoles("server-1") } returns roles
         
         val result = controller.getRoles("server-1")
@@ -59,7 +62,7 @@ class RoleControllerTest {
 
     @Test
     fun `test getRole success`() = runBlocking {
-        val role = Role("role-1", "Admin", 1L)
+        val role = Role("role-1", "server-1", "Admin", 1L)
         coEvery { serverRepository.getRole("role-1") } returns role
         
         val result = controller.getRole("role-1")
@@ -69,11 +72,12 @@ class RoleControllerTest {
 
     @Test
     fun `test updateRole success`() = runBlocking {
-        val role = Role("role-1", "Admin", 1L)
+        val role = Role("role-1", "server-1", "Admin", 1L)
         coEvery { serverRepository.updateRole(role) } returns true
         
         val result = controller.updateRole(role)
         assertTrue(result is OperationResult.Success)
+        coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }
 
     @Test
@@ -82,6 +86,7 @@ class RoleControllerTest {
         
         val result = controller.assignRoleToMember("server-1", "user-1", "role-1")
         assertTrue(result is OperationResult.Success)
+        coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }
 
     @Test
@@ -90,5 +95,6 @@ class RoleControllerTest {
         
         val result = controller.removeRoleFromMember("server-1", "user-1", "role-1")
         assertTrue(result is OperationResult.Success)
+        coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }
 }

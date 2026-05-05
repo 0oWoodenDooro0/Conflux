@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Role(
     val id: String,
+    val serverId: String,
     val name: String,
     val permissions: Long,
     val color: Int? = null,

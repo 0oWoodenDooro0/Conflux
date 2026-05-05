@@ -45,7 +45,7 @@ class PermissionQueryTest {
         assertEquals(ConfluxPermission.MESSAGING, memberPerms)
 
         // Add another role with CHANNEL_MANAGEMENT
-        val adminRole = serverRepository.createRole(server.id, Role("r1", "Admin", ConfluxPermission.CHANNEL_MANAGEMENT, null, 50))
+        val adminRole = serverRepository.createRole(server.id, Role("r1", server.id, "Admin", ConfluxPermission.CHANNEL_MANAGEMENT, null, 50))
         assertNotNull(adminRole)
         serverRepository.assignRoleToMember(server.id, member.id, adminRole.id)
 

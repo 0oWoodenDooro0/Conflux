@@ -17,8 +17,9 @@ fun CreateChannelRequest.toDomain(id: String, serverId: String) = Channel(
     topic = topic
 )
 
-fun CreateRoleRequest.toDomain(id: String) = Role(
+fun CreateRoleRequest.toDomain(id: String, serverId: String) = Role(
     id = id,
+    serverId = serverId,
     name = name,
     permissions = permissions,
     color = color,

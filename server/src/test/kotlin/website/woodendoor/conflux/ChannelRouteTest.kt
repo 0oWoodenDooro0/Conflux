@@ -25,21 +25,27 @@ class ChannelRouteTest {
         val server = Json.decodeFromString<Server>(createServerResponse.bodyAsText())
         val serverId = server.id
 
-        // 2. Create a channel
+        // 2. Verify auto-created #general channel
+        val initialChannelsResponse = client.get("/api/servers/$serverId/channels")
+        val initialChannels = Json.decodeFromString<List<Channel>>(initialChannelsResponse.bodyAsText())
+        assertEquals(1, initialChannels.size)
+        assertEquals("general", initialChannels[0].name)
+
+        // 3. Create another channel
         val createChannelResponse = client.post("/api/servers/$serverId/channels") {
             parameter("userId", server.ownerId)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(CreateChannelRequest(name = "general")))
+            setBody(Json.encodeToString(CreateChannelRequest(name = "announcements")))
         }
         assertEquals(HttpStatusCode.Created, createChannelResponse.status)
 
-        // 3. Get channels for the server
+        // 4. Get channels for the server
         val response = client.get("/api/servers/$serverId/channels")
         assertEquals(HttpStatusCode.OK, response.status)
         val channels = Json.decodeFromString<List<Channel>>(response.bodyAsText())
-        assertEquals(1, channels.size)
-        assertEquals("general", channels[0].name)
-        assertEquals(serverId, channels[0].serverId)
+        assertEquals(2, channels.size)
+        assertTrue(channels.any { it.name == "general" })
+        assertTrue(channels.any { it.name == "announcements" })
     }
 
     @Test
