@@ -2,7 +2,7 @@
 
 ## Phase 1: Backend Infrastructure (Auto-Channel & WS Events)
 - [x] Task: Update Server Creation logic to include default `#general` channel generation. f3d9f3b
-- [ ] Task: Define `PERMISSION_UPDATE` WebSocket event model in shared module.
+- [~] Task: Define `PERMISSION_UPDATE` WebSocket event model in shared module.
 - [ ] Task: Implement permission change detection in Role/Member controllers.
 - [ ] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)

@@ -21,6 +21,9 @@ sealed class ConfluxEvent {
 
     @Serializable
     data class ChannelDeleted(val channelId: String, val serverId: String) : ConfluxEvent()
+
+    @Serializable
+    data class PermissionUpdate(val serverId: String, val roleId: String? = null, val userId: String? = null) : ConfluxEvent()
     
     @Serializable
     data class Error(val message: String) : ConfluxEvent()

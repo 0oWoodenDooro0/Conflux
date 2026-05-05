@@ -43,4 +43,16 @@ class ConfluxEventSerializationTest {
         assertTrue(decoded is ConfluxEvent.SubscriptionSuccess)
         assertEquals("chan-1", decoded.channelId)
     }
+
+    @Test
+    fun `test PermissionUpdate serialization`() {
+        val event: ConfluxEvent = ConfluxEvent.PermissionUpdate("server-1", roleId = "role-1")
+        val json = Json.encodeToString(event)
+        
+        val decoded = Json.decodeFromString<ConfluxEvent>(json)
+        assertTrue(decoded is ConfluxEvent.PermissionUpdate)
+        assertEquals("server-1", decoded.serverId)
+        assertEquals("role-1", decoded.roleId)
+        assertNull(decoded.userId)
+    }
 }
