@@ -4,7 +4,7 @@
 - [x] Task: Update Server Creation logic to include default `#general` channel generation. f3d9f3b
 - [x] Task: Define `PERMISSION_UPDATE` WebSocket event model in shared module. 581e924
 - [ ] Task: Implement permission change detection in Role/Member controllers.
-- [~] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members.
+- [x] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members. 6ba4ca4
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Reactive Logic
