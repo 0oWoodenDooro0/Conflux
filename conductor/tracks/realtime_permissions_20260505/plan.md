@@ -17,3 +17,6 @@
 - [x] Task: Verify end-to-end flow: Server Creation -> Auto-channel visibility. 94ed4a2
 - [x] Task: Verify end-to-end flow: Permission Change -> Real-time UI Lock/Unlock. 94ed4a2
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Validation' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions fe4183f
