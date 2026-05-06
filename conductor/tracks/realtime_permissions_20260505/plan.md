@@ -7,11 +7,11 @@
 - [x] Task: Implement WebSocket broadcasting logic in `WebSocketConnectionManager` to target specific server members. 6ba4ca4
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
 
-## Phase 2: Frontend Reactive Logic
-- [~] Task: Update Frontend WebSocket listener to handle `PERMISSION_UPDATE` events.
-- [ ] Task: Implement permission re-fetch logic in `PermissionState` or relevant state manager.
-- [ ] Task: Bind UI element visibility and enabled states to the permission state (Message input, Settings buttons).
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Reactive Logic' (Protocol in workflow.md)
+## Phase 2: Frontend Reactive Logic [checkpoint: 54fd782]
+- [x] Task: Update Frontend WebSocket listener to handle `PERMISSION_UPDATE` events. 54fd782
+- [x] Task: Implement permission re-fetch logic in `PermissionState` or relevant state manager. 54fd782
+- [x] Task: Bind UI element visibility and enabled states to the permission state (Message input, Settings buttons). 54fd782
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Reactive Logic' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Validation
 - [ ] Task: Verify end-to-end flow: Server Creation -> Auto-channel visibility.
