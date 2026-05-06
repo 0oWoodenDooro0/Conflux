@@ -13,7 +13,7 @@
 - [x] Task: Bind UI element visibility and enabled states to the permission state (Message input, Settings buttons). 54fd782
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Reactive Logic' (Protocol in workflow.md)
 
-## Phase 3: Integration & Validation
-- [ ] Task: Verify end-to-end flow: Server Creation -> Auto-channel visibility.
-- [ ] Task: Verify end-to-end flow: Permission Change -> Real-time UI Lock/Unlock.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Validation' (Protocol in workflow.md)
+## Phase 3: Integration & Validation [checkpoint: 94ed4a2]
+- [x] Task: Verify end-to-end flow: Server Creation -> Auto-channel visibility. 94ed4a2
+- [x] Task: Verify end-to-end flow: Permission Change -> Real-time UI Lock/Unlock. 94ed4a2
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Validation' (Protocol in workflow.md)
