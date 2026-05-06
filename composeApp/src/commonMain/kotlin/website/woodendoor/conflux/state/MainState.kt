@@ -116,6 +116,17 @@ object MainState {
                     }
                 }
             }
+            is ConfluxEvent.PermissionUpdate -> {
+                if (event.serverId == selectedServer?.id) {
+                    currentUserId?.let { userId ->
+                        try {
+                            currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
+                        } catch (e: Exception) {
+                            // Handle error
+                        }
+                    }
+                }
+            }
         }
     }
 

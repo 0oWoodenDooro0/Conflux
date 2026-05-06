@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Reactive Logic
-- [ ] Task: Update Frontend WebSocket listener to handle `PERMISSION_UPDATE` events.
+- [~] Task: Update Frontend WebSocket listener to handle `PERMISSION_UPDATE` events.
 - [ ] Task: Implement permission re-fetch logic in `PermissionState` or relevant state manager.
 - [ ] Task: Bind UI element visibility and enabled states to the permission state (Message input, Settings buttons).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Reactive Logic' (Protocol in workflow.md)

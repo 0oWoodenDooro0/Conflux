@@ -98,13 +98,26 @@ class MainStateTest {
         val channels = listOf(
             Channel("c1", "s1", "general", ChannelType.TEXT)
         )
+        MainState.currentUserId = "u1"
 
         val mockEngine = MockEngine { request ->
-            respond(
-                content = ByteReadChannel(Json.encodeToString(channels)),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
+            when {
+                request.url.encodedPath.endsWith("/channels") -> {
+                    respond(
+                        content = ByteReadChannel(Json.encodeToString(channels)),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+                request.url.encodedPath.endsWith("/permissions") -> {
+                    respond(
+                        content = ByteReadChannel("7"),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+                else -> respond(content = ByteReadChannel(""), status = HttpStatusCode.NotFound)
+            }
         }
         val apiClient = ServerApiClient(HttpClient(mockEngine) {
             install(ContentNegotiation) { json() }
@@ -114,12 +127,14 @@ class MainStateTest {
 
         assertEquals(server, MainState.selectedServer)
         assertEquals(channels, MainState.channelList)
+        assertEquals(7L, MainState.currentUserPermissions)
         assertNull(MainState.channelFetchError)
     }
 
     @Test
     fun testSelectServerActionError() = runTest {
         val server = Server("s1", "Server 1", "u1")
+        MainState.currentUserId = "u1"
 
         val mockEngine = MockEngine { request ->
             respond(
@@ -197,5 +212,32 @@ class MainStateTest {
 
         assertEquals(listOf(newMessage), MainState.messages)
         assertNull(MainState.messageSendError)
+    }
+
+    @Test
+    fun testHandlePermissionUpdateEvent() = runTest {
+        val server = Server("s1", "Server 1", "u1")
+        MainState.selectedServer = server
+        MainState.currentUserId = "u1"
+        MainState.currentUserPermissions = 0L
+
+        val mockEngine = MockEngine { request ->
+            if (request.url.encodedPath.contains("/permissions")) {
+                respond(
+                    content = ByteReadChannel("7"), // 0b111
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            } else {
+                respond(content = ByteReadChannel(""), status = HttpStatusCode.NotFound)
+            }
+        }
+        val apiClient = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) { json() }
+        }, "http://localhost")
+
+        MainState.handleWebSocketEvent(ConfluxEvent.PermissionUpdate("s1"), apiClient)
+
+        assertEquals(7L, MainState.currentUserPermissions)
     }
 }

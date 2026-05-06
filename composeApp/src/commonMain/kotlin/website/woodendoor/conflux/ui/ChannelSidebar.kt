@@ -25,7 +25,7 @@ fun ChannelSidebar(
     channels: List<Channel>,
     selectedChannelId: String? = null,
     canCreateChannel: Boolean = false,
-    canManageRoles: Boolean = false,
+    canManageServer: Boolean = false,
     onCreateChannelClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onChannelClick: (Channel) -> Unit,
@@ -52,7 +52,7 @@ fun ChannelSidebar(
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
             )
-            if (canManageRoles) {
+            if (canManageServer) {
                 IconButton(onClick = onSettingsClick) {
                     Icon(Icons.Default.Settings, contentDescription = "Server Settings")
                 }

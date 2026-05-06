@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 class RolesAndPermissionsStateTest {
     @Test
     fun testSelectRole() {
-        val role = Role("r1", "Admin", 1L)
+        val role = Role("r1", "s1", "Admin", 1L)
         val state = RolesAndPermissionsState(listOf(role))
         
         assertNull(state.selectedRole)
@@ -19,8 +19,8 @@ class RolesAndPermissionsStateTest {
 
     @Test
     fun testUpdateRolesMaintainsSelection() {
-        val role1 = Role("r1", "Admin", 1L)
-        val role2 = Role("r2", "User", 0L)
+        val role1 = Role("r1", "s1", "Admin", 1L)
+        val role2 = Role("r2", "s1", "User", 0L)
         val state = RolesAndPermissionsState(listOf(role1, role2))
         
         state.selectRole(role1)
@@ -34,7 +34,7 @@ class RolesAndPermissionsStateTest {
 
     @Test
     fun testPendingPermissions() {
-        val role = Role("r1", "Admin", 1L)
+        val role = Role("r1", "s1", "Admin", 1L)
         val state = RolesAndPermissionsState(listOf(role))
         state.selectRole(role)
         
@@ -50,7 +50,7 @@ class RolesAndPermissionsStateTest {
 
     @Test
     fun testHasChanges() {
-        val role = Role("r1", "Admin", 1L)
+        val role = Role("r1", "s1", "Admin", 1L)
         val state = RolesAndPermissionsState(listOf(role))
         state.selectRole(role)
         
