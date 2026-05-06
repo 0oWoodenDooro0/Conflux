@@ -122,7 +122,7 @@ object MainState {
                         try {
                             currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
                         } catch (e: Exception) {
-                            // Handle error
+                            println("Failed to re-fetch permissions: ${e.message}")
                         }
                     }
                 }

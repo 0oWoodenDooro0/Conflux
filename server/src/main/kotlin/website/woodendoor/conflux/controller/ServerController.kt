@@ -38,15 +38,20 @@ class ServerController(
         
         if (created != null) {
             // Create default #general channel
-            channelRepository.createChannel(
-                Channel(
-                    id = UUID.randomUUID().toString(),
-                    serverId = created.id,
-                    name = "general",
-                    type = ChannelType.TEXT,
-                    topic = "Welcome to ${created.name}!"
+            try {
+                channelRepository.createChannel(
+                    Channel(
+                        id = UUID.randomUUID().toString(),
+                        serverId = created.id,
+                        name = "general",
+                        type = ChannelType.TEXT,
+                        topic = "Welcome to ${created.name}!"
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                // We don't fail the server creation if the channel fails, but we should log it
+                println("Failed to create default #general channel for server ${created.id}: ${e.message}")
+            }
             return OperationResult.Success(created)
         } else {
             return OperationResult.Failure.InternalError("Failed to create server")
