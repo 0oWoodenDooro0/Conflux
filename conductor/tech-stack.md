@@ -17,6 +17,7 @@
 
 ## Security & Authorization
 - **Bitmask Permissions**: High-performance, bitwise-combinable permission system for efficient access control.
+- **Reactive Authorization**: Real-time permission updates pushed via WebSockets to ensure immediate enforcement and UI synchronization.
 - **Role Hierarchy**: Priority-based ordering of roles to manage administrative capabilities and UI state.
 
 ## Build & Tooling
