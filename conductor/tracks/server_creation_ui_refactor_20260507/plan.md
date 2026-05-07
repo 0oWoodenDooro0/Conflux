@@ -6,7 +6,7 @@ Remove `icon_url` from the core data structures and server-side logic.
 - [x] Task: Remove `icon_url` from Shared Models (63fe431)
     - [ ] Update `Server` data class in `shared` module.
     - [ ] Update `CreateServerRequest` or similar models in `shared`.
-- [ ] Task: Update Server-Side Database and Logic
+- [x] Task: Update Server-Side Database and Logic (1c21c51)
     - [ ] Remove `icon_url` column from `Servers` table in Exposed schema.
     - [ ] Update server-side repository/service to handle creation without `icon_url`.
     - [ ] Update server-side tests to reflect the model change.
