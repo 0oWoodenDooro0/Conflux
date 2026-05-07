@@ -1,0 +1,8 @@
+{
+  "track_id": "server_creation_ui_refactor_20260507",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-07T10:00:00Z",
+  "updated_at": "2026-05-07T10:00:00Z",
+  "description": "幫我將createServerScreen 改為跟JoinServer一樣是dialog 並且移除server的icon_url 並不需要這個"
+}

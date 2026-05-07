@@ -4,3 +4,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 
 ---
+
+- [ ] **Track: Server Creation UI Refactor and Icon Removal**
+*Link: [./tracks/server_creation_ui_refactor_20260507/](./tracks/server_creation_ui_refactor_20260507/)*
