@@ -3,7 +3,7 @@
 ## Phase 1: Data Model and API Cleanup
 Remove `icon_url` from the core data structures and server-side logic.
 
-- [ ] Task: Remove `icon_url` from Shared Models
+- [x] Task: Remove `icon_url` from Shared Models (63fe431)
     - [ ] Update `Server` data class in `shared` module.
     - [ ] Update `CreateServerRequest` or similar models in `shared`.
 - [ ] Task: Update Server-Side Database and Logic
