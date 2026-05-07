@@ -15,7 +15,6 @@ import website.woodendoor.conflux.state.LoginState
 @Composable
 fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
     var serverName by remember { mutableStateOf("") }
-    var iconUrl by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
     var createdServer by remember { mutableStateOf<Server?>(null) }
@@ -56,15 +55,6 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            TextField(
-                value = iconUrl,
-                onValueChange = { iconUrl = it },
-                label = { Text("Icon URL (Optional)") },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
-            )
             Spacer(modifier = Modifier.height(24.dp))
             
             Button(
@@ -81,7 +71,6 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
                             val ownerId = currentUser.username
                             val server = apiClient.createServer(
                                 name = serverName,
-                                iconUrl = iconUrl.ifBlank { null },
                                 ownerId = ownerId
                             )
                             message = "Success! Server ID: ${server.id}"
@@ -116,7 +105,6 @@ fun CreateServerScreen(onServerCreated: (Server) -> Unit = {}) {
                 onClick = {
                     createdServer = null
                     serverName = ""
-                    iconUrl = ""
                     message = ""
                 },
                 modifier = Modifier.fillMaxWidth()
