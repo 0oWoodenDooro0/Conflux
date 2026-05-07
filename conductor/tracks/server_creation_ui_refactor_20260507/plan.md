@@ -22,7 +22,7 @@ Remove `icon_url` references from the Compose Multiplatform UI.
     - [ ] Remove `icon_url` from Server Settings screen.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Client-Side Logic and UI Cleanup' (Protocol in workflow.md)
 
-## Phase 3: Server Creation Dialog Implementation
+## Phase 3: Server Creation Dialog Implementation [checkpoint: 9c5e379]
 Implement the new dialog-based server creation UI.
 
 - [x] Task: Implement `CreateServerDialog` (f8950f6)
