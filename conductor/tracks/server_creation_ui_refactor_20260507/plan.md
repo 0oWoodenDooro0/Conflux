@@ -12,7 +12,7 @@ Remove `icon_url` from the core data structures and server-side logic.
     - [ ] Update server-side tests to reflect the model change.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Data Model and API Cleanup' (Protocol in workflow.md)
 
-## Phase 2: Client-Side Logic and UI Cleanup
+## Phase 2: Client-Side Logic and UI Cleanup [checkpoint: 359edf7]
 Remove `icon_url` references from the Compose Multiplatform UI.
 
 - [x] Task: Update Client API Calls (63fe431)
