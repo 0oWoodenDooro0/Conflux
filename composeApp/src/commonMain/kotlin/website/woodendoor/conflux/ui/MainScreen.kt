@@ -122,9 +122,13 @@ fun MainScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 if (isCreatingServer) {
-                    CreateServerScreen(onServerCreated = {
-                        isCreatingServer = false
-                    })
+                    CreateServerDialog(
+                        apiClient = apiClient,
+                        onDismissRequest = { isCreatingServer = false },
+                        onServerCreated = {
+                            isCreatingServer = false
+                        }
+                    )
                 } else if (isJoiningServer) {
                     JoinServerDialog(
                         apiClient = apiClient,
