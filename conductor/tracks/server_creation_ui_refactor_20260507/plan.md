@@ -28,7 +28,7 @@ Implement the new dialog-based server creation UI.
 - [x] Task: Implement `CreateServerDialog` (f8950f6)
     - [ ] Create a new Material3 `AlertDialog` for server creation.
     - [ ] Include input field for server name only.
-- [ ] Task: Integrate Dialog into Main UI
+- [x] Task: Integrate Dialog into Main UI (852a584)
     - [ ] Update the action that previously triggered `createServerScreen` to show the dialog instead.
     - [ ] Remove the old `createServerScreen` implementation and navigation routes.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Server Creation Dialog Implementation' (Protocol in workflow.md)
