@@ -15,9 +15,9 @@ Remove `icon_url` from the core data structures and server-side logic.
 ## Phase 2: Client-Side Logic and UI Cleanup
 Remove `icon_url` references from the Compose Multiplatform UI.
 
-- [ ] Task: Update Client API Calls
+- [x] Task: Update Client API Calls (63fe431)
     - [ ] Update `ServerApiClient` to match the new request/response models.
-- [ ] Task: Clean up existing UI components
+- [x] Task: Clean up existing UI components (a2950e0)
     - [ ] Remove `icon_url` from Server Sidebar (ensure text initials are used).
     - [ ] Remove `icon_url` from Server Settings screen.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Client-Side Logic and UI Cleanup' (Protocol in workflow.md)
