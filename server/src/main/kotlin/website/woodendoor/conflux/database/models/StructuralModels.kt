@@ -6,7 +6,6 @@ object Servers : Table("servers") {
     val id = varchar("id", 36)
     val name = varchar("name", 100)
     val ownerId = varchar("owner_id", 36).references(Users.id)
-    val icon = varchar("icon", 255).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

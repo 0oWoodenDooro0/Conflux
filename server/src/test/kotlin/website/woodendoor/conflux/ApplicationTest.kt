@@ -31,12 +31,11 @@ class ApplicationTest {
         }
         val response = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(CreateServerRequest(name = "New Server", iconUrl = "http://icon.com", ownerId = "test-owner")))
+            setBody(Json.encodeToString(CreateServerRequest(name = "New Server", ownerId = "test-owner")))
         }
         assertEquals(HttpStatusCode.Created, response.status)
         val server = Json.decodeFromString<Server>(response.bodyAsText())
         assertEquals("New Server", server.name)
-        assertEquals("http://icon.com", server.icon)
         assertNotNull(server.ownerId)
         assertTrue(server.ownerId.isNotEmpty())
         assertNotNull(server.id)

@@ -10,7 +10,6 @@ class MappingTest {
     fun `test CreateServerRequest to Server domain model mapping`() {
         val request = CreateServerRequest(
             name = "Test Server",
-            iconUrl = "http://icon.com",
             ownerId = "user-1"
         )
         val server = request.toDomain(id = "server-1")
@@ -18,7 +17,6 @@ class MappingTest {
         assertEquals("server-1", server.id)
         assertEquals("Test Server", server.name)
         assertEquals("user-1", server.ownerId)
-        assertEquals("http://icon.com", server.icon)
     }
 
     @Test

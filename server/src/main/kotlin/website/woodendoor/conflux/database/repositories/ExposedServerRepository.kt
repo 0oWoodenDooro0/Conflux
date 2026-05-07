@@ -17,8 +17,7 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
         name = row[Servers.name],
-        ownerId = row[Servers.ownerId],
-        icon = row[Servers.icon]
+        ownerId = row[Servers.ownerId]
     )
 
     private fun resultRowToRole(row: ResultRow) = Role(
@@ -42,7 +41,6 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
             it[id] = server.id
             it[name] = server.name
             it[ownerId] = server.ownerId
-            it[icon] = server.icon
         }
         val createdServer = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToServer)
         
@@ -112,7 +110,6 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
         Servers.update({ Servers.id eq server.id }) {
             it[name] = server.name
             it[ownerId] = server.ownerId
-            it[icon] = server.icon
         } > 0
     }
 

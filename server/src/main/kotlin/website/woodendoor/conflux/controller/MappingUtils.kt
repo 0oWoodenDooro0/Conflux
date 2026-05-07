@@ -5,8 +5,7 @@ import website.woodendoor.conflux.models.*
 fun CreateServerRequest.toDomain(id: String) = Server(
     id = id,
     name = name,
-    ownerId = ownerId,
-    icon = iconUrl
+    ownerId = ownerId
 )
 
 fun CreateChannelRequest.toDomain(id: String, serverId: String) = Channel(
