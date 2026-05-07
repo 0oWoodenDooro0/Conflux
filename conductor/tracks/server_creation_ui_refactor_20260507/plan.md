@@ -1,6 +1,6 @@
 # Implementation Plan - Server Creation UI Refactor and Icon Removal
 
-## Phase 1: Data Model and API Cleanup
+## Phase 1: Data Model and API Cleanup [checkpoint: 7207602]
 Remove `icon_url` from the core data structures and server-side logic.
 
 - [x] Task: Remove `icon_url` from Shared Models (63fe431)
