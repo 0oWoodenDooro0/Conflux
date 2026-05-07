@@ -10,7 +10,6 @@ class ApiModelsTest {
     fun testCreateServerRequestWithDetails() {
         val request = CreateServerRequest(
             name = "Full Server",
-            iconUrl = "http://example.com/icon.png",
             ownerId = "test-user"
         )
         val json = Json.encodeToString(request)

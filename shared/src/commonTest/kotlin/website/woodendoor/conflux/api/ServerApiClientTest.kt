@@ -20,8 +20,7 @@ class ServerApiClientTest {
         val mockServer = Server(
             id = "test-id",
             name = "Test Server",
-            ownerId = "owner-id",
-            icon = "http://icon.com"
+            ownerId = "owner-id"
         )
         
         val mockEngine = MockEngine { request ->
@@ -34,7 +33,6 @@ class ServerApiClientTest {
             val expectedBody = Json.encodeToString(
                 CreateServerRequest(
                     name = "Test Server",
-                    iconUrl = "http://icon.com",
                     ownerId = "owner-id"
                 )
             )
@@ -52,7 +50,7 @@ class ServerApiClientTest {
                 json()
             }
         }, "http://localhost:8080")
-        val result = client.createServer("Test Server", "http://icon.com", "owner-id")
+        val result = client.createServer("Test Server", "owner-id")
         
         assertEquals(mockServer, result)
     }

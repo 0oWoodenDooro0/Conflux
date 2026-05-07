@@ -13,7 +13,6 @@ class StructuralModelTest {
             id = "server-789",
             name = "Conflux HQ",
             ownerId = "user-123",
-            icon = "https://example.com/icon.png",
             memberIds = listOf("user-123", "user-456"),
             roleIds = listOf("role-456")
         )
