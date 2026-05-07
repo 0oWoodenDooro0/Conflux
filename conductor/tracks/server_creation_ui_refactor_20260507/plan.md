@@ -25,7 +25,7 @@ Remove `icon_url` references from the Compose Multiplatform UI.
 ## Phase 3: Server Creation Dialog Implementation
 Implement the new dialog-based server creation UI.
 
-- [ ] Task: Implement `CreateServerDialog`
+- [x] Task: Implement `CreateServerDialog` (f8950f6)
     - [ ] Create a new Material3 `AlertDialog` for server creation.
     - [ ] Include input field for server name only.
 - [ ] Task: Integrate Dialog into Main UI
