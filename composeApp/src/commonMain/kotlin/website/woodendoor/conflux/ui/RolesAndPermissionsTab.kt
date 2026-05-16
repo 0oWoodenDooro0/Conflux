@@ -166,13 +166,19 @@ fun RoleGeneralSettings(
     priority: Int,
     onPriorityChange: (Int) -> Unit
 ) {
+    var textValue by remember(priority) { mutableStateOf(priority.toString()) }
+
     OutlinedTextField(
-        value = priority.toString(),
+        value = textValue,
         onValueChange = { newValue ->
+            textValue = newValue
             newValue.toIntOrNull()?.let { onPriorityChange(it) }
         },
         label = { Text("Priority Level") },
-        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+            keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+        )
     )
 }
 

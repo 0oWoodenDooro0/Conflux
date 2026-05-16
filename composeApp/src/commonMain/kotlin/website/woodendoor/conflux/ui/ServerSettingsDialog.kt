@@ -232,7 +232,7 @@ fun RoleCreationDialog(
 ) {
     var name by remember { mutableStateOf("") }
     var permissions by remember { mutableStateOf(0L) }
-    var priority by remember { mutableStateOf(0) }
+    var priorityText by remember { mutableStateOf("0") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -247,10 +247,13 @@ fun RoleCreationDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 TextField(
-                    value = priority.toString(),
-                    onValueChange = { priority = it.toIntOrNull() ?: 0 },
+                    value = priorityText,
+                    onValueChange = { priorityText = it },
                     label = { Text("Priority Level") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    )
                 )
                 Spacer(Modifier.height(16.dp))
                 Text("Permissions", style = MaterialTheme.typography.titleSmall)
@@ -264,7 +267,7 @@ fun RoleCreationDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onAdd(name, permissions, priority) },
+                onClick = { onAdd(name, permissions, priorityText.toIntOrNull() ?: 0) },
                 enabled = name.isNotBlank()
             ) {
                 Text("Create")
