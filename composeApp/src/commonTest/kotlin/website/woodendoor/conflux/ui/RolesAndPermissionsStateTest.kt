@@ -78,13 +78,14 @@ class RolesAndPermissionsStateTest {
         val state = RolesAndPermissionsState(listOf(role))
         state.selectRole(role)
         
-        assertEquals(5, state.pendingPriority)
-        state.updatePendingPriority(10)
-        assertEquals(10, state.pendingPriority)
+        assertEquals("5", state.pendingPriorityText)
+        state.updatePendingPriority("10")
+        assertEquals("10", state.pendingPriorityText)
         assertTrue(state.hasChanges)
+        assertTrue(state.canSave)
         
         state.revertChanges()
-        assertEquals(5, state.pendingPriority)
+        assertEquals("5", state.pendingPriorityText)
         assertEquals(5, state.selectedRole?.priorityLevel)
     }
 
@@ -95,10 +96,10 @@ class RolesAndPermissionsStateTest {
         state.selectRole(role)
         
         assertTrue(!state.hasChanges)
-        state.updatePendingPriority(6)
+        state.updatePendingPriority("6")
         assertTrue(state.hasChanges)
         
-        state.updatePendingPriority(5) // Back to original
+        state.updatePendingPriority("5") // Back to original
         assertTrue(!state.hasChanges)
     }
 
@@ -110,17 +111,23 @@ class RolesAndPermissionsStateTest {
         
         assertTrue(state.isPriorityValid)
         
-        state.updatePendingPriority(-1)
+        state.updatePendingPriority("-1")
         assertTrue(!state.isPriorityValid)
         
-        state.updatePendingPriority(101)
+        state.updatePendingPriority("101")
         assertTrue(!state.isPriorityValid)
         
-        state.updatePendingPriority(100)
+        state.updatePendingPriority("100")
         assertTrue(state.isPriorityValid)
         
-        state.updatePendingPriority(0)
+        state.updatePendingPriority("0")
         assertTrue(state.isPriorityValid)
+
+        state.updatePendingPriority("abc")
+        assertTrue(!state.isPriorityValid)
+
+        state.updatePendingPriority("")
+        assertTrue(!state.isPriorityValid)
     }
 
     @Test
@@ -131,16 +138,28 @@ class RolesAndPermissionsStateTest {
         
         assertTrue(!state.hasChanges)
         
-        state.updatePendingPriority(51)
+        state.updatePendingPriority("51")
         assertTrue(state.hasChanges)
+        assertTrue(state.canSave)
         
-        state.updatePendingPriority(101)
-        assertTrue(!state.hasChanges) // Invalid priority, so hasChanges should be false
+        state.updatePendingPriority("101")
+        assertTrue(state.hasChanges) // Now hasChanges remains true even if invalid
+        assertTrue(!state.canSave) // But canSave is false
         
-        state.updatePendingPriority(100)
+        state.updatePendingPriority("100")
         assertTrue(state.hasChanges)
+        assertTrue(state.canSave)
         
-        state.updatePendingPriority(-1)
-        assertTrue(!state.hasChanges) // Invalid priority
+        state.updatePendingPriority("-1")
+        assertTrue(state.hasChanges)
+        assertTrue(!state.canSave)
+
+        state.updatePendingPriority("abc")
+        assertTrue(state.hasChanges)
+        assertTrue(!state.canSave)
+
+        state.updatePendingPriority("")
+        assertTrue(state.hasChanges)
+        assertTrue(!state.canSave)
     }
 }

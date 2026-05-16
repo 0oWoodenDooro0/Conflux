@@ -115,11 +115,14 @@ fun RolesAndPermissionsTab(
                                 Text("Revert")
                             }
                             Spacer(Modifier.width(8.dp))
-                            Button(onClick = { 
-                                val perms = state.pendingPermissions ?: selectedRole.permissions
-                                val priority = state.pendingPriority ?: selectedRole.priorityLevel
-                                onSaveChanges(selectedRole, perms, priority)
-                            }) {
+                            Button(
+                                onClick = { 
+                                    val perms = state.pendingPermissions ?: selectedRole.permissions
+                                    val priority = state.pendingPriorityText.toIntOrNull() ?: selectedRole.priorityLevel
+                                    onSaveChanges(selectedRole, perms, priority)
+                                },
+                                enabled = state.canSave
+                            ) {
                                 Text("Save Changes")
                             }
                         }
@@ -135,7 +138,7 @@ fun RolesAndPermissionsTab(
                     0 -> {
                         Column(modifier = Modifier.fillMaxSize()) {
                             RoleGeneralSettings(
-                                priority = state.pendingPriority ?: selectedRole.priorityLevel,
+                                priorityText = state.pendingPriorityText,
                                 isError = !state.isPriorityValid,
                                 onPriorityChange = { state.updatePendingPriority(it) }
                             )
@@ -164,18 +167,13 @@ fun RolesAndPermissionsTab(
 
 @Composable
 fun RoleGeneralSettings(
-    priority: Int,
+    priorityText: String,
     isError: Boolean,
-    onPriorityChange: (Int) -> Unit
+    onPriorityChange: (String) -> Unit
 ) {
-    var textValue by remember(priority) { mutableStateOf(priority.toString()) }
-
     OutlinedTextField(
-        value = textValue,
-        onValueChange = { newValue ->
-            textValue = newValue
-            newValue.toIntOrNull()?.let { onPriorityChange(it) }
-        },
+        value = priorityText,
+        onValueChange = onPriorityChange,
         label = { Text("Priority Level") },
         isError = isError,
         supportingText = if (isError) {

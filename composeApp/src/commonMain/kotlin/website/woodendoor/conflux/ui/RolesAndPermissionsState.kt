@@ -17,24 +17,26 @@ class RolesAndPermissionsState(
     var pendingPermissions by mutableStateOf<Long?>(null)
         private set
 
-    var pendingPriority by mutableStateOf<Int?>(null)
+    var pendingPriorityText by mutableStateOf("")
         private set
 
     var roleMembers by mutableStateOf<List<User>>(emptyList())
         private set
 
     val isPriorityValid: Boolean
-        get() = pendingPriority == null || pendingPriority in 0..100
+        get() = pendingPriorityText.toIntOrNull() in 0..100
 
     val hasChanges: Boolean
-        get() = ((pendingPermissions != null && pendingPermissions != selectedRole?.permissions) ||
-                (pendingPriority != null && pendingPriority != selectedRole?.priorityLevel)) &&
-                isPriorityValid
+        get() = (pendingPermissions != null && pendingPermissions != selectedRole?.permissions) ||
+                (pendingPriorityText.toIntOrNull() != selectedRole?.priorityLevel)
+
+    val canSave: Boolean
+        get() = hasChanges && isPriorityValid
 
     fun selectRole(role: Role?) {
         selectedRole = role
         pendingPermissions = role?.permissions
-        pendingPriority = role?.priorityLevel
+        pendingPriorityText = role?.priorityLevel?.toString() ?: ""
         roleMembers = emptyList()
     }
     
@@ -49,8 +51,9 @@ class RolesAndPermissionsState(
         if (pendingPermissions == null) {
             pendingPermissions = selectedRole?.permissions
         }
-        if (pendingPriority == null) {
-            pendingPriority = selectedRole?.priorityLevel
+        // If we haven't started editing, update the priority text to match new role data
+        if (!hasChanges) {
+            pendingPriorityText = selectedRole?.priorityLevel?.toString() ?: ""
         }
     }
 
@@ -59,12 +62,12 @@ class RolesAndPermissionsState(
         pendingPermissions = ConfluxPermission.setPermission(current, permission, enabled)
     }
 
-    fun updatePendingPriority(priority: Int) {
-        pendingPriority = priority
+    fun updatePendingPriority(priority: String) {
+        pendingPriorityText = priority
     }
 
     fun revertChanges() {
         pendingPermissions = selectedRole?.permissions
-        pendingPriority = selectedRole?.priorityLevel
+        pendingPriorityText = selectedRole?.priorityLevel?.toString() ?: ""
     }
 }
