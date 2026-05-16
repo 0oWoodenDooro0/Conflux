@@ -203,6 +203,7 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
 
     override suspend fun getRoles(serverId: String): List<Role> = dbQuery {
         Roles.selectAll().where { Roles.serverId eq serverId }
+            .orderBy(Roles.priorityLevel, SortOrder.DESC)
             .map(::resultRowToRole)
     }
 
@@ -227,6 +228,7 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
                 (MemberRoles.userId eq userId) and 
                 (Roles.id eq MemberRoles.roleId) 
             }
+            .orderBy(Roles.priorityLevel, SortOrder.DESC)
             .map(::resultRowToRole)
     }
 
