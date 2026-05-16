@@ -101,4 +101,46 @@ class RolesAndPermissionsStateTest {
         state.updatePendingPriority(5) // Back to original
         assertTrue(!state.hasChanges)
     }
+
+    @Test
+    fun testPriorityValidation() {
+        val role = Role("r1", "s1", "Admin", 1L, priorityLevel = 50)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
+        
+        assertTrue(state.isPriorityValid)
+        
+        state.updatePendingPriority(-1)
+        assertTrue(!state.isPriorityValid)
+        
+        state.updatePendingPriority(101)
+        assertTrue(!state.isPriorityValid)
+        
+        state.updatePendingPriority(100)
+        assertTrue(state.isPriorityValid)
+        
+        state.updatePendingPriority(0)
+        assertTrue(state.isPriorityValid)
+    }
+
+    @Test
+    fun testHasChangesWithInvalidPriority() {
+        val role = Role("r1", "s1", "Admin", 1L, priorityLevel = 50)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
+        
+        assertTrue(!state.hasChanges)
+        
+        state.updatePendingPriority(51)
+        assertTrue(state.hasChanges)
+        
+        state.updatePendingPriority(101)
+        assertTrue(!state.hasChanges) // Invalid priority, so hasChanges should be false
+        
+        state.updatePendingPriority(100)
+        assertTrue(state.hasChanges)
+        
+        state.updatePendingPriority(-1)
+        assertTrue(!state.hasChanges) // Invalid priority
+    }
 }

@@ -23,9 +23,13 @@ class RolesAndPermissionsState(
     var roleMembers by mutableStateOf<List<User>>(emptyList())
         private set
 
+    val isPriorityValid: Boolean
+        get() = pendingPriority == null || pendingPriority in 0..100
+
     val hasChanges: Boolean
-        get() = (pendingPermissions != null && pendingPermissions != selectedRole?.permissions) ||
-                (pendingPriority != null && pendingPriority != selectedRole?.priorityLevel)
+        get() = ((pendingPermissions != null && pendingPermissions != selectedRole?.permissions) ||
+                (pendingPriority != null && pendingPriority != selectedRole?.priorityLevel)) &&
+                isPriorityValid
 
     fun selectRole(role: Role?) {
         selectedRole = role
