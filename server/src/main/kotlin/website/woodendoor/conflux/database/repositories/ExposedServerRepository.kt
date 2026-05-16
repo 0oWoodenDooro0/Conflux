@@ -231,11 +231,22 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
     }
 
     override suspend fun getPermissionsForMember(serverId: String, userId: String): Long = dbQuery {
+        val resolvedUserId = if (userRepository.getUser(userId) == null) {
+            userRepository.findByUsername(userId)?.id ?: userId
+        } else {
+            userId
+        }
+
+        val server = Servers.selectAll().where { Servers.id eq serverId }.singleOrNull()
+        if (server != null && server[Servers.ownerId] == resolvedUserId) {
+            return@dbQuery ConfluxPermission.ALL
+        }
+
         (Roles innerJoin MemberRoles)
             .select(Roles.permissions)
             .where { 
                 (MemberRoles.serverId eq serverId) and 
-                (MemberRoles.userId eq userId) and 
+                (MemberRoles.userId eq resolvedUserId) and 
                 (Roles.id eq MemberRoles.roleId) 
             }
             .map { it[Roles.permissions] }

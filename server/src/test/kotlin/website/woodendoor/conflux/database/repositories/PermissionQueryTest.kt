@@ -53,4 +53,23 @@ class PermissionQueryTest {
         val updatedPerms = serverRepository.getPermissionsForMember(server.id, member.id)
         assertEquals(ConfluxPermission.MESSAGING or ConfluxPermission.CHANNEL_MANAGEMENT, updatedPerms)
     }
+
+    @Test
+    fun testOwnerAlwaysHasAllPermissions() = runBlocking {
+        val owner = User("owner1", "owner", "0001")
+        userRepository.createUser(owner)
+
+        val server = Server("s1", "Test Server", owner.id)
+        serverRepository.createServer(server)
+
+        // Remove all roles from owner
+        val ownerRoles = serverRepository.getRolesForMember(server.id, owner.id)
+        for (role in ownerRoles) {
+            serverRepository.removeRoleFromMember(server.id, owner.id, role.id)
+        }
+
+        // Owner should still have ALL permissions
+        val ownerPerms = serverRepository.getPermissionsForMember(server.id, owner.id)
+        assertEquals(ConfluxPermission.ALL, ownerPerms)
+    }
 }
