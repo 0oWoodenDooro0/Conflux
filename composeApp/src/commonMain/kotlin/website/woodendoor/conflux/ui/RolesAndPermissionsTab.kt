@@ -136,6 +136,7 @@ fun RolesAndPermissionsTab(
                         Column(modifier = Modifier.fillMaxSize()) {
                             RoleGeneralSettings(
                                 priority = state.pendingPriority ?: selectedRole.priorityLevel,
+                                isError = !state.isPriorityValid,
                                 onPriorityChange = { state.updatePendingPriority(it) }
                             )
 
@@ -164,6 +165,7 @@ fun RolesAndPermissionsTab(
 @Composable
 fun RoleGeneralSettings(
     priority: Int,
+    isError: Boolean,
     onPriorityChange: (Int) -> Unit
 ) {
     var textValue by remember(priority) { mutableStateOf(priority.toString()) }
@@ -175,6 +177,10 @@ fun RoleGeneralSettings(
             newValue.toIntOrNull()?.let { onPriorityChange(it) }
         },
         label = { Text("Priority Level") },
+        isError = isError,
+        supportingText = if (isError) {
+            { Text("Priority must be between 0 and 100") }
+        } else null,
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
             keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
