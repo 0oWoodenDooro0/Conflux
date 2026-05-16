@@ -176,15 +176,9 @@ fun RoleGeneralSettings(
         onValueChange = onPriorityChange,
         label = { Text("Priority Level") },
         isError = isError,
-        supportingText = {
-            if (isError) {
-                Text(
-                    text = "Priority must be between 0 and 100",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        },
+        supportingText = if (isError) {
+            { Text("Priority must be between 0 and 100") }
+        } else null,
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
             keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
