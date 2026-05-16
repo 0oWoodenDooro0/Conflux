@@ -233,24 +233,37 @@ fun RoleCreationDialog(
     var name by remember { mutableStateOf("") }
     var permissions by remember { mutableStateOf(0L) }
     var priorityText by remember { mutableStateOf("0") }
+    
+    val isPriorityValid = priorityText.toIntOrNull() in 0..100
+    val canCreate = name.isNotBlank() && isPriorityValid
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Create New Role") },
         text = {
             Column {
-                TextField(
+                OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Role Name") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
-                TextField(
+                OutlinedTextField(
                     value = priorityText,
                     onValueChange = { priorityText = it },
                     label = { Text("Priority Level") },
                     modifier = Modifier.fillMaxWidth(),
+                    isError = !isPriorityValid,
+                    supportingText = {
+                        if (!isPriorityValid) {
+                            Text(
+                                "Priority must be between 0 and 100",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    },
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
                     )
@@ -268,7 +281,7 @@ fun RoleCreationDialog(
         confirmButton = {
             Button(
                 onClick = { onAdd(name, permissions, priorityText.toIntOrNull() ?: 0) },
-                enabled = name.isNotBlank()
+                enabled = canCreate
             ) {
                 Text("Create")
             }
