@@ -138,6 +138,9 @@ fun Route.roleRoutes(roleController: RoleController) {
 
             try {
                 val request = call.receive<CreateRoleRequest>()
+                if (request.priorityLevel !in 0..100) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
+                }
                 val result = roleController.createRole(serverId, request)
                 call.respond(result, HttpStatusCode.Created)
             } catch (e: Exception) {
@@ -156,6 +159,9 @@ fun Route.roleRoutes(roleController: RoleController) {
 
             try {
                 val request = call.receive<UpdateRoleRequest>()
+                if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
+                    return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
+                }
                 val existingRole = when (val getResult = roleController.getRole(roleId)) {
                     is OperationResult.Success -> getResult.data
                     is OperationResult.Failure -> return@patch call.respond(getResult)
