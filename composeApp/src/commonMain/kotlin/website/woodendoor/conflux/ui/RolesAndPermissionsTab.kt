@@ -26,7 +26,7 @@ fun RolesAndPermissionsTab(
     state: RolesAndPermissionsState,
     allServerMembers: List<User>,
     onAddRole: () -> Unit,
-    onSaveChanges: (Role, Long) -> Unit,
+    onSaveChanges: (Role, Long, Int) -> Unit,
     onAssignRole: (Role, User) -> Unit,
     onRemoveRole: (Role, User) -> Unit
 ) {
@@ -116,7 +116,9 @@ fun RolesAndPermissionsTab(
                             }
                             Spacer(Modifier.width(8.dp))
                             Button(onClick = { 
-                                state.pendingPermissions?.let { onSaveChanges(selectedRole, it) }
+                                val perms = state.pendingPermissions ?: selectedRole.permissions
+                                val priority = state.pendingPriority ?: selectedRole.priorityLevel
+                                onSaveChanges(selectedRole, perms, priority)
                             }) {
                                 Text("Save Changes")
                             }
@@ -131,12 +133,19 @@ fun RolesAndPermissionsTab(
 
                 when (detailTabIndex) {
                     0 -> {
-                        PermissionList(
-                            permissions = state.pendingPermissions ?: selectedRole.permissions,
-                            onPermissionChange = { permission, enabled ->
-                                state.updatePendingPermission(permission, enabled)
-                            }
-                        )
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            RoleGeneralSettings(
+                                priority = state.pendingPriority ?: selectedRole.priorityLevel,
+                                onPriorityChange = { state.updatePendingPriority(it) }
+                            )
+
+                            PermissionList(
+                                permissions = state.pendingPermissions ?: selectedRole.permissions,
+                                onPermissionChange = { permission, enabled ->
+                                    state.updatePendingPermission(permission, enabled)
+                                }
+                            )
+                        }
                     }
                     1 -> {
                         MemberAssignmentView(
@@ -150,6 +159,21 @@ fun RolesAndPermissionsTab(
             }
         }
     }
+}
+
+@Composable
+fun RoleGeneralSettings(
+    priority: Int,
+    onPriorityChange: (Int) -> Unit
+) {
+    OutlinedTextField(
+        value = priority.toString(),
+        onValueChange = { newValue ->
+            newValue.toIntOrNull()?.let { onPriorityChange(it) }
+        },
+        label = { Text("Priority Level") },
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+    )
 }
 
 @Composable

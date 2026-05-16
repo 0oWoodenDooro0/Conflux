@@ -127,7 +127,7 @@ fun ServerSettingsDialog(
                                     state = rolesState,
                                     allServerMembers = members,
                                     onAddRole = { isAddingRole = true },
-                                    onSaveChanges = { role, newPermissions ->
+                                    onSaveChanges = { role, newPermissions, newPriority ->
                                         scope.launch {
                                             try {
                                                 val adminId = MainState.currentUserId ?: return@launch
@@ -135,7 +135,8 @@ fun ServerSettingsDialog(
                                                     serverId = server.id,
                                                     userId = adminId,
                                                     roleId = role.id,
-                                                    permissions = newPermissions
+                                                    permissions = newPermissions,
+                                                    priority = newPriority
                                                 )
                                                 refreshData()
                                             } catch (e: Exception) {
