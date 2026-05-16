@@ -61,4 +61,44 @@ class RolesAndPermissionsStateTest {
         state.updatePendingPermission(1L, true) // Back to original
         assertTrue(!state.hasChanges)
     }
+
+    @Test
+    fun testRolesSorting() {
+        val role1 = Role("r1", "s1", "User", 0L, priorityLevel = 0)
+        val role2 = Role("r2", "s1", "Admin", 1L, priorityLevel = 10)
+        val state = RolesAndPermissionsState(listOf(role1, role2))
+        
+        assertEquals(role2, state.roles[0])
+        assertEquals(role1, state.roles[1])
+    }
+
+    @Test
+    fun testPendingPriority() {
+        val role = Role("r1", "s1", "Admin", 1L, priorityLevel = 5)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
+        
+        assertEquals(5, state.pendingPriority)
+        state.updatePendingPriority(10)
+        assertEquals(10, state.pendingPriority)
+        assertTrue(state.hasChanges)
+        
+        state.revertChanges()
+        assertEquals(5, state.pendingPriority)
+        assertEquals(5, state.selectedRole?.priorityLevel)
+    }
+
+    @Test
+    fun testHasChangesWithPriority() {
+        val role = Role("r1", "s1", "Admin", 1L, priorityLevel = 5)
+        val state = RolesAndPermissionsState(listOf(role))
+        state.selectRole(role)
+        
+        assertTrue(!state.hasChanges)
+        state.updatePendingPriority(6)
+        assertTrue(state.hasChanges)
+        
+        state.updatePendingPriority(5) // Back to original
+        assertTrue(!state.hasChanges)
+    }
 }
