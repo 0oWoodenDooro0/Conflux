@@ -20,6 +20,9 @@ fun CreateServerDialog(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    
+    val isNameTooLong = serverName.length > 32
+    val isNameError = isNameTooLong
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -29,13 +32,19 @@ fun CreateServerDialog(
                 Text("Servers are where you and your friends hang out. Make yours and start talking.")
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                TextField(
+                OutlinedTextField(
                     value = serverName,
                     onValueChange = { serverName = it },
                     label = { Text("Server Name") },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading,
-                    placeholder = { Text("My Awesome Server") }
+                    placeholder = { Text("My Awesome Server") },
+                    isError = isNameError,
+                    supportingText = {
+                        if (isNameTooLong) {
+                            Text("Server name cannot exceed 32 characters", color = MaterialTheme.colorScheme.error)
+                        }
+                    }
                 )
                 
                 if (errorMessage != null) {
@@ -57,7 +66,7 @@ fun CreateServerDialog(
                                 return@launch
                             }
                             val server = apiClient.createServer(
-                                name = serverName,
+                                name = serverName.trim(),
                                 ownerId = currentUser.username
                             )
                             onServerCreated(server)
@@ -69,7 +78,7 @@ fun CreateServerDialog(
                         }
                     }
                 },
-                enabled = serverName.isNotBlank() && !isLoading
+                enabled = serverName.isNotBlank() && !isNameError && !isLoading
             ) {
                 Text(if (isLoading) "Creating..." else "Create")
             }
