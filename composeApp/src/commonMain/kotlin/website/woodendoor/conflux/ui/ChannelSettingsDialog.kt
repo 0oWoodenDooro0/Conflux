@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 import website.woodendoor.conflux.api.ServerApiClient
 import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.state.MainState
+import website.woodendoor.conflux.validation.ChannelValidator
+import website.woodendoor.conflux.validation.ValidationResult
 
 @Composable
 fun ChannelSettingsDialog(
@@ -22,6 +24,7 @@ fun ChannelSettingsDialog(
     onDismissRequest: () -> Unit
 ) {
     var name by remember { mutableStateOf(channel.name) }
+    var validationError by remember { mutableStateOf<String?>(null) }
     var isDeleting by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -64,10 +67,22 @@ fun ChannelSettingsDialog(
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = name,
-                        onValueChange = { name = it },
+                        onValueChange = {
+                            name = it
+                            validationError = when (val result = ChannelValidator.validateName(it)) {
+                                is ValidationResult.Error -> result.message
+                                ValidationResult.Success -> null
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        placeholder = { Text("new-channel-name") }
+                        placeholder = { Text("new-channel-name") },
+                        isError = validationError != null,
+                        supportingText = {
+                            if (validationError != null) {
+                                Text(validationError!!, color = MaterialTheme.colorScheme.error)
+                            }
+                        }
                     )
                     
                     Spacer(modifier = Modifier.height(32.dp))
@@ -112,7 +127,7 @@ fun ChannelSettingsDialog(
                         }
                     }
                 },
-                enabled = name.isNotBlank() && name != channel.name && !isLoading
+                enabled = name.isNotBlank() && name != channel.name && !isLoading && validationError == null
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
