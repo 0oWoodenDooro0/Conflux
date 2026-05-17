@@ -89,7 +89,7 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing channelId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
                 return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
@@ -107,7 +107,7 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing channelId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
                 return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
@@ -117,6 +117,51 @@ fun Route.channelRoutes(
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
             }
+        }
+
+        get("/{channelId}/overrides") {
+            val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+
+            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+                return@get call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            val result = channelController.getOverrides(channelId)
+            call.respond(result)
+        }
+
+        post("/{channelId}/overrides") {
+            val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+
+            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val request = call.receive<UpsertOverrideRequest>()
+                val result = channelController.upsertOverride(channelId, request)
+                call.respond(result)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
+
+        delete("/{channelId}/overrides/{overrideId}") {
+            val serverId = call.parameters["serverId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+            val overrideId = call.parameters["overrideId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing overrideId")
+
+            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            val result = channelController.deleteOverride(overrideId)
+            call.respond(result)
         }
     }
 }
