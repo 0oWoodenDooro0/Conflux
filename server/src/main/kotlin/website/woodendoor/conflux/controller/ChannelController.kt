@@ -3,10 +3,7 @@ package website.woodendoor.conflux.controller
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
-import website.woodendoor.conflux.models.Channel
-import website.woodendoor.conflux.models.ConfluxEvent
-import website.woodendoor.conflux.models.CreateChannelRequest
-import website.woodendoor.conflux.models.UpdateChannelRequest
+import website.woodendoor.conflux.models.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -19,6 +16,50 @@ class ChannelController(
     private val serverRepository: ServerRepository,
     private val connectionManager: WebSocketConnectionManager
 ) {
+
+    suspend fun getOverrides(channelId: String): OperationResult<List<ChannelPermissionOverride>> {
+        if (channelRepository.getChannel(channelId) == null) {
+            return OperationResult.Failure.NotFound("Channel not found")
+        }
+        val overrides = channelRepository.getOverrides(channelId)
+        return OperationResult.Success(overrides)
+    }
+
+    suspend fun upsertOverride(channelId: String, request: UpsertOverrideRequest): OperationResult<Unit> {
+        if (channelRepository.getChannel(channelId) == null) {
+            return OperationResult.Failure.NotFound("Channel not found")
+        }
+
+        val override = ChannelPermissionOverride(
+            id = UUID.randomUUID().toString(),
+            channelId = channelId,
+            targetId = request.targetId,
+            targetType = request.targetType,
+            allow = request.allow,
+            deny = request.deny
+        )
+
+        val success = channelRepository.upsertOverride(channelId, override)
+        return if (success) {
+            OperationResult.Success(Unit)
+        } else {
+            OperationResult.Failure.InternalError("Failed to upsert override")
+        }
+    }
+
+    suspend fun deleteOverride(overrideId: String): OperationResult<Unit> {
+        val success = channelRepository.deleteOverride(overrideId)
+        return if (success) {
+            OperationResult.Success(Unit)
+        } else {
+            OperationResult.Failure.NotFound("Override not found or failed to delete")
+        }
+    }
+
+    suspend fun hasPermission(serverId: String, channelId: String, userId: String, permission: Long): Boolean {
+        val effectivePermissions = channelRepository.getEffectivePermissions(serverId, channelId, userId)
+        return ConfluxPermission.hasPermission(effectivePermissions, permission)
+    }
 
     suspend fun editChannel(channelId: String, request: UpdateChannelRequest): OperationResult<Channel> {
         val existingChannel = channelRepository.getChannel(channelId)
