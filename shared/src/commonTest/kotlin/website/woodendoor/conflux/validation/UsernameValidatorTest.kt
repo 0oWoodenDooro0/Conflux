@@ -38,4 +38,11 @@ class UsernameValidatorTest {
         val result = UsernameValidator.validateUsername("confluxUser123")
         assertIs<ValidationResult.Success>(result)
     }
+
+    @Test
+    fun testValidateCharacters() {
+        assertIs<ValidationResult.Success>(UsernameValidator.validateCharacters("abc123"))
+        assertIs<ValidationResult.Error>(UsernameValidator.validateCharacters("user!"))
+        assertIs<ValidationResult.Success>(UsernameValidator.validateCharacters("")) // Empty should be fine for character check
+    }
 }
