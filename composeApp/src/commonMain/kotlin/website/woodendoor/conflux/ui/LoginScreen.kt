@@ -35,10 +35,14 @@ fun LoginScreen(
             value = username,
             onValueChange = { 
                 username = it
-                errorMessage = null
+                errorMessage = when (val result = UsernameValidator.validateCharacters(it)) {
+                    is ValidationResult.Error -> result.message
+                    ValidationResult.Success -> null
+                }
             },
             label = { Text("Username") },
             isError = errorMessage != null,
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(0.8f)
         )
         
