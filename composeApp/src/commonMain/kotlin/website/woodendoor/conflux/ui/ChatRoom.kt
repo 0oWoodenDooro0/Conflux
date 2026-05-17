@@ -80,7 +80,7 @@ fun ChatRoom(apiClient: ServerApiClient) {
                 }
             },
             sendError = MainState.messageSendError,
-            enabled = (MainState.currentUserPermissions and ConfluxPermission.MESSAGING) != 0L
+            enabled = (MainState.currentChannelPermissions and ConfluxPermission.MESSAGING) != 0L
         )
     }
 }

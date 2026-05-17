@@ -34,7 +34,8 @@ fun MainScreen() {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val canManageServer = (MainState.currentUserPermissions and (ConfluxPermission.ROLE_MANAGEMENT or ConfluxPermission.SERVER_MANAGEMENT)) != 0L
-    val canManageChannels = (MainState.currentUserPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L
+    val canManageChannelsServerWide = (MainState.currentUserPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L
+    val canManageCurrentChannel = (MainState.currentChannelPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L
 
     LaunchedEffect(canManageServer) {
         if (!canManageServer) {
@@ -42,8 +43,8 @@ fun MainScreen() {
         }
     }
 
-    LaunchedEffect(canManageChannels) {
-        if (!canManageChannels) {
+    LaunchedEffect(canManageChannelsServerWide, canManageCurrentChannel) {
+        if (!canManageChannelsServerWide && !canManageCurrentChannel) {
             isCreatingChannel = false
             channelToEdit = null
         }
@@ -100,7 +101,7 @@ fun MainScreen() {
                     serverName = selectedServer.name,
                     channels = channels,
                     selectedChannelId = MainState.selectedChannel?.id,
-                    canCreateChannel = canManageChannels,
+                    canCreateChannel = canManageChannelsServerWide,
                     canManageServer = canManageServer,
                     onCreateChannelClick = { isCreatingChannel = true },
                     onSettingsClick = { isShowingSettings = true },
