@@ -232,7 +232,8 @@ fun RoleGeneralSettings(
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
             keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
-        )
+        ),
+        singleLine = true
     )
 }
 
