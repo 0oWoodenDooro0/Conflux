@@ -3,10 +3,13 @@ package website.woodendoor.conflux
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
 import website.woodendoor.conflux.controller.*
 import website.woodendoor.conflux.database.DatabaseFactory
@@ -17,9 +20,13 @@ import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
+        .start(wait = true)
+}
 
 fun Application.module() {
+    install(WebSockets)
     install(ContentNegotiation) {
         json()
     }
