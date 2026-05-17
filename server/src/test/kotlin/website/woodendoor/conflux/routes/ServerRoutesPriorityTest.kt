@@ -53,10 +53,13 @@ class ServerRoutesPriorityTest {
         val server = json.decodeFromString<Server>(createServerResponse.bodyAsText())
         val serverId = server.id
         
-        // 2. Get the roles (to get a valid roleId)
-        val getRolesResponse = client.get("/api/servers/$serverId/roles")
-        val roles = json.decodeFromString<List<Role>>(getRolesResponse.bodyAsText())
-        val roleId = roles.first().id
+        // 2. Create a custom role
+        val createRoleResponse = client.post("/api/servers/$serverId/roles?userId=u1") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(Json.encodeToString(CreateRoleRequest("Custom Role", priorityLevel = 10)))
+        }
+        val customRole = json.decodeFromString<Role>(createRoleResponse.bodyAsText())
+        val roleId = customRole.id
 
         // 3. Try to update role with invalid priority (too high)
         val responseHigh = client.patch("/api/servers/$serverId/roles/$roleId?userId=u1") {

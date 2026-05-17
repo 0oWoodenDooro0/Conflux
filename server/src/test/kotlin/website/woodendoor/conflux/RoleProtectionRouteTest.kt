@@ -78,4 +78,37 @@ class RoleProtectionRouteTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, "Should not be able to create role with priority -1")
     }
+
+    @Test
+    fun testUpdateEveryonePermissions() = testApplication {
+        application { module() }
+        
+        // 1. Create a server
+        val createServerResponse = client.post("/api/servers") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(Json.encodeToString(CreateServerRequest(name = "Test Server", ownerId = "u1")))
+        }
+        val server = json.decodeFromString<Server>(createServerResponse.bodyAsText())
+        val serverId = server.id
+        
+        // 2. Get the @everyone role
+        val getRolesResponse = client.get("/api/servers/$serverId/roles")
+        val roles = json.decodeFromString<List<Role>>(getRolesResponse.bodyAsText())
+        val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }!!
+        val roleId = everyoneRole.id
+
+        // 3. Update @everyone permissions
+        val newPermissions = ConfluxPermission.MESSAGING or ConfluxPermission.CHANNEL_MANAGEMENT
+        val updateResponse = client.patch("/api/servers/$serverId/roles/$roleId?userId=u1") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(Json.encodeToString(UpdateRoleRequest(permissions = newPermissions)))
+        }
+        assertEquals(HttpStatusCode.OK, updateResponse.status, "Should be able to update @everyone permissions. Body: ${updateResponse.bodyAsText()}")
+
+        // 4. Verify update
+        val verifyResponse = client.get("/api/servers/$serverId/roles")
+        val finalRoles = json.decodeFromString<List<Role>>(verifyResponse.bodyAsText())
+        val finalEveryone = finalRoles.find { it.id == roleId }!!
+        assertEquals(newPermissions, finalEveryone.permissions)
+    }
 }

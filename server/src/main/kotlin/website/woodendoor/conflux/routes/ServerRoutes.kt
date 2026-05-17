@@ -160,9 +160,7 @@ fun Route.roleRoutes(roleController: RoleController) {
 
             try {
                 val request = call.receive<UpdateRoleRequest>()
-                if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
-                    return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
-                }
+                
                 val existingRole = when (val getResult = roleController.getRole(roleId)) {
                     is OperationResult.Success -> getResult.data
                     is OperationResult.Failure -> return@patch call.respond(getResult)
@@ -174,6 +172,11 @@ fun Route.roleRoutes(roleController: RoleController) {
                     }
                     if (request.priorityLevel != null && request.priorityLevel != existingRole.priorityLevel) {
                         return@patch call.respond(HttpStatusCode.BadRequest, "Cannot change the priority of the @everyone role")
+                    }
+                } else {
+                    // For custom roles, ensure priority is in 0..100
+                    if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
+                        return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
                     }
                 }
                 
