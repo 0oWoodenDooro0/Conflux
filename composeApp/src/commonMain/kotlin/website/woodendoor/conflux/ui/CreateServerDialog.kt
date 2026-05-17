@@ -35,7 +35,8 @@ fun CreateServerDialog(
                     label = { Text("Server Name") },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading,
-                    placeholder = { Text("My Awesome Server") }
+                    placeholder = { Text("My Awesome Server") },
+                    singleLine = true
                 )
                 
                 if (errorMessage != null) {

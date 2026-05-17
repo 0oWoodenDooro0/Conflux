@@ -46,7 +46,8 @@ fun ChannelCreationDialog(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading
+                    enabled = !isLoading,
+                    singleLine = true
                 )
                 if (errorMessage != null) {
                     Spacer(modifier = Modifier.height(8.dp))
