@@ -266,7 +266,8 @@ fun MemberAssignmentView(
                             Icon(Icons.Default.Close, contentDescription = null)
                         }
                     }
-                }
+                },
+                singleLine = true
             )
 
             DropdownMenu(
