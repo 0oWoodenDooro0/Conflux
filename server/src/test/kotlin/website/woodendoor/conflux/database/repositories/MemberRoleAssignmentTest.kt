@@ -25,7 +25,7 @@ class MemberRoleAssignmentTest {
     }
 
     @Test
-    fun testMemberRoleAssignedOnServerJoin() = runBlocking {
+    fun testNoMemberRoleAssignedOnServerJoin() = runBlocking {
         val owner = User("owner1", "owner", "0001")
         val member = User("member1", "member", "0002")
         userRepository.createUser(owner)
@@ -38,9 +38,6 @@ class MemberRoleAssignmentTest {
         assertTrue(joined, "User should be able to join server")
 
         val roles = serverRepository.getRolesForMember(server.id, member.id)
-        val memberRole = roles.find { it.name == "Member" }
-        
-        assertNotNull(memberRole, "Member role should be assigned to the new user")
-        assertEquals(ConfluxPermission.MESSAGING, memberRole.permissions, "Member role should have messaging privilege")
+        assertTrue(roles.isEmpty(), "No roles should be assigned to the new user")
     }
 }

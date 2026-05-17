@@ -9,6 +9,9 @@ import website.woodendoor.conflux.models.*
 import kotlin.test.*
 import java.util.UUID
 
+import website.woodendoor.conflux.DEFAULT_ROLE_NAME_EVERYONE
+import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
+
 class ExposedServerRepositoryTest {
     private val userRepository = ExposedUserRepository()
     private val serverRepository = ExposedServerRepository(userRepository)
@@ -23,6 +26,19 @@ class ExposedServerRepositoryTest {
     }
 
     @Test
+    fun `createServer should only create @everyone role`() = runBlocking {
+        val owner = User("owner", "owner", "0001")
+        userRepository.createUser(owner)
+        val server = Server("test-id", "Test Server", owner.id)
+        serverRepository.createServer(server)
+        
+        val roles = serverRepository.getRoles("test-id")
+        assertEquals(1, roles.size)
+        assertEquals(DEFAULT_ROLE_NAME_EVERYONE, roles[0].name)
+        assertEquals(DEFAULT_ROLE_PRIORITY_EVERYONE, roles[0].priorityLevel)
+    }
+
+    @Test
     fun testGetRolesSorting() = runBlocking {
         val owner = User("owner", "owner", "0001")
         userRepository.createUser(owner)
@@ -30,7 +46,7 @@ class ExposedServerRepositoryTest {
         val server = Server(serverId, "Test Server", owner.id)
         serverRepository.createServer(server)
 
-        // createServer adds Owner (100) and Member (0) roles
+        // createServer adds @everyone (-1) role
 
         // Add a role with priority 50
         val roleMid = Role(UUID.randomUUID().toString(), serverId, "Middle", 0, null, 50)
@@ -42,12 +58,11 @@ class ExposedServerRepositoryTest {
 
         val roles = serverRepository.getRoles(serverId)
         
-        // Expected order: 150, 100, 50, 0
-        assertEquals(4, roles.size)
+        // Expected order: 150, 50, -1
+        assertEquals(3, roles.size)
         assertEquals(150, roles[0].priorityLevel)
-        assertEquals(100, roles[1].priorityLevel)
-        assertEquals(50, roles[2].priorityLevel)
-        assertEquals(0, roles[3].priorityLevel)
+        assertEquals(50, roles[1].priorityLevel)
+        assertEquals(-1, roles[2].priorityLevel)
     }
 
     @Test
@@ -58,7 +73,10 @@ class ExposedServerRepositoryTest {
         val server = Server(serverId, "Test Server", owner.id)
         serverRepository.createServer(server)
 
-        // owner already has Owner role (100)
+        // owner has no roles assigned explicitly, but createServer doesn't assign any anymore.
+        // getRolesForMember currently only returns assigned roles. 
+        // Note: Task 5 will update getRolesForMember to include @everyone.
+        // For now, let's just check assigned roles.
 
         // Add a role with priority 50 and assign to owner
         val roleMid = Role(UUID.randomUUID().toString(), serverId, "Middle", 0, null, 50)
@@ -72,10 +90,9 @@ class ExposedServerRepositoryTest {
 
         val roles = serverRepository.getRolesForMember(serverId, owner.id)
         
-        // Expected order: 150, 100, 50
-        assertEquals(3, roles.size)
+        // Expected order: 150, 50
+        assertEquals(2, roles.size)
         assertEquals(150, roles[0].priorityLevel)
-        assertEquals(100, roles[1].priorityLevel)
-        assertEquals(50, roles[2].priorityLevel)
+        assertEquals(50, roles[1].priorityLevel)
     }
 }

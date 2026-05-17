@@ -63,14 +63,21 @@ class JoinServerTest {
     }
 
     @Test
-    fun testJoinServerAsOwner() = runBlocking {
+    fun `joinServer should not assign default role`() = runBlocking {
         val owner = User("owner", "owner", "0001")
+        val user = User("user", "user", "0002")
         userRepository.createUser(owner)
+        userRepository.createUser(user)
 
         val server = Server("s1", "Test Server", owner.id)
         serverRepository.createServer(server)
 
-        val result = serverRepository.joinServer(owner.id, server.id)
-        assertFalse(result, "Owner should be considered already a member or not allowed to join explicitly")
+        val result = serverRepository.joinServer(user.id, server.id)
+        assertTrue(result, "Should successfully join server")
+        
+        val roles = serverRepository.getRolesForMember(server.id, user.id)
+        // Since getRolesForMember hasn't been updated to include @everyone yet (Task 5), 
+        // it should be empty because we no longer assign "Member" role.
+        assertTrue(roles.isEmpty(), "No roles should be explicitly assigned to the new member")
     }
 }

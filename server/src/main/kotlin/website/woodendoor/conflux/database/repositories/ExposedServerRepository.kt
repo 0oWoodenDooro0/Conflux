@@ -10,8 +10,8 @@ import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import java.util.UUID
 
-import website.woodendoor.conflux.DEFAULT_ROLE_NAME_OWNER
-import website.woodendoor.conflux.DEFAULT_ROLE_NAME_MEMBER
+import website.woodendoor.conflux.DEFAULT_ROLE_NAME_EVERYONE
+import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 
 class ExposedServerRepository(private val userRepository: ExposedUserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
@@ -51,32 +51,14 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
                 it[this.userId] = createdServer.ownerId
             }
 
-            // Create Owner role
-            val ownerRoleId = UUID.randomUUID().toString()
-            Roles.insert {
-                it[id] = ownerRoleId
-                it[this.serverId] = createdServer.id
-                it[name] = DEFAULT_ROLE_NAME_OWNER
-                it[permissions] = ConfluxPermission.ALL
-                it[color] = null
-                it[priorityLevel] = 100
-            }
-            
-            // Create Member role
+            // Create @everyone role
             Roles.insert {
                 it[id] = UUID.randomUUID().toString()
                 it[this.serverId] = createdServer.id
-                it[name] = DEFAULT_ROLE_NAME_MEMBER
+                it[name] = DEFAULT_ROLE_NAME_EVERYONE
                 it[permissions] = ConfluxPermission.MESSAGING
                 it[color] = null
-                it[priorityLevel] = 0
-            }
-            
-            // Assign Owner role to creator
-            MemberRoles.insert {
-                it[this.serverId] = createdServer.id
-                it[this.userId] = createdServer.ownerId
-                it[this.roleId] = ownerRoleId
+                it[priorityLevel] = DEFAULT_ROLE_PRIORITY_EVERYONE
             }
         }
         
@@ -152,20 +134,6 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
             it[this.serverId] = serverId
             it[this.userId] = userId
         }.insertedCount > 0
-
-        if (inserted) {
-            val memberRole = Roles.selectAll()
-                .where { (Roles.serverId eq serverId) and (Roles.name eq DEFAULT_ROLE_NAME_MEMBER) }
-                .singleOrNull()
-            
-            if (memberRole != null) {
-                MemberRoles.insert {
-                    it[this.serverId] = serverId
-                    it[this.userId] = userId
-                    it[this.roleId] = memberRole[Roles.id]
-                }
-            }
-        }
 
         inserted
     }

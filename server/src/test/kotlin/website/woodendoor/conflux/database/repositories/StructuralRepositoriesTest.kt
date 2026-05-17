@@ -47,7 +47,7 @@ class StructuralRepositoriesTest {
         serverRepository.createRole("s1", role)
         
         val roles = serverRepository.getRoles("s1")
-        assertEquals(3, roles.size)
+        assertEquals(2, roles.size) // Admin and @everyone
         val adminRole = roles.find { it.name == "Admin" }
         assertNotNull(adminRole)
         assertEquals(role.name, adminRole.name)
