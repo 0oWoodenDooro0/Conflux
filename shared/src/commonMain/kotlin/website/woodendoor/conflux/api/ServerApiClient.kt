@@ -98,6 +98,32 @@ class ServerApiClient(
         return client.get("$baseUrl/api/servers/$serverId/members/$userId/permissions").body()
     }
 
+    suspend fun getChannelOverrides(serverId: String, channelId: String): List<ChannelPermissionOverride> {
+        return client.get("$baseUrl/api/servers/$serverId/channels/$channelId/overrides").body()
+    }
+
+    suspend fun upsertChannelOverride(serverId: String, channelId: String, userId: String, request: UpsertOverrideRequest): Boolean {
+        val response = client.post("$baseUrl/api/servers/$serverId/channels/$channelId/overrides") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+        return response.status.isSuccess()
+    }
+
+    suspend fun deleteChannelOverride(serverId: String, channelId: String, userId: String, overrideId: String): Boolean {
+        val response = client.delete("$baseUrl/api/servers/$serverId/channels/$channelId/overrides/$overrideId") {
+            parameter("userId", userId)
+        }
+        return response.status.isSuccess()
+    }
+
+    suspend fun getChannelPermissions(serverId: String, channelId: String, userId: String): Long {
+        return client.get("$baseUrl/api/servers/$serverId/channels/$channelId/permissions") {
+            parameter("userId", userId)
+        }.body()
+    }
+
     // Role Management API
     suspend fun getRoles(serverId: String): List<Role> {
         return client.get("$baseUrl/api/servers/$serverId/roles").body()

@@ -56,6 +56,11 @@ class ChannelController(
         }
     }
 
+    suspend fun getEffectivePermissions(serverId: String, channelId: String, userId: String): OperationResult<Long> {
+        val permissions = channelRepository.getEffectivePermissions(serverId, channelId, userId)
+        return OperationResult.Success(permissions)
+    }
+
     suspend fun hasPermission(serverId: String, channelId: String, userId: String, permission: Long): Boolean {
         val effectivePermissions = channelRepository.getEffectivePermissions(serverId, channelId, userId)
         return ConfluxPermission.hasPermission(effectivePermissions, permission)

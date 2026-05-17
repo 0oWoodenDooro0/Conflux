@@ -17,6 +17,7 @@ import website.woodendoor.conflux.models.Server
 object MainState {
     var currentUserId by mutableStateOf<String?>(null)
     var currentUserPermissions by mutableStateOf<Long>(0L)
+    var currentChannelPermissions by mutableStateOf<Long>(0L)
 
     var serverList by mutableStateOf<List<Server>>(emptyList())
     var selectedServer by mutableStateOf<Server?>(null)
@@ -121,6 +122,9 @@ object MainState {
                     currentUserId?.let { userId ->
                         try {
                             currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
+                            selectedChannel?.let { channel ->
+                                currentChannelPermissions = apiClient.getChannelPermissions(event.serverId, channel.id, userId)
+                            }
                         } catch (e: Exception) {
                             println("Failed to re-fetch permissions: ${e.message}")
                         }
@@ -137,6 +141,7 @@ object MainState {
         selectedChannel = null
         messages = emptyList()
         currentUserPermissions = 0L
+        currentChannelPermissions = 0L
 
         webSocketClient?.subscribeServer(server.id)
 
@@ -154,10 +159,18 @@ object MainState {
         selectedChannel = channel
         messages = emptyList()
         messageFetchError = null
+        currentChannelPermissions = 0L
         
         try {
             messages = apiClient.getMessages(channel.id)
             webSocketClient?.subscribe(channel.id)
+
+            // Fetch hierarchical permissions for the channel
+            selectedServer?.let { server ->
+                currentUserId?.let { userId ->
+                    currentChannelPermissions = apiClient.getChannelPermissions(server.id, channel.id, userId)
+                }
+            }
         } catch (e: Exception) {
             messageFetchError = e.message ?: "Unknown error"
         }

@@ -163,9 +163,17 @@ fun Route.channelRoutes(
             val result = channelController.deleteOverride(overrideId)
             call.respond(result)
         }
-    }
-}
 
+        get("/{channelId}/permissions") {
+            val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val channelId = call.parameters["channelId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing channelId")
+
+            val result = channelController.getEffectivePermissions(serverId, channelId, userId)
+            call.respond(result)
+        }
+        }
+        }
 fun Route.roleRoutes(roleController: RoleController) {
     route("/api/servers/{serverId}/roles") {
         get {
