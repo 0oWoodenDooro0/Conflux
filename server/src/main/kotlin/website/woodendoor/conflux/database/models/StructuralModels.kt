@@ -46,3 +46,14 @@ object ServerMembers : Table("server_members") {
 
     override val primaryKey = PrimaryKey(serverId, userId)
 }
+
+object ChannelPermissionOverrides : Table("channel_permission_overrides") {
+    val id = varchar("id", 36)
+    val channelId = varchar("channel_id", 36).references(Channels.id)
+    val targetId = varchar("target_id", 36)
+    val targetType = enumerationByName("target_type", 10, website.woodendoor.conflux.models.OverrideType::class)
+    val allow = long("allow")
+    val deny = long("deny")
+
+    override val primaryKey = PrimaryKey(id)
+}
