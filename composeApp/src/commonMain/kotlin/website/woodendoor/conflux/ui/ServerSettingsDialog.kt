@@ -246,7 +246,8 @@ fun RoleCreationDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Role Name") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
@@ -266,7 +267,8 @@ fun RoleCreationDialog(
                     },
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
-                    )
+                    ),
+                    singleLine = true
                 )
                 Spacer(Modifier.height(16.dp))
                 Text("Permissions", style = MaterialTheme.typography.titleSmall)
