@@ -1,46 +1,25 @@
 package website.woodendoor.conflux
 
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-
-import website.woodendoor.conflux.database.DatabaseFactory
-import website.woodendoor.conflux.controller.ChannelController
-import website.woodendoor.conflux.controller.ChatController
-import website.woodendoor.conflux.controller.RoleController
-import website.woodendoor.conflux.controller.ServerController
-import website.woodendoor.conflux.controller.UserController
-import website.woodendoor.conflux.database.models.*
-import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
-import website.woodendoor.conflux.database.repositories.ExposedServerRepository
-import website.woodendoor.conflux.database.repositories.ExposedUserRepository
-import website.woodendoor.conflux.database.repositories.ExposedMessageRepository
-import website.woodendoor.conflux.routes.channelRoutes
-import website.woodendoor.conflux.routes.serverRoutes
-import website.woodendoor.conflux.routes.roleRoutes
-import website.woodendoor.conflux.routes.userRoutes
-import website.woodendoor.conflux.routes.messageRoutes
-import website.woodendoor.conflux.routes.webSocketRoutes
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import website.woodendoor.conflux.controller.*
+import website.woodendoor.conflux.database.DatabaseFactory
+import website.woodendoor.conflux.database.models.*
+import website.woodendoor.conflux.database.repositories.*
+import website.woodendoor.conflux.routes.*
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
-fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
-    install(WebSockets)
     install(ContentNegotiation) {
         json()
     }
@@ -57,7 +36,7 @@ fun Application.module() {
     }
     DatabaseFactory.init()
     transaction {
-        SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, Messages)
+        SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages)
         
         // Create a default user if it doesn't exist
         if (Users.selectAll().where { Users.id eq "default-user" }.empty()) {
@@ -98,9 +77,9 @@ fun Application.module() {
         }
         serverRoutes(serverController)
         channelRoutes(channelController, roleController)
+        messageRoutes(chatController)
         roleRoutes(roleController)
         userRoutes(userController)
-        messageRoutes(chatController)
         webSocketRoutes(tokenManager, connectionManager)
     }
 }
