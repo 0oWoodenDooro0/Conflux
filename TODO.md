@@ -1,8 +1,0 @@
-- [x] Task 1: Shared Models
-- [x] Task 2: Database Table
-- [x] Task 3: Repository Methods
-- [ ] Task 4: Implement Permission Logic
-- [ ] Task 5: Controller & Routes
-- [ ] Task 6: Chat Permission Integration
-- [ ] Task 7: UI State & API Client
-- [ ] Task 8: UI Implementation
