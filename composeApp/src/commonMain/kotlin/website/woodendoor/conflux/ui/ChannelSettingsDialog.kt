@@ -301,8 +301,11 @@ fun ChannelPermissionsTab(
                             scope.launch {
                                 val userId = MainState.currentUserId ?: return@launch
                                 if (apiClient.deleteChannelOverride(channel.serverId, channel.id, userId, override.id)) {
-                                    overrides = overrides.filter { it.id != override.id }
+                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                                     selectedOverride = null
+                                    
+                                    // Refresh local effective permissions
+                                    MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
                                 }
                             }
                         }) {
@@ -324,6 +327,9 @@ fun ChannelPermissionsTab(
                                 if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
                                     overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                                     selectedOverride = overrides.find { it.targetId == override.targetId && it.targetType == override.targetType }
+                                    
+                                    // Refresh local effective permissions
+                                    MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
                                 }
                             }
                         }
@@ -341,6 +347,9 @@ fun ChannelPermissionsTab(
                                 if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
                                     overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                                     selectedOverride = overrides.find { it.targetId == override.targetId && it.targetType == override.targetType }
+                                    
+                                    // Refresh local effective permissions
+                                    MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
                                 }
                             }
                         }
@@ -368,6 +377,9 @@ fun ChannelPermissionsTab(
                         if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
                             overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                             selectedOverride = overrides.find { it.targetId == targetId && it.targetType == type }
+                            
+                            // Refresh local effective permissions
+                            MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
                         }
                     } catch (e: Exception) {
                         // Optionally show an error message

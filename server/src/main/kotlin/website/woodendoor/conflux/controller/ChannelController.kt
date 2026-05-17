@@ -46,21 +46,10 @@ class ChannelController(
         }
     }
 
-    suspend fun deleteOverride(overrideId: String): OperationResult<Unit> {
-        // We need the serverId to broadcast
-        val overrides = channelRepository.getOverrides("") // This is inefficient but we don't have getOverrideById
-        // Actually, let's just assume we should have it or find another way.
-        // Wait, I can just not pass "" and look at the implementation. 
-        // ExposedChannelRepository.getOverrides(channelId)
-        
-        // Let's just broadcast to all if we can't find serverId easily, 
-        // OR better, update the repository to return the override or its channel.
-        
-        // For now, let's just focus on upsert as it's the most common case.
-        // For delete, we might need a better repository method.
-        
+    suspend fun deleteOverride(serverId: String, overrideId: String): OperationResult<Unit> {
         val success = channelRepository.deleteOverride(overrideId)
         return if (success) {
+            broadcastPermissionUpdate(serverId)
             OperationResult.Success(Unit)
         } else {
             OperationResult.Failure.NotFound("Override not found or failed to delete")

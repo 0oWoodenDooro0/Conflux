@@ -160,7 +160,7 @@ fun Route.channelRoutes(
                 return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
             }
 
-            val result = channelController.deleteOverride(overrideId)
+            val result = channelController.deleteOverride(serverId, overrideId)
             call.respond(result)
         }
 
