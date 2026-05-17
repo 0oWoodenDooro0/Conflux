@@ -231,7 +231,8 @@ fun ChannelPermissionsTab(
     LaunchedEffect(channel.id) {
         scope.launch {
             try {
-                overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
+                val userId = MainState.currentUserId ?: return@launch
+                overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                 roles = apiClient.getRoles(channel.serverId)
                 members = apiClient.getMembers(channel.serverId)
             } catch (e: Exception) {
@@ -321,7 +322,7 @@ fun ChannelPermissionsTab(
                                 val userId = MainState.currentUserId ?: return@launch
                                 val request = UpsertOverrideRequest(override.targetId, override.targetType, newAllow, newDeny)
                                 if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
-                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
+                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                                     selectedOverride = overrides.find { it.targetId == override.targetId && it.targetType == override.targetType }
                                 }
                             }
@@ -338,7 +339,7 @@ fun ChannelPermissionsTab(
                                 val userId = MainState.currentUserId ?: return@launch
                                 val request = UpsertOverrideRequest(override.targetId, override.targetType, newAllow, newDeny)
                                 if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
-                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
+                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                                     selectedOverride = overrides.find { it.targetId == override.targetId && it.targetType == override.targetType }
                                 }
                             }
@@ -365,7 +366,7 @@ fun ChannelPermissionsTab(
                         val userId = MainState.currentUserId ?: return@launch
                         val request = UpsertOverrideRequest(targetId, type, 0L, 0L)
                         if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
-                            overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
+                            overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
                             selectedOverride = overrides.find { it.targetId == targetId && it.targetType == type }
                         }
                     } catch (e: Exception) {

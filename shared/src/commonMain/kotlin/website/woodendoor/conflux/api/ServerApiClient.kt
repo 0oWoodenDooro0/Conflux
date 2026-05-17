@@ -98,8 +98,10 @@ class ServerApiClient(
         return client.get("$baseUrl/api/servers/$serverId/members/$userId/permissions").body()
     }
 
-    suspend fun getChannelOverrides(serverId: String, channelId: String): List<ChannelPermissionOverride> {
-        return client.get("$baseUrl/api/servers/$serverId/channels/$channelId/overrides").body()
+    suspend fun getChannelOverrides(serverId: String, channelId: String, userId: String): List<ChannelPermissionOverride> {
+        return client.get("$baseUrl/api/servers/$serverId/channels/$channelId/overrides") {
+            parameter("userId", userId)
+        }.body()
     }
 
     suspend fun upsertChannelOverride(serverId: String, channelId: String, userId: String, request: UpsertOverrideRequest): Boolean {
