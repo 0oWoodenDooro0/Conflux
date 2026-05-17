@@ -166,6 +166,10 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
     }
 
     override suspend fun deleteRole(roleId: String): Boolean = dbQuery {
+        val role = Roles.selectAll().where { Roles.id eq roleId }.singleOrNull()
+        if (role != null && role[Roles.priorityLevel] == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+            return@dbQuery false
+        }
         Roles.deleteWhere { Roles.id eq roleId } > 0
     }
 
@@ -190,7 +194,12 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
     }
 
     override suspend fun getRolesForMember(serverId: String, userId: String): List<Role> = dbQuery {
-        (Roles innerJoin MemberRoles)
+        val everyoneRole = Roles.selectAll()
+            .where { (Roles.serverId eq serverId) and (Roles.priorityLevel eq DEFAULT_ROLE_PRIORITY_EVERYONE) }
+            .map(::resultRowToRole)
+            .singleOrNull()
+
+        val assignedRoles = (Roles innerJoin MemberRoles)
             .selectAll().where { 
                 (MemberRoles.serverId eq serverId) and 
                 (MemberRoles.userId eq userId) and 
@@ -198,6 +207,12 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
             }
             .orderBy(Roles.priorityLevel, SortOrder.DESC)
             .map(::resultRowToRole)
+
+        if (everyoneRole != null) {
+            (assignedRoles + everyoneRole).distinctBy { it.id }.sortedByDescending { it.priorityLevel }
+        } else {
+            assignedRoles
+        }
     }
 
     override suspend fun getPermissionsForMember(serverId: String, userId: String): Long = dbQuery {
@@ -212,7 +227,12 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
             return@dbQuery ConfluxPermission.ALL
         }
 
-        (Roles innerJoin MemberRoles)
+        val everyonePermissions = Roles.selectAll()
+            .where { (Roles.serverId eq serverId) and (Roles.priorityLevel eq DEFAULT_ROLE_PRIORITY_EVERYONE) }
+            .map { it[Roles.permissions] }
+            .singleOrNull() ?: 0L
+
+        val rolePermissions = (Roles innerJoin MemberRoles)
             .select(Roles.permissions)
             .where { 
                 (MemberRoles.serverId eq serverId) and 
@@ -221,6 +241,8 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
             }
             .map { it[Roles.permissions] }
             .fold(0L) { acc, p -> acc or p }
+
+        rolePermissions or everyonePermissions
     }
 
     override suspend fun getMembersWithRole(serverId: String, roleId: String): List<User> = dbQuery {

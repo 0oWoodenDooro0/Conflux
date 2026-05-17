@@ -76,8 +76,9 @@ class JoinServerTest {
         assertTrue(result, "Should successfully join server")
         
         val roles = serverRepository.getRolesForMember(server.id, user.id)
-        // Since getRolesForMember hasn't been updated to include @everyone yet (Task 5), 
-        // it should be empty because we no longer assign "Member" role.
-        assertTrue(roles.isEmpty(), "No roles should be explicitly assigned to the new member")
+        // Since getRolesForMember is updated to include @everyone (Task 5), 
+        // it should only contain the @everyone role.
+        assertEquals(1, roles.size, "Should have @everyone role implicitly")
+        assertEquals("@everyone", roles[0].name)
     }
 }

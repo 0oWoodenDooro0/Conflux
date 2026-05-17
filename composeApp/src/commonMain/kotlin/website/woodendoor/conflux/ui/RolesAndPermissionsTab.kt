@@ -53,30 +53,33 @@ fun RolesAndPermissionsTab(
             }
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(state.roles) { role ->
-                    DebugContextMenu(
-                        ids = mapOf("Role ID" to role.id),
-                        onCopy = copyToClipboard
-                    ) {
-                        NavigationDrawerItem(
-                            label = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    val roleColor = role.color
-                                    if (roleColor != null) {
-                                        Surface(
-                                            color = Color(roleColor),
-                                            shape = CircleShape,
-                                            modifier = Modifier.size(12.dp)
-                                        ) {}
-                                        Spacer(Modifier.width(8.dp))
-                                    }
-                                    Text(role.name)
-                                }
-                            },
-                            selected = state.selectedRole?.id == role.id,
-                            onClick = { state.selectRole(role) },
-                            modifier = Modifier.padding(vertical = 2.dp)
+                val everyoneRole = state.roles.find { it.priorityLevel == -1 }
+                val customRoles = state.roles.filter { it.priorityLevel != -1 }
+
+                if (everyoneRole != null) {
+                    item {
+                        Text(
+                            "Default Role",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
                         )
+                        RoleNavigationItem(everyoneRole, state, copyToClipboard)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp))
+                    }
+                }
+
+                if (customRoles.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Custom Roles",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 4.dp)
+                        )
+                    }
+                    items(customRoles) { role ->
+                        RoleNavigationItem(role, state, copyToClipboard)
                     }
                 }
             }
@@ -118,7 +121,8 @@ fun RolesAndPermissionsTab(
                             Button(
                                 onClick = { 
                                     val perms = state.pendingPermissions ?: selectedRole.permissions
-                                    val priority = state.pendingPriorityText.toIntOrNull() ?: selectedRole.priorityLevel
+                                    val priority = if (selectedRole.priorityLevel == -1) -1 
+                                                   else state.pendingPriorityText.toIntOrNull() ?: selectedRole.priorityLevel
                                     onSaveChanges(selectedRole, perms, priority)
                                 },
                                 enabled = state.canSave
@@ -131,17 +135,28 @@ fun RolesAndPermissionsTab(
 
                 TabRow(selectedTabIndex = detailTabIndex, modifier = Modifier.padding(bottom = 16.dp)) {
                     Tab(selected = detailTabIndex == 0, onClick = { detailTabIndex = 0 }, text = { Text("Permissions") })
-                    Tab(selected = detailTabIndex == 1, onClick = { detailTabIndex = 1 }, text = { Text("Members") })
+                    if (selectedRole.priorityLevel != -1) {
+                        Tab(selected = detailTabIndex == 1, onClick = { detailTabIndex = 1 }, text = { Text("Members") })
+                    }
                 }
 
                 when (detailTabIndex) {
                     0 -> {
                         Column(modifier = Modifier.fillMaxSize()) {
-                            RoleGeneralSettings(
-                                priorityText = state.pendingPriorityText,
-                                isError = !state.isPriorityValid,
-                                onPriorityChange = { state.updatePendingPriority(it) }
-                            )
+                            if (selectedRole.priorityLevel != -1) {
+                                RoleGeneralSettings(
+                                    priorityText = state.pendingPriorityText,
+                                    isError = !state.isPriorityValid,
+                                    onPriorityChange = { state.updatePendingPriority(it) }
+                                )
+                            } else {
+                                Text(
+                                    "This is the default role for everyone. Priority is fixed.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(bottom = 16.dp, start = 4.dp)
+                                )
+                            }
 
                             PermissionList(
                                 permissions = state.pendingPermissions ?: selectedRole.permissions,
@@ -152,16 +167,51 @@ fun RolesAndPermissionsTab(
                         }
                     }
                     1 -> {
-                        MemberAssignmentView(
-                            allMembers = allServerMembers,
-                            roleMembers = state.roleMembers,
-                            onAddMember = { onAddMember -> onAssignRole(selectedRole, onAddMember) },
-                            onRemoveMember = { onRemoveMember -> onRemoveRole(selectedRole, onRemoveMember) }
-                        )
+                        if (selectedRole.priorityLevel != -1) {
+                            MemberAssignmentView(
+                                allMembers = allServerMembers,
+                                roleMembers = state.roleMembers,
+                                onAddMember = { onAddMember -> onAssignRole(selectedRole, onAddMember) },
+                                onRemoveMember = { onRemoveMember -> onRemoveRole(selectedRole, onRemoveMember) }
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RoleNavigationItem(
+    role: Role,
+    state: RolesAndPermissionsState,
+    copyToClipboard: (String) -> Unit
+) {
+    DebugContextMenu(
+        ids = mapOf("Role ID" to role.id),
+        onCopy = copyToClipboard
+    ) {
+        NavigationDrawerItem(
+            label = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val roleColor = role.color
+                    if (roleColor != null) {
+                        Surface(
+                            color = Color(roleColor),
+                            shape = CircleShape,
+                            modifier = Modifier.size(12.dp)
+                        ) {}
+                        Spacer(Modifier.width(8.dp))
+                    }
+                    Text(role.name)
+                }
+            },
+            selected = state.selectedRole?.id == role.id,
+            onClick = { state.selectRole(role) },
+            modifier = Modifier.padding(vertical = 2.dp),
+            shape = MaterialTheme.shapes.medium
+        )
     }
 }
 

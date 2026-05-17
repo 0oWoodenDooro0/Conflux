@@ -8,17 +8,25 @@ import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.MessageRepository
+import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.*
 
 class ChatController(
     private val messageRepository: MessageRepository,
     private val channelRepository: ChannelRepository,
+    private val serverRepository: ServerRepository,
     private val roleController: RoleController,
     private val connectionManager: WebSocketConnectionManager
 ) {
 
     suspend fun sendMessage(channelId: String, request: SendMessageRequest): OperationResult<Message> {
         val channel = channelRepository.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
+        
+        // Verify membership
+        val members = serverRepository.getMembers(channel.serverId)
+        if (members.none { it.id == request.senderId }) {
+            return OperationResult.Failure.Forbidden("User is not a member of this server")
+        }
         
         if (!roleController.hasPermission(channel.serverId, request.senderId, ConfluxPermission.MESSAGING)) {
             return OperationResult.Failure.Forbidden("Insufficient permissions")

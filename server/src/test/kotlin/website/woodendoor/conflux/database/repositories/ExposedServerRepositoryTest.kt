@@ -90,9 +90,11 @@ class ExposedServerRepositoryTest {
 
         val roles = serverRepository.getRolesForMember(serverId, owner.id)
         
-        // Expected order: 150, 50
-        assertEquals(2, roles.size)
+        // Expected order: 150, 50, -1 (@everyone)
+        assertEquals(3, roles.size)
         assertEquals(150, roles[0].priorityLevel)
         assertEquals(50, roles[1].priorityLevel)
+        assertEquals(-1, roles[2].priorityLevel)
+        assertEquals(DEFAULT_ROLE_NAME_EVERYONE, roles[2].name)
     }
 }

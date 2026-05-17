@@ -100,10 +100,14 @@ class AuthorizationTest {
         }
         assertEquals(HttpStatusCode.Created, memberMsgResponse.status, "Member should have permission to send messages by default. Status: ${memberMsgResponse.status}, Body: ${memberMsgResponse.bodyAsText()}")
 
-        // 5. Remove messaging permission from Member role (simulated by direct DB update or hypothetical API)
-        // For this test, I'll assume we want to verify the check exists.
-        // I'll create a user who is NOT a member and they should get 403.
-        val nonMemberId = "stranger"
+        // 5. Create another valid user who is NOT a member and they should get 403.
+        val strangerDummyResponse = client.post("/api/servers") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            setBody(Json.encodeToString(CreateServerRequest(name = "Stranger", ownerId = "stranger")))
+        }
+        val strangerServer = Json.decodeFromString<Server>(strangerDummyResponse.bodyAsText())
+        val nonMemberId = strangerServer.ownerId
+
         val strangerMsgResponse = client.post("/api/channels/$channelId/messages") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
             setBody(Json.encodeToString(SendMessageRequest(senderId = nonMemberId, content = "Attack")))

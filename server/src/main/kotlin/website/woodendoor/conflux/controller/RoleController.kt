@@ -43,6 +43,15 @@ class RoleController(
         }
     }
 
+    suspend fun deleteRole(roleId: String): OperationResult<Unit> {
+        val success = serverRepository.deleteRole(roleId)
+        return if (success) {
+            OperationResult.Success(Unit)
+        } else {
+            OperationResult.Failure.InternalError("Failed to delete role")
+        }
+    }
+
     suspend fun updateRole(role: Role): OperationResult<Role> {
         val success = serverRepository.updateRole(role)
         return if (success) {

@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.MessageRepository
+import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,17 +15,20 @@ import kotlin.test.assertTrue
 class ChatControllerTest {
     private val messageRepository = mockk<MessageRepository>()
     private val channelRepository = mockk<ChannelRepository>()
+    private val serverRepository = mockk<ServerRepository>()
     private val roleController = mockk<RoleController>()
     private val connectionManager = mockk<WebSocketConnectionManager>()
-    private val controller = ChatController(messageRepository, channelRepository, roleController, connectionManager)
+    private val controller = ChatController(messageRepository, channelRepository, serverRepository, roleController, connectionManager)
 
     @Test
     fun `test sendMessage success`() = runBlocking {
         val request = SendMessageRequest("user-1", "Hello")
         val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
         val message = Message("msg-1", "channel-1", "user-1", "Hello", 123456789L)
+        val members = listOf(User("user-1", "User 1", "0000"))
         
         coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { serverRepository.getMembers("server-1") } returns members
         coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
         coEvery { messageRepository.saveMessage("channel-1", "user-1", "Hello") } returns message
         every { connectionManager.getConnectionsForChannel("channel-1") } returns emptyList()
@@ -36,11 +40,26 @@ class ChatControllerTest {
     }
 
     @Test
-    fun `test sendMessage forbidden`() = runBlocking {
+    fun `test sendMessage forbidden by membership`() = runBlocking {
         val request = SendMessageRequest("user-1", "Hello")
         val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
         
         coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { serverRepository.getMembers("server-1") } returns emptyList()
+        
+        val result = controller.sendMessage("channel-1", request)
+        
+        assertTrue(result is OperationResult.Failure.Forbidden)
+    }
+
+    @Test
+    fun `test sendMessage forbidden by permission`() = runBlocking {
+        val request = SendMessageRequest("user-1", "Hello")
+        val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
+        val members = listOf(User("user-1", "User 1", "0000"))
+        
+        coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { serverRepository.getMembers("server-1") } returns members
         coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns false
         
         val result = controller.sendMessage("channel-1", request)
@@ -72,7 +91,9 @@ class ChatControllerTest {
     fun `test sendMessage too long`() = runBlocking {
         val request = SendMessageRequest("user-1", "a".repeat(2001))
         val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
+        val members = listOf(User("user-1", "User 1", "0000"))
         coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { serverRepository.getMembers("server-1") } returns members
         coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
         
         val result = controller.sendMessage("channel-1", request)
@@ -83,7 +104,9 @@ class ChatControllerTest {
     fun `test sendMessage blank content`() = runBlocking {
         val request = SendMessageRequest("user-1", "   ")
         val channel = Channel("channel-1", "server-1", "general", ChannelType.TEXT)
+        val members = listOf(User("user-1", "User 1", "0000"))
         coEvery { channelRepository.getChannel("channel-1") } returns channel
+        coEvery { serverRepository.getMembers("server-1") } returns members
         coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
         
         val result = controller.sendMessage("channel-1", request)

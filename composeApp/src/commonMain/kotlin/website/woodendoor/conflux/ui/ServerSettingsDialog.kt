@@ -301,12 +301,13 @@ fun RoleAssignmentDialog(
     onDismiss: () -> Unit,
     onAssign: (String) -> Unit
 ) {
+    val assignableRoles = roles.filter { it.priorityLevel != -1 }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Assign Role to ${user.username}") },
         text = {
             LazyColumn {
-                items(roles) { role ->
+                items(assignableRoles) { role ->
                     ListItem(
                         headlineContent = { Text(role.name) },
                         trailingContent = {

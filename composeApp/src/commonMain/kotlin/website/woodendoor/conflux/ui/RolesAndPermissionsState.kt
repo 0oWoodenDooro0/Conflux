@@ -24,11 +24,15 @@ class RolesAndPermissionsState(
         private set
 
     val isPriorityValid: Boolean
-        get() = pendingPriorityText.toIntOrNull() in 0..100
+        get() = if (selectedRole?.priorityLevel == -1) true 
+                else pendingPriorityText.toIntOrNull() in 0..100
+
+    val isEveryoneSelected: Boolean
+        get() = selectedRole?.priorityLevel == -1
 
     val hasChanges: Boolean
         get() = (pendingPermissions != null && pendingPermissions != selectedRole?.permissions) ||
-                (pendingPriorityText.toIntOrNull() != selectedRole?.priorityLevel)
+                (selectedRole?.priorityLevel != -1 && pendingPriorityText.toIntOrNull() != selectedRole?.priorityLevel)
 
     val canSave: Boolean
         get() = hasChanges && isPriorityValid

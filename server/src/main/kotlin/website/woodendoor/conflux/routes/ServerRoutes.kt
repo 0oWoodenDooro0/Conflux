@@ -9,6 +9,7 @@ import website.woodendoor.conflux.controller.*
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.database.repositories.UserRepository
 import website.woodendoor.conflux.models.*
+import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 import java.util.*
 
 fun Route.serverRoutes(
@@ -166,6 +167,15 @@ fun Route.roleRoutes(roleController: RoleController) {
                     is OperationResult.Success -> getResult.data
                     is OperationResult.Failure -> return@patch call.respond(getResult)
                 }
+
+                if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+                    if (request.name != null && request.name != existingRole.name) {
+                        return@patch call.respond(HttpStatusCode.BadRequest, "Cannot rename the @everyone role")
+                    }
+                    if (request.priorityLevel != null && request.priorityLevel != existingRole.priorityLevel) {
+                        return@patch call.respond(HttpStatusCode.BadRequest, "Cannot change the priority of the @everyone role")
+                    }
+                }
                 
                 val updatedRole = existingRole.copy(
                     name = request.name ?: existingRole.name,
@@ -175,6 +185,32 @@ fun Route.roleRoutes(roleController: RoleController) {
                 )
                 
                 val result = roleController.updateRole(updatedRole)
+                call.respond(result)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            }
+        }
+
+        delete("/{roleId}") {
+            val serverId = call.parameters["serverId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing serverId")
+            val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val roleId = call.parameters["roleId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing roleId")
+
+            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
+                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            }
+
+            try {
+                val existingRole = when (val getResult = roleController.getRole(roleId)) {
+                    is OperationResult.Success -> getResult.data
+                    is OperationResult.Failure -> return@delete call.respond(getResult)
+                }
+
+                if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+                    return@delete call.respond(HttpStatusCode.BadRequest, "Cannot delete the @everyone role")
+                }
+
+                val result = roleController.deleteRole(roleId)
                 call.respond(result)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")

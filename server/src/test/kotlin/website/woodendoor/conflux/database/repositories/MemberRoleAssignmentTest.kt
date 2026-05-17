@@ -38,6 +38,7 @@ class MemberRoleAssignmentTest {
         assertTrue(joined, "User should be able to join server")
 
         val roles = serverRepository.getRolesForMember(server.id, member.id)
-        assertTrue(roles.isEmpty(), "No roles should be assigned to the new user")
+        assertEquals(1, roles.size, "Should have @everyone role implicitly")
+        assertEquals("@everyone", roles[0].name)
     }
 }
