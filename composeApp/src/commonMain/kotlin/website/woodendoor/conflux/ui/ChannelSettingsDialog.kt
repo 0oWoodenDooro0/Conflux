@@ -1,5 +1,6 @@
 package website.woodendoor.conflux.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -358,14 +359,18 @@ fun ChannelPermissionsTab(
             members = members.filter { member -> overrides.none { it.targetId == member.id && it.targetType == OverrideType.USER } },
             onDismiss = { isAddingOverride = false },
             onAdd = { targetId, type ->
+                isAddingOverride = false
                 scope.launch {
-                    val userId = MainState.currentUserId ?: return@launch
-                    val request = UpsertOverrideRequest(targetId, type, 0L, 0L)
-                    if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
-                        overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
-                        selectedOverride = overrides.find { it.targetId == targetId && it.targetType == type }
+                    try {
+                        val userId = MainState.currentUserId ?: return@launch
+                        val request = UpsertOverrideRequest(targetId, type, 0L, 0L)
+                        if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
+                            overrides = apiClient.getChannelOverrides(channel.serverId, channel.id)
+                            selectedOverride = overrides.find { it.targetId == targetId && it.targetType == type }
+                        }
+                    } catch (e: Exception) {
+                        // Optionally show an error message
                     }
-                    isAddingOverride = false
                 }
             }
         )
@@ -452,23 +457,41 @@ fun AddOverrideDialog(
         title = { Text("Add Permission Override") },
         text = {
             LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
-                item { Text("Roles", style = MaterialTheme.typography.labelLarge) }
-                items(roles) { role ->
-                    TextButton(
-                        onClick = { onAdd(role.id, OverrideType.ROLE) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(role.name, modifier = Modifier.fillMaxWidth())
+                if (roles.isNotEmpty()) {
+                    item { 
+                        Text(
+                            "Roles", 
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) 
+                    }
+                    items(roles) { role ->
+                        ListItem(
+                            headlineContent = { Text(role.name) },
+                            modifier = Modifier.clickable { onAdd(role.id, OverrideType.ROLE) }
+                        )
                     }
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { Text("Members", style = MaterialTheme.typography.labelLarge) }
-                items(members) { member ->
-                    TextButton(
-                        onClick = { onAdd(member.id, OverrideType.USER) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(member.username, modifier = Modifier.fillMaxWidth())
+                
+                if (members.isNotEmpty()) {
+                    item { 
+                        Text(
+                            "Members", 
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        ) 
+                    }
+                    items(members) { member ->
+                        ListItem(
+                            headlineContent = { Text(member.username) },
+                            modifier = Modifier.clickable { onAdd(member.id, OverrideType.USER) }
+                        )
+                    }
+                }
+
+                if (roles.isEmpty() && members.isEmpty()) {
+                    item {
+                        Text("No more roles or members to add", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
