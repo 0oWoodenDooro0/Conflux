@@ -28,8 +28,9 @@ class ChatController(
             return OperationResult.Failure.Forbidden("User is not a member of this server")
         }
         
-        if (!roleController.hasPermission(channel.serverId, request.senderId, ConfluxPermission.MESSAGING)) {
-            return OperationResult.Failure.Forbidden("Insufficient permissions")
+        val permissions = channelRepository.getEffectivePermissions(channel.serverId, channelId, request.senderId)
+        if (!ConfluxPermission.hasPermission(permissions, ConfluxPermission.MESSAGING)) {
+            return OperationResult.Failure.Forbidden("No messaging permission in this channel")
         }
 
         if (request.content.length > 2000) {

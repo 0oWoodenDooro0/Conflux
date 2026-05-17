@@ -29,7 +29,7 @@ class ChatControllerTest {
         
         coEvery { channelRepository.getChannel("channel-1") } returns channel
         coEvery { serverRepository.getMembers("server-1") } returns members
-        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns ConfluxPermission.MESSAGING
         coEvery { messageRepository.saveMessage("channel-1", "user-1", "Hello") } returns message
         every { connectionManager.getConnectionsForChannel("channel-1") } returns emptyList()
         
@@ -60,7 +60,7 @@ class ChatControllerTest {
         
         coEvery { channelRepository.getChannel("channel-1") } returns channel
         coEvery { serverRepository.getMembers("server-1") } returns members
-        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns false
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns ConfluxPermission.NONE
         
         val result = controller.sendMessage("channel-1", request)
         
@@ -94,7 +94,7 @@ class ChatControllerTest {
         val members = listOf(User("user-1", "User 1", "0000"))
         coEvery { channelRepository.getChannel("channel-1") } returns channel
         coEvery { serverRepository.getMembers("server-1") } returns members
-        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns ConfluxPermission.MESSAGING
         
         val result = controller.sendMessage("channel-1", request)
         assertTrue(result is OperationResult.Failure.BadRequest)
@@ -107,7 +107,7 @@ class ChatControllerTest {
         val members = listOf(User("user-1", "User 1", "0000"))
         coEvery { channelRepository.getChannel("channel-1") } returns channel
         coEvery { serverRepository.getMembers("server-1") } returns members
-        coEvery { roleController.hasPermission("server-1", "user-1", ConfluxPermission.MESSAGING) } returns true
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns ConfluxPermission.MESSAGING
         
         val result = controller.sendMessage("channel-1", request)
         assertTrue(result is OperationResult.Failure.BadRequest)
