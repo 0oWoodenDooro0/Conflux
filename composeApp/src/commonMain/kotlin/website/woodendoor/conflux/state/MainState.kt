@@ -122,8 +122,22 @@ object MainState {
                     currentUserId?.let { userId ->
                         try {
                             currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
-                            selectedChannel?.let { channel ->
-                                currentChannelPermissions = apiClient.getChannelPermissions(event.serverId, channel.id, userId)
+                            val newChannels = apiClient.getChannels(event.serverId, userId)
+                            channelList = newChannels
+                            
+                            val wasSelected = selectedChannel != null
+                            if (wasSelected && newChannels.none { it.id == selectedChannel?.id }) {
+                                val nextChannel = newChannels.firstOrNull()
+                                if (nextChannel != null) {
+                                    selectChannel(nextChannel, apiClient)
+                                } else {
+                                    selectedChannel = null
+                                    messages = emptyList()
+                                }
+                            } else {
+                                selectedChannel?.let { channel ->
+                                    currentChannelPermissions = apiClient.getChannelPermissions(event.serverId, channel.id, userId)
+                                }
                             }
                         } catch (e: Exception) {
                             println("Failed to re-fetch permissions: ${e.message}")
@@ -146,7 +160,7 @@ object MainState {
         webSocketClient?.subscribeServer(server.id)
 
         try {
-            channelList = apiClient.getChannels(server.id)
+            channelList = apiClient.getChannels(server.id, currentUserId)
             currentUserId?.let { userId ->
                 currentUserPermissions = apiClient.getPermissions(server.id, userId)
             }
