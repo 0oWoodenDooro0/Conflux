@@ -113,6 +113,42 @@ class ChannelControllerTest {
     }
 
     @Test
+    fun `test getChannelsByServer with userId having view permission`() = runBlocking {
+        val channels = listOf(
+            Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        )
+        
+        coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
+        coEvery { channelRepository.getChannelsByServer("server-1") } returns channels
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.VIEW_CHANNEL
+        
+        val result = controller.getChannelsByServer("server-1", "user-1")
+        
+        assertTrue(result is OperationResult.Success)
+        assertEquals(channels, (result as OperationResult.Success<List<Channel>>).data)
+    }
+
+    @Test
+    fun `test getChannelsByServer with userId lacking view permission`() = runBlocking {
+        val channels = listOf(
+            Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT),
+            Channel("channel-2", "server-1", "secret", website.woodendoor.conflux.models.ChannelType.TEXT)
+        )
+        
+        coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
+        coEvery { channelRepository.getChannelsByServer("server-1") } returns channels
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.VIEW_CHANNEL
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-2", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.NONE
+        
+        val result = controller.getChannelsByServer("server-1", "user-1")
+        
+        assertTrue(result is OperationResult.Success)
+        val returnedChannels = (result as OperationResult.Success<List<Channel>>).data
+        assertEquals(1, returnedChannels.size)
+        assertEquals("channel-1", returnedChannels[0].id)
+    }
+
+    @Test
     fun `test getChannel success`() = runBlocking {
         val channel = Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
         coEvery { channelRepository.getChannel("channel-1") } returns channel
