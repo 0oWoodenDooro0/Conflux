@@ -87,6 +87,6 @@ fun Application.module() {
         messageRoutes(chatController)
         roleRoutes(roleController)
         userRoutes(userController)
-        webSocketRoutes(tokenManager, connectionManager)
+        webSocketRoutes(tokenManager, connectionManager, channelRepository)
     }
 }

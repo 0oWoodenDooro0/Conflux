@@ -11,6 +11,16 @@ import kotlinx.serialization.json.jsonPrimitive
 import website.woodendoor.conflux.models.ConfluxEvent
 import kotlin.test.*
 
+import kotlinx.coroutines.runBlocking
+import website.woodendoor.conflux.database.DatabaseFactory
+import website.woodendoor.conflux.database.repositories.ExposedChannelRepository
+import website.woodendoor.conflux.database.repositories.ExposedServerRepository
+import website.woodendoor.conflux.database.repositories.ExposedUserRepository
+import website.woodendoor.conflux.models.Channel
+import website.woodendoor.conflux.models.ChannelType
+import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.User
+
 class WebSocketRouteTest {
 
     @Test
@@ -37,6 +47,25 @@ class WebSocketRouteTest {
 
         val client = createClient {
             install(WebSockets)
+        }
+
+        // Force application startup to create database schema
+        client.get("/health")
+
+        // Initialize DB and insert required test data
+        DatabaseFactory.init()
+        val userRepo = ExposedUserRepository()
+        val serverRepo = ExposedServerRepository(userRepo)
+        val channelRepo = ExposedChannelRepository()
+
+        val user = User("user-123", "testuser", "0001")
+        val server = Server("server-123", "Test Server", "user-123")
+        val channel = Channel("channel-123", "server-123", "general", ChannelType.TEXT)
+
+        runBlocking {
+            userRepo.createUser(user)
+            serverRepo.createServer(server)
+            channelRepo.createChannel(channel)
         }
 
         // 1. Get a token

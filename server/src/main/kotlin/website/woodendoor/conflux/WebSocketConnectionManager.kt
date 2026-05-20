@@ -61,6 +61,14 @@ class WebSocketConnectionManager {
         }
     }
 
+    fun getServerSubscribers(serverId: String): Set<String> {
+        return serverSubscriptions[serverId]?.toSet() ?: emptySet()
+    }
+
+    fun getUserSessions(userId: String): Set<DefaultWebSocketServerSession> {
+        return userSessions[userId]?.toSet() ?: emptySet()
+    }
+
     suspend fun broadcastToServer(serverId: String, event: ConfluxEvent) {
         val connections = getConnectionsForServer(serverId)
         val eventJson = Json.encodeToString<ConfluxEvent>(event)

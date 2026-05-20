@@ -11,7 +11,14 @@ import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
 import website.woodendoor.conflux.models.ConfluxEvent
 
-fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionManager: WebSocketConnectionManager) {
+import website.woodendoor.conflux.database.repositories.ChannelRepository
+import website.woodendoor.conflux.models.ConfluxPermission
+
+fun Route.webSocketRoutes(
+    tokenManager: WebSocketAuthTokenManager,
+    connectionManager: WebSocketConnectionManager,
+    channelRepository: ChannelRepository
+) {
     post("/api/auth/ws-token") {
         val userId = call.receiveText() // Simple for now
         if (userId.isBlank()) {
@@ -47,8 +54,14 @@ fun Route.webSocketRoutes(tokenManager: WebSocketAuthTokenManager, connectionMan
                     // Simple protocol: "subscribe:channelId"
                     if (text.startsWith("subscribe:")) {
                         val channelId = text.substringAfter("subscribe:")
-                        connectionManager.subscribeToChannel(userId, channelId)
-                        send(Frame.Text(Json.encodeToString<ConfluxEvent>(ConfluxEvent.SubscriptionSuccess(channelId))))
+                        val channel = channelRepository.getChannel(channelId)
+                        if (channel != null) {
+                            val perms = channelRepository.getEffectivePermissions(channel.serverId, channelId, userId)
+                            if (ConfluxPermission.hasPermission(perms, ConfluxPermission.VIEW_CHANNEL)) {
+                                connectionManager.subscribeToChannel(userId, channelId)
+                                send(Frame.Text(Json.encodeToString<ConfluxEvent>(ConfluxEvent.SubscriptionSuccess(channelId))))
+                            }
+                        }
                     } else if (text.startsWith("subscribe_server:")) {
                         val serverId = text.substringAfter("subscribe_server:")
                         connectionManager.subscribeToServer(userId, serverId)
