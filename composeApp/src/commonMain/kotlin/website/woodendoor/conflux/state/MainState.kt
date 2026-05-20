@@ -23,6 +23,8 @@ object MainState {
     var selectedServer by mutableStateOf<Server?>(null)
     var channelList by mutableStateOf<List<Channel>>(emptyList())
     var channelFetchError by mutableStateOf<String?>(null)
+    var unreadChannels by mutableStateOf<Set<String>>(emptySet())
+    var unreadServerIds by mutableStateOf<Set<String>>(emptySet())
 
     var selectedChannel by mutableStateOf<Channel?>(null)
     var messages by mutableStateOf<List<Message>>(emptyList())
@@ -72,10 +74,16 @@ object MainState {
                 }
             }
             is ConfluxEvent.NewMessage -> {
-                if (event.message.channelId == selectedChannel?.id) {
+                val isCurrentChannel = event.message.channelId == selectedChannel?.id
+                if (isCurrentChannel) {
                     // Avoid duplicates
                     if (messages.none { it.id == event.message.id }) {
                         messages = messages + event.message
+                    }
+                } else {
+                    if (event.message.authorId != currentUserId) {
+                        unreadChannels = unreadChannels + event.message.channelId
+                        unreadServerIds = unreadServerIds + event.serverId
                     }
                 }
             }
@@ -174,6 +182,15 @@ object MainState {
         messages = emptyList()
         messageFetchError = null
         currentChannelPermissions = 0L
+
+        // Clear notification
+        unreadChannels = unreadChannels - channel.id
+        selectedServer?.let { server ->
+            val hasAnyUnreadOnServer = channelList.any { it.id in unreadChannels }
+            if (!hasAnyUnreadOnServer) {
+                unreadServerIds = unreadServerIds - server.id
+            }
+        }
         
         try {
             messages = apiClient.getMessages(channel.id)
@@ -223,6 +240,15 @@ object MainState {
         }
     }
 
+    fun subscribeToAllServers() {
+        val ws = webSocketClient ?: return
+        scope.launch {
+            serverList.forEach { server ->
+                ws.subscribeServer(server.id)
+            }
+        }
+    }
+
     fun reset() {
         serverList = emptyList()
         selectedServer = null
@@ -232,6 +258,8 @@ object MainState {
         messages = emptyList()
         messageFetchError = null
         messageSendError = null
+        unreadChannels = emptySet()
+        unreadServerIds = emptySet()
         webSocketClient?.close()
         webSocketClient = null
     }
