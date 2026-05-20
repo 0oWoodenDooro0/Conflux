@@ -19,6 +19,7 @@ import website.woodendoor.conflux.models.Server
 @Composable
 fun ServerSidebar(
     servers: List<Server>,
+    unreadServerIds: Set<String> = emptySet(),
     onServerClick: (Server) -> Unit,
     onHomeClick: () -> Unit,
     onCreateServerClick: () -> Unit,
@@ -62,10 +63,20 @@ fun ServerSidebar(
                     ),
                     onCopy = copyToClipboard
                 ) {
-                    ServerIcon(
-                        name = server.name.take(1).uppercase(),
-                        onClick = { onServerClick(server) }
-                    )
+                    Box {
+                        ServerIcon(
+                            name = server.name.take(1).uppercase(),
+                            onClick = { onServerClick(server) }
+                        )
+                        if (server.id in unreadServerIds) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .align(Alignment.TopEnd)
+                                    .background(MaterialTheme.colorScheme.error, CircleShape)
+                            )
+                        }
+                    }
                 }
             }
         }

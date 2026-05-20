@@ -61,6 +61,7 @@ fun MainScreen() {
         if (!isCreatingServer && !isJoiningServer) {
             try {
                 MainState.serverList = apiClient.getServers(user.id)
+                MainState.subscribeToAllServers()
             } catch (e: Exception) {
                 error = "Failed to load servers: ${e.message}"
             } finally {
@@ -81,6 +82,7 @@ fun MainScreen() {
         Row(modifier = Modifier.fillMaxSize().padding(padding)) {
             ServerSidebar(
                 servers = servers,
+                unreadServerIds = MainState.unreadServerIds,
                 onServerClick = { server ->
                     isCreatingServer = false
                     isJoiningServer = false
@@ -107,6 +109,7 @@ fun MainScreen() {
                 ChannelSidebar(
                     serverName = selectedServer.name,
                     channels = channels,
+                    unreadChannels = MainState.unreadChannels,
                     selectedChannelId = MainState.selectedChannel?.id,
                     canCreateChannel = canManageChannelsServerWide,
                     canManageServer = canManageServer,

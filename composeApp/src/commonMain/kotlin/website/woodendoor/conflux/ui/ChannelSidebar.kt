@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,6 +24,7 @@ import website.woodendoor.conflux.models.Channel
 fun ChannelSidebar(
     serverName: String,
     channels: List<Channel>,
+    unreadChannels: Set<String> = emptySet(),
     selectedChannelId: String? = null,
     canCreateChannel: Boolean = false,
     canManageServer: Boolean = false,
@@ -81,6 +83,7 @@ fun ChannelSidebar(
                     ChannelItem(
                         channel = channel,
                         isSelected = channel.id == selectedChannelId,
+                        isUnread = channel.id in unreadChannels,
                         canManage = channel.canManage,
                         onClick = { onChannelClick(channel) },
                         onSettingsClick = { onChannelSettingsClick(channel) }
@@ -95,6 +98,7 @@ fun ChannelSidebar(
 fun ChannelItem(
     channel: Channel,
     isSelected: Boolean,
+    isUnread: Boolean = false,
     canManage: Boolean = false,
     onClick: () -> Unit,
     onSettingsClick: () -> Unit = {}
@@ -118,10 +122,18 @@ fun ChannelItem(
             Text(
                 text = channel.name,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (isSelected || isUnread) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else if (isUnread) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
+            if (isUnread) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(8.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                )
+            }
             if (canManage && isSelected) {
                 IconButton(
                     onClick = onSettingsClick,
