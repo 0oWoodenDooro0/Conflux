@@ -23,7 +23,7 @@ class ConfluxEventSerializationTest {
             content = "Hello",
             timestamp = 123456789L
         )
-        val event: ConfluxEvent = ConfluxEvent.NewMessage(message)
+        val event: ConfluxEvent = ConfluxEvent.NewMessage(message, "server-1")
         val json = Json.encodeToString(event)
         
         assertTrue(json.contains("website.woodendoor.conflux.models.ConfluxEvent.NewMessage"))
@@ -32,6 +32,7 @@ class ConfluxEventSerializationTest {
         val decoded = Json.decodeFromString<ConfluxEvent>(json)
         assertTrue(decoded is ConfluxEvent.NewMessage)
         assertEquals(message, decoded.message)
+        assertEquals("server-1", decoded.serverId)
     }
 
     @Test

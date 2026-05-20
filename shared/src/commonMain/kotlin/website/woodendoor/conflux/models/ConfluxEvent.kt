@@ -8,7 +8,7 @@ sealed class ConfluxEvent {
     data object Connected : ConfluxEvent()
 
     @Serializable
-    data class NewMessage(val message: Message) : ConfluxEvent()
+    data class NewMessage(val message: Message, val serverId: String) : ConfluxEvent()
     
     @Serializable
     data class SubscriptionSuccess(val channelId: String) : ConfluxEvent()
