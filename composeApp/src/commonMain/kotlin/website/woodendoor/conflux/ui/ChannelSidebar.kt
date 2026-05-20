@@ -81,7 +81,7 @@ fun ChannelSidebar(
                     ChannelItem(
                         channel = channel,
                         isSelected = channel.id == selectedChannelId,
-                        canManage = canCreateChannel,
+                        canManage = channel.canManage,
                         onClick = { onChannelClick(channel) },
                         onSettingsClick = { onChannelSettingsClick(channel) }
                     )

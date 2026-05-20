@@ -37,15 +37,22 @@ fun MainScreen() {
     val canManageChannelsServerWide = (MainState.currentUserPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L
     val canManageCurrentChannel = (MainState.currentChannelPermissions and ConfluxPermission.CHANNEL_MANAGEMENT) != 0L
 
+    val currentChannelToEdit = channels.find { it.id == channelToEdit?.id }
+
     LaunchedEffect(canManageServer) {
         if (!canManageServer) {
             isShowingSettings = false
         }
     }
 
-    LaunchedEffect(canManageChannelsServerWide, canManageCurrentChannel) {
-        if (!canManageChannelsServerWide && !canManageCurrentChannel) {
+    LaunchedEffect(canManageChannelsServerWide) {
+        if (!canManageChannelsServerWide) {
             isCreatingChannel = false
+        }
+    }
+
+    LaunchedEffect(channelToEdit, currentChannelToEdit, currentChannelToEdit?.canManage) {
+        if (channelToEdit != null && (currentChannelToEdit == null || !currentChannelToEdit.canManage)) {
             channelToEdit = null
         }
     }

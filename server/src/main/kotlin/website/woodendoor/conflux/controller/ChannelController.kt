@@ -105,13 +105,16 @@ class ChannelController(
 
     private suspend fun broadcastChannelUpdated(serverId: String, channel: Channel) {
         val userIds = connectionManager.getServerSubscribers(serverId)
-        val event = ConfluxEvent.ChannelUpdated(channel)
-        val eventJson = Json.encodeToString<ConfluxEvent>(event)
         
         coroutineScope {
             userIds.forEach { userId ->
                 launch {
                     if (hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)) {
+                        val userSpecificChannel = channel.copy(
+                            canManage = hasPermission(serverId, channel.id, userId, ConfluxPermission.CHANNEL_MANAGEMENT)
+                        )
+                        val event = ConfluxEvent.ChannelUpdated(userSpecificChannel)
+                        val eventJson = Json.encodeToString<ConfluxEvent>(event)
                         connectionManager.getUserSessions(userId).forEach { session ->
                             try {
                                 session.send(Frame.Text(eventJson))
@@ -174,13 +177,16 @@ class ChannelController(
 
     private suspend fun broadcastChannelCreated(serverId: String, channel: Channel) {
         val userIds = connectionManager.getServerSubscribers(serverId)
-        val event = ConfluxEvent.ChannelCreated(channel)
-        val eventJson = Json.encodeToString<ConfluxEvent>(event)
         
         coroutineScope {
             userIds.forEach { userId ->
                 launch {
                     if (hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)) {
+                        val userSpecificChannel = channel.copy(
+                            canManage = hasPermission(serverId, channel.id, userId, ConfluxPermission.CHANNEL_MANAGEMENT)
+                        )
+                        val event = ConfluxEvent.ChannelCreated(userSpecificChannel)
+                        val eventJson = Json.encodeToString<ConfluxEvent>(event)
                         connectionManager.getUserSessions(userId).forEach { session ->
                             try {
                                 session.send(Frame.Text(eventJson))
@@ -202,6 +208,10 @@ class ChannelController(
         val filtered = if (userId != null) {
             channels.filter { channel ->
                 hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)
+            }.map { channel ->
+                channel.copy(
+                    canManage = hasPermission(serverId, channel.id, userId, ConfluxPermission.CHANNEL_MANAGEMENT)
+                )
             }
         } else {
             channels

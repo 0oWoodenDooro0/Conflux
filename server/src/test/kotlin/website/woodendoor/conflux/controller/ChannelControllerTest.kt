@@ -129,6 +129,24 @@ class ChannelControllerTest {
     }
 
     @Test
+    fun `test getChannelsByServer sets canManage to true when user has channel management permission`() = runBlocking {
+        val channels = listOf(
+            Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        )
+        
+        coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
+        coEvery { channelRepository.getChannelsByServer("server-1") } returns channels
+        coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns (website.woodendoor.conflux.models.ConfluxPermission.VIEW_CHANNEL or website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT)
+        
+        val result = controller.getChannelsByServer("server-1", "user-1")
+        
+        assertTrue(result is OperationResult.Success)
+        val returnedChannels = (result as OperationResult.Success<List<Channel>>).data
+        assertEquals(1, returnedChannels.size)
+        assertTrue(returnedChannels[0].canManage)
+    }
+
+    @Test
     fun `test getChannelsByServer with userId lacking view permission`() = runBlocking {
         val channels = listOf(
             Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT),
