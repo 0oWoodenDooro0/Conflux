@@ -316,6 +316,26 @@ fun ChannelPermissionsTab(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     PermissionOverrideRow(
+                        name = "View Channel",
+                        permission = ConfluxPermission.VIEW_CHANNEL,
+                        allow = override.allow,
+                        deny = override.deny,
+                        onChanged = { newAllow, newDeny ->
+                            scope.launch {
+                                val userId = MainState.currentUserId ?: return@launch
+                                val request = UpsertOverrideRequest(override.targetId, override.targetType, newAllow, newDeny)
+                                if (apiClient.upsertChannelOverride(channel.serverId, channel.id, userId, request)) {
+                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
+                                    selectedOverride = overrides.find { it.targetId == override.targetId && it.targetType == override.targetType }
+                                    
+                                    // Refresh local effective permissions
+                                    MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
+                                }
+                            }
+                        }
+                    )
+
+                    PermissionOverrideRow(
                         name = "Send Messages",
                         permission = ConfluxPermission.MESSAGING,
                         allow = override.allow,

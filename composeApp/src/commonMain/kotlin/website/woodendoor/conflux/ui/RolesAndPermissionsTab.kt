@@ -334,6 +334,12 @@ fun PermissionList(
 ) {
     Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
         PermissionToggle(
+            name = "View Channel",
+            description = "Allows members to view channels and their lists.",
+            enabled = ConfluxPermission.hasPermission(permissions, ConfluxPermission.VIEW_CHANNEL),
+            onCheckedChange = { onPermissionChange(ConfluxPermission.VIEW_CHANNEL, it) }
+        )
+        PermissionToggle(
             name = "Messaging",
             description = "Allows members to send messages in channels.",
             enabled = ConfluxPermission.hasPermission(permissions, ConfluxPermission.MESSAGING),
