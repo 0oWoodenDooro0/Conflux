@@ -2,6 +2,8 @@ package website.woodendoor.conflux.controller
 
 import io.ktor.server.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -69,12 +71,21 @@ class ChatController(
         // 1. Send to all channel subscribers
         sessionsToSend.addAll(connectionManager.getConnectionsForChannel(channelId))
         
-        // 2. Send to all server subscribers who have VIEW_CHANNEL permission
+        // 2. Send to all server subscribers who have VIEW_CHANNEL permission (queried concurrently)
         val serverSubscribers = connectionManager.getServerSubscribers(serverId)
-        serverSubscribers.forEach { userId ->
-            val perms = channelRepository.getEffectivePermissions(serverId, channelId, userId)
-            if (ConfluxPermission.hasPermission(perms, ConfluxPermission.VIEW_CHANNEL)) {
-                sessionsToSend.addAll(connectionManager.getUserSessions(userId))
+        if (serverSubscribers.isNotEmpty()) {
+            coroutineScope {
+                serverSubscribers.map { userId ->
+                    async {
+                        val perms = channelRepository.getEffectivePermissions(serverId, channelId, userId)
+                        userId to ConfluxPermission.hasPermission(perms, ConfluxPermission.VIEW_CHANNEL)
+                    }
+                }.forEach { deferred ->
+                    val (userId, hasPerm) = deferred.await()
+                    if (hasPerm) {
+                        sessionsToSend.addAll(connectionManager.getUserSessions(userId))
+                    }
+                }
             }
         }
         
@@ -84,6 +95,7 @@ class ChatController(
                     try {
                         session.send(Frame.Text(eventJson))
                     } catch (e: Exception) {
+                        if (e is CancellationException) throw e
                         // Session might be closed
                     }
                 }
