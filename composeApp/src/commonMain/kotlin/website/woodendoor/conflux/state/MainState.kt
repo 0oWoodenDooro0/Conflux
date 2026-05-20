@@ -112,6 +112,16 @@ object MainState {
             }
             is ConfluxEvent.ChannelDeleted -> {
                 val wasSelected = selectedChannel?.id == event.channelId
+                
+                // Clear from unreads
+                unreadChannels = unreadChannels - event.channelId
+                selectedServer?.let { server ->
+                    val hasAnyUnreadOnServer = channelList.any { it.id in unreadChannels }
+                    if (!hasAnyUnreadOnServer) {
+                        unreadServerIds = unreadServerIds - server.id
+                    }
+                }
+                
                 // Remove channel from list
                 channelList = channelList.filter { it.id != event.channelId }
                 
@@ -130,7 +140,18 @@ object MainState {
                     currentUserId?.let { userId ->
                         try {
                             currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
+                            val oldChannelIds = channelList.map { it.id }.toSet()
                             val newChannels = apiClient.getChannels(event.serverId, userId)
+                            val newChannelIds = newChannels.map { it.id }.toSet()
+                            
+                            val removedChannelIds = oldChannelIds - newChannelIds
+                            unreadChannels = unreadChannels - removedChannelIds
+                            
+                            val hasAnyUnreadOnServer = newChannels.any { it.id in unreadChannels }
+                            if (!hasAnyUnreadOnServer) {
+                                unreadServerIds = unreadServerIds - event.serverId
+                            }
+                            
                             channelList = newChannels
                             
                             val wasSelected = selectedChannel != null
