@@ -32,6 +32,7 @@ class ChatControllerTest {
         coEvery { channelRepository.getEffectivePermissions("server-1", "channel-1", "user-1") } returns ConfluxPermission.MESSAGING
         coEvery { messageRepository.saveMessage("channel-1", "user-1", "Hello") } returns message
         every { connectionManager.getConnectionsForChannel("channel-1") } returns emptyList()
+        every { connectionManager.getServerSubscribers("server-1") } returns emptySet()
         
         val result = controller.sendMessage("channel-1", request)
         
