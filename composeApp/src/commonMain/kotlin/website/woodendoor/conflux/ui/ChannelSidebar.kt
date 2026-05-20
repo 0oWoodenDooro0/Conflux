@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import website.woodendoor.conflux.models.Channel
@@ -52,6 +53,7 @@ fun ChannelSidebar(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
             if (canManageServer) {
@@ -116,13 +118,15 @@ fun ChannelItem(
             Text(
                 text = "#",
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = channel.name,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (isSelected || isUnread) FontWeight.Bold else FontWeight.Normal,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else if (isUnread) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
@@ -134,17 +138,24 @@ fun ChannelItem(
                         .background(MaterialTheme.colorScheme.primary, CircleShape)
                 )
             }
-            if (canManage && isSelected) {
-                IconButton(
-                    onClick = onSettingsClick,
-                    modifier = Modifier.size(24.dp)
+            if (canManage) {
+                Box(
+                    modifier = Modifier.size(24.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.Settings,
-                        contentDescription = "Channel Settings",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    if (isSelected) {
+                        IconButton(
+                            onClick = onSettingsClick,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = "Channel Settings",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                    }
                 }
             }
         }

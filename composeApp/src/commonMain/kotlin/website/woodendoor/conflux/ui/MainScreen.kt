@@ -82,6 +82,7 @@ fun MainScreen() {
         Row(modifier = Modifier.fillMaxSize().padding(padding)) {
             ServerSidebar(
                 servers = servers,
+                selectedServerId = selectedServer?.id,
                 unreadServerIds = MainState.unreadServerIds,
                 onServerClick = { server ->
                     isCreatingServer = false

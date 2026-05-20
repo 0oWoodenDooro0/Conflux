@@ -19,6 +19,7 @@ import website.woodendoor.conflux.models.Server
 @Composable
 fun ServerSidebar(
     servers: List<Server>,
+    selectedServerId: String? = null,
     unreadServerIds: Set<String> = emptySet(),
     onServerClick: (Server) -> Unit,
     onHomeClick: () -> Unit,
@@ -56,6 +57,7 @@ fun ServerSidebar(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(servers) { server ->
+                val isSelected = server.id == selectedServerId
                 DebugContextMenu(
                     ids = mapOf(
                         "Server ID" to server.id,
@@ -65,8 +67,10 @@ fun ServerSidebar(
                 ) {
                     Box {
                         ServerIcon(
-                            name = server.name.take(1).uppercase(),
-                            onClick = { onServerClick(server) }
+                            name = server.name.take(1).ifEmpty { "?" }.uppercase(),
+                            onClick = { onServerClick(server) },
+                            backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                         )
                         if (server.id in unreadServerIds) {
                             Box(
@@ -117,8 +121,8 @@ fun ServerIcon(
     Surface(
         onClick = onClick,
         modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape),
+            .size(48.dp),
+        shape = CircleShape,
         color = backgroundColor,
         contentColor = contentColor,
         tonalElevation = 2.dp
