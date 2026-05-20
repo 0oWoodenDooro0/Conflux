@@ -56,7 +56,7 @@ class ExposedServerRepository(private val userRepository: ExposedUserRepository)
                 it[id] = UUID.randomUUID().toString()
                 it[this.serverId] = createdServer.id
                 it[name] = DEFAULT_ROLE_NAME_EVERYONE
-                it[permissions] = ConfluxPermission.MESSAGING
+                it[permissions] = ConfluxPermission.MESSAGING or ConfluxPermission.VIEW_CHANNEL
                 it[color] = null
                 it[priorityLevel] = DEFAULT_ROLE_PRIORITY_EVERYONE
             }

@@ -39,19 +39,19 @@ class PermissionQueryTest {
         val ownerPerms = serverRepository.getPermissionsForMember(server.id, owner.id)
         assertEquals(ConfluxPermission.ALL, ownerPerms)
 
-        // New member should have MESSAGING permissions by default due to @everyone role (Task 4)
+        // New member should have MESSAGING and VIEW_CHANNEL permissions by default due to @everyone role (Task 4)
         serverRepository.joinServer(member.id, server.id)
         val memberPerms = serverRepository.getPermissionsForMember(server.id, member.id)
-        assertEquals(ConfluxPermission.MESSAGING, memberPerms)
+        assertEquals(ConfluxPermission.MESSAGING or ConfluxPermission.VIEW_CHANNEL, memberPerms)
 
         // Add another role with CHANNEL_MANAGEMENT
         val adminRole = serverRepository.createRole(server.id, Role("r1", server.id, "Admin", ConfluxPermission.CHANNEL_MANAGEMENT, null, 50))
         assertNotNull(adminRole)
         serverRepository.assignRoleToMember(server.id, member.id, adminRole.id)
 
-        // Member should now have CHANNEL_MANAGEMENT OR MESSAGING
+        // Member should now have CHANNEL_MANAGEMENT OR MESSAGING OR VIEW_CHANNEL
         val updatedPerms = serverRepository.getPermissionsForMember(server.id, member.id)
-        assertEquals(ConfluxPermission.CHANNEL_MANAGEMENT or ConfluxPermission.MESSAGING, updatedPerms)
+        assertEquals(ConfluxPermission.CHANNEL_MANAGEMENT or ConfluxPermission.MESSAGING or ConfluxPermission.VIEW_CHANNEL, updatedPerms)
     }
 
     @Test

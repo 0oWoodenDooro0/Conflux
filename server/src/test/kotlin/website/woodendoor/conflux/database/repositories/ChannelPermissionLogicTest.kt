@@ -52,14 +52,14 @@ class ChannelPermissionLogicTest {
         val roles = serverRepository.getRoles(server.id)
         val everyoneRole = roles.find { it.priorityLevel == website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE }!!
 
-        // Initially member has MESSAGING from @everyone server role (check server repository createServer for default perms)
+        // Initially member has MESSAGING and VIEW_CHANNEL from @everyone server role (check server repository createServer for default perms)
         val initialPerms = channelRepository.getEffectivePermissions(server.id, channel.id, member.id)
-        assertEquals(ConfluxPermission.MESSAGING, initialPerms)
+        assertEquals(ConfluxPermission.MESSAGING or ConfluxPermission.VIEW_CHANNEL, initialPerms)
 
         // Deny MESSAGING for @everyone in channel
         channelRepository.upsertOverride(channel.id, ChannelPermissionOverride(UUID.randomUUID().toString(), channel.id, everyoneRole.id, OverrideType.ROLE, 0L, ConfluxPermission.MESSAGING))
         val afterDenyPerms = channelRepository.getEffectivePermissions(server.id, channel.id, member.id)
-        assertEquals(0L, afterDenyPerms, "Messaging should be denied by @everyone override")
+        assertEquals(ConfluxPermission.VIEW_CHANNEL, afterDenyPerms, "Messaging should be denied by @everyone override, but VIEW_CHANNEL should still be present")
 
         // Allow CHANNEL_MANAGEMENT for @everyone in channel (Expandable)
         // Note: Channel settings replace server base for the specific bit. 
@@ -69,7 +69,7 @@ class ChannelPermissionLogicTest {
         // then effective = (1 & ~0) | 2 = 3 (MESSAGING | CHANNEL_MANAGEMENT).
         channelRepository.upsertOverride(channel.id, ChannelPermissionOverride(UUID.randomUUID().toString(), channel.id, everyoneRole.id, OverrideType.ROLE, ConfluxPermission.CHANNEL_MANAGEMENT, 0L))
         val afterAllowPerms = channelRepository.getEffectivePermissions(server.id, channel.id, member.id)
-        assertEquals(ConfluxPermission.MESSAGING or ConfluxPermission.CHANNEL_MANAGEMENT, afterAllowPerms, "Channel management should be allowed, and messaging should still be inherited from server base")
+        assertEquals(ConfluxPermission.MESSAGING or ConfluxPermission.CHANNEL_MANAGEMENT or ConfluxPermission.VIEW_CHANNEL, afterAllowPerms, "Channel management should be allowed, and messaging and view channel should still be inherited from server base")
     }
 
     @Test

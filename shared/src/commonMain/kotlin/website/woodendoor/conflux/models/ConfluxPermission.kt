@@ -6,7 +6,8 @@ object ConfluxPermission {
     const val CHANNEL_MANAGEMENT = 1L shl 1
     const val ROLE_MANAGEMENT = 1L shl 2
     const val SERVER_MANAGEMENT = 1L shl 3
-    const val ALL = MESSAGING or CHANNEL_MANAGEMENT or ROLE_MANAGEMENT or SERVER_MANAGEMENT
+    const val VIEW_CHANNEL = 1L shl 4
+    const val ALL = MESSAGING or CHANNEL_MANAGEMENT or ROLE_MANAGEMENT or SERVER_MANAGEMENT or VIEW_CHANNEL
 
     fun hasPermission(current: Long, permission: Long): Boolean {
         return (current and permission) == permission
