@@ -53,8 +53,12 @@ class ServerApiClient(
         }.body()
     }
 
-    suspend fun getChannels(serverId: String): List<Channel> {
-        return client.get("$baseUrl/api/servers/$serverId/channels").body()
+    suspend fun getChannels(serverId: String, userId: String? = null): List<Channel> {
+        return client.get("$baseUrl/api/servers/$serverId/channels") {
+            if (userId != null) {
+                parameter("userId", userId)
+            }
+        }.body()
     }
 
     suspend fun updateChannel(serverId: String, channelId: String, userId: String, name: String? = null, type: ChannelType? = null, topic: String? = null): Channel {
