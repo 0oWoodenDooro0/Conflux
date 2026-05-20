@@ -104,17 +104,21 @@ class ChannelController(
     }
 
     private suspend fun broadcastChannelUpdated(serverId: String, channel: Channel) {
-        val connections = connectionManager.getConnectionsForServer(serverId)
+        val userIds = connectionManager.getServerSubscribers(serverId)
         val event = ConfluxEvent.ChannelUpdated(channel)
         val eventJson = Json.encodeToString<ConfluxEvent>(event)
         
         coroutineScope {
-            connections.forEach { session ->
+            userIds.forEach { userId ->
                 launch {
-                    try {
-                        session.send(Frame.Text(eventJson))
-                    } catch (e: Exception) {
-                        // Session might be closed
+                    if (hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)) {
+                        connectionManager.getUserSessions(userId).forEach { session ->
+                            try {
+                                session.send(Frame.Text(eventJson))
+                            } catch (e: Exception) {
+                                // Session might be closed
+                            }
+                        }
                     }
                 }
             }
@@ -169,29 +173,40 @@ class ChannelController(
     }
 
     private suspend fun broadcastChannelCreated(serverId: String, channel: Channel) {
-        val connections = connectionManager.getConnectionsForServer(serverId)
+        val userIds = connectionManager.getServerSubscribers(serverId)
         val event = ConfluxEvent.ChannelCreated(channel)
         val eventJson = Json.encodeToString<ConfluxEvent>(event)
         
         coroutineScope {
-            connections.forEach { session ->
+            userIds.forEach { userId ->
                 launch {
-                    try {
-                        session.send(Frame.Text(eventJson))
-                    } catch (e: Exception) {
-                        // Session might be closed
+                    if (hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)) {
+                        connectionManager.getUserSessions(userId).forEach { session ->
+                            try {
+                                session.send(Frame.Text(eventJson))
+                            } catch (e: Exception) {
+                                // Session might be closed
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    suspend fun getChannelsByServer(serverId: String): OperationResult<List<Channel>> {
+    suspend fun getChannelsByServer(serverId: String, userId: String? = null): OperationResult<List<Channel>> {
         if (serverRepository.getServer(serverId) == null) {
             return OperationResult.Failure.NotFound("Server not found")
         }
         val channels = channelRepository.getChannelsByServer(serverId)
-        return OperationResult.Success(channels)
+        val filtered = if (userId != null) {
+            channels.filter { channel ->
+                hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)
+            }
+        } else {
+            channels
+        }
+        return OperationResult.Success(filtered)
     }
 
     suspend fun getChannel(channelId: String): OperationResult<Channel> {
