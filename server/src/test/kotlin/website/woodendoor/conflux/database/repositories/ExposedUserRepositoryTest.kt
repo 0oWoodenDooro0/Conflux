@@ -15,8 +15,8 @@ class ExposedUserRepositoryTest {
     fun setup() {
         DatabaseFactory.init()
         transaction {
-            SchemaUtils.drop(Messages, MemberRoles, ServerMembers, Channels, Roles, Servers, Users)
-            SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, Messages)
+            SchemaUtils.drop(Messages, ChannelPermissionOverrides, MemberRoles, ServerMembers, Channels, Roles, Servers, Users)
+            SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages)
         }
     }
 
