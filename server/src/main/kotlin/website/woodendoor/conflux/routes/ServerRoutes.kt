@@ -63,7 +63,8 @@ fun Route.channelRoutes(
     route("/api/servers/{serverId}/channels") {
         get {
             val serverId = call.parameters["serverId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
-            val result = channelController.getChannelsByServer(serverId)
+            val userId = call.request.queryParameters["userId"]
+            val result = channelController.getChannelsByServer(serverId, userId)
             call.respond(result)
         }
 
