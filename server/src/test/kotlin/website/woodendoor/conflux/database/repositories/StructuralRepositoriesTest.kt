@@ -110,4 +110,39 @@ class StructuralRepositoriesTest {
         assertTrue(servers.any { it.id == "s1" })
         assertTrue(servers.any { it.id == "s2" })
     }
+
+    @Test
+    fun testChannelOverrideDeletionProtection() = runBlocking {
+        val owner = User("owner", "owner", "0001")
+        userRepository.createUser(owner)
+        val server = Server("s1", "Test Server", owner.id)
+        serverRepository.createServer(server)
+        
+        val roles = serverRepository.getRoles("s1")
+        val everyoneRole = roles.find { it.priorityLevel == website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE }
+        assertNotNull(everyoneRole)
+
+        val channel = Channel("c1", "s1", "general", ChannelType.TEXT)
+        channelRepository.createChannel(channel)
+
+        // Create everyone override
+        val everyoneOverride = ChannelPermissionOverride("o1", "c1", everyoneRole.id, OverrideType.ROLE, 0L, 0L)
+        channelRepository.upsertOverride("c1", everyoneOverride)
+
+        // Create other override
+        val otherOverride = ChannelPermissionOverride("o2", "c1", "other-role-id", OverrideType.ROLE, 0L, 0L)
+        channelRepository.upsertOverride("c1", otherOverride)
+
+        // Try deleting other override - should succeed
+        val deleteOtherResult = channelRepository.deleteOverride("o2")
+        assertTrue(deleteOtherResult)
+
+        // Try deleting everyone override - should fail
+        val deleteEveryoneResult = channelRepository.deleteOverride("o1")
+        assertFalse(deleteEveryoneResult)
+        
+        // Verify everyone override is still there
+        val overrides = channelRepository.getOverrides("c1")
+        assertTrue(overrides.any { it.id == "o1" })
+    }
 }

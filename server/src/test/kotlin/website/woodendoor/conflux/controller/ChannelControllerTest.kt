@@ -77,9 +77,12 @@ class ChannelControllerTest {
     fun `test createChannel success`() = runBlocking {
         val request = CreateChannelRequest("general")
         val channel = Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        val everyoneRole = website.woodendoor.conflux.models.Role("role-1", "server-1", "@everyone", 0L, null, website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE)
         
         coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
         coEvery { channelRepository.createChannel(any()) } returns channel
+        coEvery { serverRepository.getRoles("server-1") } returns listOf(everyoneRole)
+        coEvery { channelRepository.upsertOverride(any(), any()) } returns true
         
         val result = controller.createChannel("server-1", request)
         
@@ -184,5 +187,63 @@ class ChannelControllerTest {
         val result = controller.getChannel("channel-1")
         
         assertTrue(result is OperationResult.Failure.NotFound)
+    }
+
+    @Test
+    fun `test deleteOverride success`() = runBlocking {
+        val serverId = "server-1"
+        val overrideId = "override-1"
+        val everyoneRole = website.woodendoor.conflux.models.Role("role-everyone", "server-1", "@everyone", 0L, null, website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE)
+        val channels = listOf(
+            Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        )
+        val overrides = listOf(
+            website.woodendoor.conflux.models.ChannelPermissionOverride(
+                id = overrideId,
+                channelId = "channel-1",
+                targetId = "some-other-role",
+                targetType = website.woodendoor.conflux.models.OverrideType.ROLE,
+                allow = 0L,
+                deny = 0L
+            )
+        )
+
+        coEvery { serverRepository.getRoles(serverId) } returns listOf(everyoneRole)
+        coEvery { channelRepository.getChannelsByServer(serverId) } returns channels
+        coEvery { channelRepository.getOverrides("channel-1") } returns overrides
+        coEvery { channelRepository.deleteOverride(overrideId) } returns true
+
+        val result = controller.deleteOverride(serverId, overrideId)
+
+        assertTrue(result is OperationResult.Success)
+    }
+
+    @Test
+    fun `test deleteOverride cannot delete everyone override`() = runBlocking {
+        val serverId = "server-1"
+        val overrideId = "override-everyone"
+        val everyoneRole = website.woodendoor.conflux.models.Role("role-everyone", "server-1", "@everyone", 0L, null, website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE)
+        val channels = listOf(
+            Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        )
+        val overrides = listOf(
+            website.woodendoor.conflux.models.ChannelPermissionOverride(
+                id = overrideId,
+                channelId = "channel-1",
+                targetId = "role-everyone",
+                targetType = website.woodendoor.conflux.models.OverrideType.ROLE,
+                allow = 0L,
+                deny = 0L
+            )
+        )
+
+        coEvery { serverRepository.getRoles(serverId) } returns listOf(everyoneRole)
+        coEvery { channelRepository.getChannelsByServer(serverId) } returns channels
+        coEvery { channelRepository.getOverrides("channel-1") } returns overrides
+
+        val result = controller.deleteOverride(serverId, overrideId)
+
+        assertTrue(result is OperationResult.Failure.BadRequest)
+        assertEquals("Cannot delete the @everyone override", result.message)
     }
 }

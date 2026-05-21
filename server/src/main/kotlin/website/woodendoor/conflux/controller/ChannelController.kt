@@ -3,6 +3,7 @@ package website.woodendoor.conflux.controller
 import website.woodendoor.conflux.WebSocketConnectionManager
 import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
+import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 import website.woodendoor.conflux.models.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.coroutineScope
@@ -47,6 +48,22 @@ class ChannelController(
     }
 
     suspend fun deleteOverride(serverId: String, overrideId: String): OperationResult<Unit> {
+        val roles = serverRepository.getRoles(serverId)
+        val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }
+        if (everyoneRole != null) {
+            val channels = channelRepository.getChannelsByServer(serverId)
+            for (channel in channels) {
+                val overrides = channelRepository.getOverrides(channel.id)
+                val matchingOverride = overrides.find { it.id == overrideId }
+                if (matchingOverride != null) {
+                    if (matchingOverride.targetId == everyoneRole.id) {
+                        return OperationResult.Failure.BadRequest("Cannot delete the @everyone override")
+                    }
+                    break
+                }
+            }
+        }
+
         val success = channelRepository.deleteOverride(overrideId)
         return if (success) {
             broadcastPermissionUpdate(serverId)
@@ -168,6 +185,19 @@ class ChannelController(
         val created = channelRepository.createChannel(channel)
         
         return if (created != null) {
+            val roles = serverRepository.getRoles(serverId)
+            val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }
+            if (everyoneRole != null) {
+                val override = ChannelPermissionOverride(
+                    id = UUID.randomUUID().toString(),
+                    channelId = created.id,
+                    targetId = everyoneRole.id,
+                    targetType = OverrideType.ROLE,
+                    allow = 0L,
+                    deny = 0L
+                )
+                channelRepository.upsertOverride(created.id, override)
+            }
             broadcastChannelCreated(serverId, created)
             OperationResult.Success(created)
         } else {

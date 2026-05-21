@@ -56,6 +56,7 @@ class ExposedChannelRepository : ChannelRepository {
     }
 
     override suspend fun deleteChannel(id: String): Boolean = dbQuery {
+        ChannelPermissionOverrides.deleteWhere { ChannelPermissionOverrides.channelId eq id }
         Channels.deleteWhere { Channels.id eq id } > 0
     }
 
@@ -91,7 +92,23 @@ class ExposedChannelRepository : ChannelRepository {
     }
 
     override suspend fun deleteOverride(overrideId: String): Boolean = dbQuery {
-        ChannelPermissionOverrides.deleteWhere { id eq overrideId } > 0
+        val override = ChannelPermissionOverrides.selectAll()
+            .where { ChannelPermissionOverrides.id eq overrideId }
+            .singleOrNull() ?: return@dbQuery false
+
+        val channelId = override[ChannelPermissionOverrides.channelId]
+        val channel = Channels.selectAll().where { Channels.id eq channelId }.singleOrNull() ?: return@dbQuery false
+        val serverId = channel[Channels.serverId]
+
+        val everyoneRole = Roles.selectAll()
+            .where { (Roles.serverId eq serverId) and (Roles.priorityLevel eq website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE) }
+            .singleOrNull() ?: return@dbQuery false
+
+        if (override[ChannelPermissionOverrides.targetId] == everyoneRole[Roles.id]) {
+            false
+        } else {
+            ChannelPermissionOverrides.deleteWhere { id eq overrideId } > 0
+        }
     }
 
     override suspend fun getEffectivePermissions(serverId: String, channelId: String, userId: String): Long = dbQuery {

@@ -307,19 +307,26 @@ fun ChannelPermissionsTab(
                             }
                         }", style = MaterialTheme.typography.titleMedium)
                         
-                        IconButton(onClick = {
-                            scope.launch {
-                                val userId = MainState.currentUserId ?: return@launch
-                                if (apiClient.deleteChannelOverride(channel.serverId, channel.id, userId, override.id)) {
-                                    overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
-                                    selectedOverride = null
-                                    
-                                    // Refresh local effective permissions
-                                    MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
+                        val everyoneRole = roles.find { it.priorityLevel == website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE }
+                        val isEveryoneOverride = everyoneRole != null && 
+                                                 override.targetId == everyoneRole.id && 
+                                                 override.targetType == OverrideType.ROLE
+                        
+                        if (!isEveryoneOverride) {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    val userId = MainState.currentUserId ?: return@launch
+                                    if (apiClient.deleteChannelOverride(channel.serverId, channel.id, userId, override.id)) {
+                                        overrides = apiClient.getChannelOverrides(channel.serverId, channel.id, userId)
+                                        selectedOverride = null
+                                        
+                                        // Refresh local effective permissions
+                                        MainState.currentChannelPermissions = apiClient.getChannelPermissions(channel.serverId, channel.id, userId)
+                                    }
                                 }
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Override", tint = MaterialTheme.colorScheme.error)
                             }
-                        }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete Override", tint = MaterialTheme.colorScheme.error)
                         }
                     }
                     
