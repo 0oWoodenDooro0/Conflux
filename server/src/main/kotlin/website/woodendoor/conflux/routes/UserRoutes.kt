@@ -19,4 +19,14 @@ fun Route.userRoutes(userController: UserController) {
             call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
         }
     }
+
+    get("/api/users/{userId}") {
+        val userId = call.parameters["userId"]
+        if (userId == null) {
+            call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            return@get
+        }
+        val result = userController.getUser(userId)
+        call.respond(result, HttpStatusCode.OK)
+    }
 }

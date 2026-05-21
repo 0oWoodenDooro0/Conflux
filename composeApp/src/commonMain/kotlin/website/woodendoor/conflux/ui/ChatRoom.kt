@@ -32,11 +32,39 @@ fun ChatRoom(apiClient: ServerApiClient) {
     val copyToClipboard = rememberClipboardHelper()
 
     var members by remember { mutableStateOf<List<User>>(emptyList()) }
+    var fetchedUsers by remember { mutableStateOf<Map<String, User>>(emptyMap()) }
+    val pendingFetches = remember { mutableStateListOf<String>() }
+
     LaunchedEffect(channel.serverId) {
         try {
             members = apiClient.getMembers(channel.serverId)
         } catch (e: Exception) {
             println("Failed to fetch members: ${e.message}")
+        }
+    }
+
+    LaunchedEffect(messages, members) {
+        val unknownAuthorIds = messages
+            .map { it.authorId }
+            .distinct()
+            .filter { authorId ->
+                members.none { it.id == authorId } && !fetchedUsers.containsKey(authorId)
+            }
+
+        unknownAuthorIds.forEach { authorId ->
+            if (!pendingFetches.contains(authorId)) {
+                pendingFetches.add(authorId)
+                scope.launch {
+                    try {
+                        val fetched = apiClient.getUser(authorId)
+                        fetchedUsers = fetchedUsers + (authorId to fetched)
+                    } catch (e: Exception) {
+                        println("Failed to fetch user $authorId: ${e.message}")
+                    } finally {
+                        pendingFetches.remove(authorId)
+                    }
+                }
+            }
         }
     }
 
@@ -56,7 +84,7 @@ fun ChatRoom(apiClient: ServerApiClient) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
-                    val user = members.find { it.id == message.authorId }
+                    val user = members.find { it.id == message.authorId } ?: fetchedUsers[message.authorId]
                     val displayName = user?.username ?: "User ${message.authorId}"
                     val formattedTime = formatTimestamp(message.timestamp)
 

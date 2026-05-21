@@ -181,6 +181,10 @@ class ServerApiClient(
         return client.get("$baseUrl/api/servers/$serverId/roles/$roleId/members").body()
     }
 
+    suspend fun getUser(userId: String): User {
+        return client.get("$baseUrl/api/users/$userId").body()
+    }
+
     fun close() {
         client.close()
     }

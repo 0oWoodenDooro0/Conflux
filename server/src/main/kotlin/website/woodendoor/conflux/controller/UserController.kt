@@ -25,4 +25,14 @@ class UserController(
             OperationResult.Failure.InternalError("Failed to create or retrieve user")
         }
     }
+
+    suspend fun getUser(id: String): OperationResult<User> {
+        val user = userService.getUser(id)
+        return if (user != null) {
+            OperationResult.Success(user)
+        } else {
+            OperationResult.Failure.NotFound("User with ID $id not found")
+        }
+    }
 }
+
