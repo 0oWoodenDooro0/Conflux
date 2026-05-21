@@ -16,8 +16,10 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import website.woodendoor.conflux.api.ServerApiClient
+import website.woodendoor.conflux.formatTimestamp
 import website.woodendoor.conflux.models.Message
 import website.woodendoor.conflux.models.ConfluxPermission
+import website.woodendoor.conflux.models.User
 import website.woodendoor.conflux.state.LoginState
 import website.woodendoor.conflux.state.MainState
 
@@ -28,6 +30,15 @@ fun ChatRoom(apiClient: ServerApiClient) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val copyToClipboard = rememberClipboardHelper()
+
+    var members by remember { mutableStateOf<List<User>>(emptyList()) }
+    LaunchedEffect(channel.serverId) {
+        try {
+            members = apiClient.getMembers(channel.serverId)
+        } catch (e: Exception) {
+            println("Failed to fetch members: ${e.message}")
+        }
+    }
 
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
@@ -45,6 +56,10 @@ fun ChatRoom(apiClient: ServerApiClient) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
+                    val user = members.find { it.id == message.authorId }
+                    val displayName = user?.username ?: "User ${message.authorId}"
+                    val formattedTime = formatTimestamp(message.timestamp)
+
                     DebugContextMenu(
                         ids = mapOf(
                             "Message ID" to message.id,
@@ -52,7 +67,11 @@ fun ChatRoom(apiClient: ServerApiClient) {
                         ),
                         onCopy = copyToClipboard
                     ) {
-                        MessageItem(message)
+                        MessageItem(
+                            message = message,
+                            authorName = displayName,
+                            formattedTime = formattedTime
+                        )
                     }
                 }
             }
@@ -86,7 +105,7 @@ fun ChatRoom(apiClient: ServerApiClient) {
 }
 
 @Composable
-fun MessageItem(message: Message) {
+fun MessageItem(message: Message, authorName: String, formattedTime: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -94,11 +113,22 @@ fun MessageItem(message: Message) {
         )
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = "User ${message.authorId}",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = authorName,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = formattedTime,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = message.content,
                 style = MaterialTheme.typography.bodyLarge
