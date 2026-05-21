@@ -23,10 +23,16 @@ class ServerControllerTest {
     fun `test createServer success`() = runBlocking {
         val request = CreateServerRequest("Test Server", ownerId = "owner-1")
         val server = Server("server-1", "Test Server", "owner-1")
+        val generalChannel = website.woodendoor.conflux.models.Channel("chan-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
+        val everyoneRole = website.woodendoor.conflux.models.Role(
+            "role-everyone", "server-1", "@everyone", 0L, null, website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
+        )
         
         coEvery { userRepository.getUser("owner-1") } returns User("owner-1", "owner", "1234")
         coEvery { serverRepository.createServer(any()) } returns server
-        coEvery { channelRepository.createChannel(any()) } returns mockk()
+        coEvery { channelRepository.createChannel(any()) } returns generalChannel
+        coEvery { serverRepository.getRoles("server-1") } returns listOf(everyoneRole)
+        coEvery { channelRepository.upsertOverride(any(), any()) } returns true
         
         val result = controller.createServer(request)
         

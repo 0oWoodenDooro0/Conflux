@@ -3,9 +3,12 @@ package website.woodendoor.conflux.controller
 import website.woodendoor.conflux.database.repositories.ChannelRepository
 import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.database.repositories.UserRepository
+import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 import website.woodendoor.conflux.models.Channel
+import website.woodendoor.conflux.models.ChannelPermissionOverride
 import website.woodendoor.conflux.models.ChannelType
 import website.woodendoor.conflux.models.CreateServerRequest
+import website.woodendoor.conflux.models.OverrideType
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.User
 import java.util.*
@@ -37,9 +40,9 @@ class ServerController(
         val created = serverRepository.createServer(server)
         
         if (created != null) {
-            // Create default #general channel
+            // Create default #general channel and set default override for @everyone
             try {
-                channelRepository.createChannel(
+                val generalChannel = channelRepository.createChannel(
                     Channel(
                         id = UUID.randomUUID().toString(),
                         serverId = created.id,
@@ -48,6 +51,21 @@ class ServerController(
                         topic = "Welcome to ${created.name}!"
                     )
                 )
+                if (generalChannel != null) {
+                    val roles = serverRepository.getRoles(created.id)
+                    val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }
+                    if (everyoneRole != null) {
+                        val override = ChannelPermissionOverride(
+                            id = UUID.randomUUID().toString(),
+                            channelId = generalChannel.id,
+                            targetId = everyoneRole.id,
+                            targetType = OverrideType.ROLE,
+                            allow = 0L,
+                            deny = 0L
+                        )
+                        channelRepository.upsertOverride(generalChannel.id, override)
+                    }
+                }
             } catch (e: Exception) {
                 // We don't fail the server creation if the channel fails, but we should log it
                 println("Failed to create default #general channel for server ${created.id}: ${e.message}")
