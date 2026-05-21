@@ -19,7 +19,11 @@ class ChatControllerTest {
     private val serverRepository = mockk<ServerRepository>()
     private val roleController = mockk<RoleController>()
     private val connectionManager = mockk<WebSocketConnectionManager>()
-    private val controller = ChatController(messageRepository, channelRepository, serverRepository, roleController, connectionManager)
+    private val chatService = website.woodendoor.conflux.service.impl.ChatServiceImpl(messageRepository)
+    private val channelPermissionService = website.woodendoor.conflux.service.impl.ChannelPermissionServiceImpl(channelRepository, serverRepository)
+    private val channelService = website.woodendoor.conflux.service.impl.ChannelServiceImpl(channelRepository, channelPermissionService)
+    private val serverService = website.woodendoor.conflux.service.impl.ServerServiceImpl(serverRepository, mockk(), channelService)
+    private val controller = ChatController(chatService, channelService, channelPermissionService, serverService, connectionManager)
 
     @Test
     fun `test sendMessage success`() = runBlocking {

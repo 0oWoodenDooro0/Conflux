@@ -18,7 +18,10 @@ class ChannelControllerTest {
     private val channelRepository = mockk<ChannelRepository>()
     private val serverRepository = mockk<ServerRepository>()
     private val connectionManager = mockk<WebSocketConnectionManager>(relaxed = true)
-    private val controller = ChannelController(channelRepository, serverRepository, connectionManager)
+    private val channelPermissionService = website.woodendoor.conflux.service.impl.ChannelPermissionServiceImpl(channelRepository, serverRepository)
+    private val channelService = website.woodendoor.conflux.service.impl.ChannelServiceImpl(channelRepository, channelPermissionService)
+    private val serverService = website.woodendoor.conflux.service.impl.ServerServiceImpl(serverRepository, mockk(), channelService)
+    private val controller = ChannelController(channelService, channelPermissionService, serverService, connectionManager)
 
     @Test
     fun `test editChannel success`() = runBlocking {

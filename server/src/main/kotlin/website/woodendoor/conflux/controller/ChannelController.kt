@@ -1,10 +1,10 @@
 package website.woodendoor.conflux.controller
 
 import website.woodendoor.conflux.WebSocketConnectionManager
-import website.woodendoor.conflux.database.repositories.ChannelRepository
-import website.woodendoor.conflux.database.repositories.ServerRepository
-import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 import website.woodendoor.conflux.models.*
+import website.woodendoor.conflux.service.ChannelPermissionService
+import website.woodendoor.conflux.service.ChannelService
+import website.woodendoor.conflux.service.ServerService
 import io.ktor.websocket.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -13,32 +13,24 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 class ChannelController(
-    private val channelRepository: ChannelRepository,
-    private val serverRepository: ServerRepository,
+    private val channelService: ChannelService,
+    private val channelPermissionService: ChannelPermissionService,
+    private val serverService: ServerService,
     private val connectionManager: WebSocketConnectionManager
 ) {
 
     suspend fun getOverrides(channelId: String): OperationResult<List<ChannelPermissionOverride>> {
-        if (channelRepository.getChannel(channelId) == null) {
+        if (channelService.getChannel(channelId) == null) {
             return OperationResult.Failure.NotFound("Channel not found")
         }
-        val overrides = channelRepository.getOverrides(channelId)
+        val overrides = channelPermissionService.getOverrides(channelId)
         return OperationResult.Success(overrides)
     }
 
     suspend fun upsertOverride(channelId: String, request: UpsertOverrideRequest): OperationResult<Unit> {
-        val channel = channelRepository.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
+        val channel = channelService.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
 
-        val override = ChannelPermissionOverride(
-            id = UUID.randomUUID().toString(),
-            channelId = channelId,
-            targetId = request.targetId,
-            targetType = request.targetType,
-            allow = request.allow,
-            deny = request.deny
-        )
-
-        val success = channelRepository.upsertOverride(channelId, override)
+        val success = channelPermissionService.upsertOverride(channelId, request)
         return if (success) {
             broadcastPermissionUpdate(channel.serverId)
             OperationResult.Success(Unit)
@@ -48,28 +40,26 @@ class ChannelController(
     }
 
     suspend fun deleteOverride(serverId: String, overrideId: String): OperationResult<Unit> {
-        val roles = serverRepository.getRoles(serverId)
-        val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }
-        if (everyoneRole != null) {
-            val channels = channelRepository.getChannelsByServer(serverId)
-            for (channel in channels) {
-                val overrides = channelRepository.getOverrides(channel.id)
-                val matchingOverride = overrides.find { it.id == overrideId }
-                if (matchingOverride != null) {
-                    if (matchingOverride.targetId == everyoneRole.id) {
-                        return OperationResult.Failure.BadRequest("Cannot delete the @everyone override")
-                    }
-                    break
-                }
+        val channels = channelService.getChannelsByServer(serverId)
+        var foundOverride: ChannelPermissionOverride? = null
+        for (channel in channels) {
+            val overrides = channelPermissionService.getOverrides(channel.id)
+            val matching = overrides.find { it.id == overrideId }
+            if (matching != null) {
+                foundOverride = matching
+                break
             }
         }
+        if (foundOverride == null) {
+            return OperationResult.Failure.NotFound("Override not found or failed to delete")
+        }
 
-        val success = channelRepository.deleteOverride(overrideId)
+        val success = channelPermissionService.deleteOverride(serverId, overrideId)
         return if (success) {
             broadcastPermissionUpdate(serverId)
             OperationResult.Success(Unit)
         } else {
-            OperationResult.Failure.NotFound("Override not found or failed to delete")
+            OperationResult.Failure.BadRequest("Cannot delete the @everyone override")
         }
     }
 
@@ -92,17 +82,16 @@ class ChannelController(
     }
 
     suspend fun getEffectivePermissions(serverId: String, channelId: String, userId: String): OperationResult<Long> {
-        val permissions = channelRepository.getEffectivePermissions(serverId, channelId, userId)
+        val permissions = channelPermissionService.getEffectivePermissions(serverId, channelId, userId)
         return OperationResult.Success(permissions)
     }
 
     suspend fun hasPermission(serverId: String, channelId: String, userId: String, permission: Long): Boolean {
-        val effectivePermissions = channelRepository.getEffectivePermissions(serverId, channelId, userId)
-        return ConfluxPermission.hasPermission(effectivePermissions, permission)
+        return channelPermissionService.hasPermission(serverId, channelId, userId, permission)
     }
 
     suspend fun editChannel(channelId: String, request: UpdateChannelRequest): OperationResult<Channel> {
-        val existingChannel = channelRepository.getChannel(channelId)
+        val existingChannel = channelService.getChannel(channelId)
             ?: return OperationResult.Failure.NotFound("Channel not found")
 
         val updatedChannel = existingChannel.copy(
@@ -111,7 +100,7 @@ class ChannelController(
             topic = request.topic ?: existingChannel.topic
         )
 
-        val success = channelRepository.updateChannel(updatedChannel)
+        val success = channelService.updateChannel(updatedChannel)
         return if (success) {
             broadcastChannelUpdated(updatedChannel.serverId, updatedChannel)
             OperationResult.Success(updatedChannel)
@@ -146,10 +135,10 @@ class ChannelController(
     }
 
     suspend fun deleteChannel(channelId: String): OperationResult<Unit> {
-        val existingChannel = channelRepository.getChannel(channelId)
+        val existingChannel = channelService.getChannel(channelId)
             ?: return OperationResult.Failure.NotFound("Channel not found")
 
-        val success = channelRepository.deleteChannel(channelId)
+        val success = channelService.deleteChannel(channelId)
         return if (success) {
             broadcastChannelDeleted(existingChannel.serverId, channelId)
             OperationResult.Success(Unit)
@@ -177,27 +166,12 @@ class ChannelController(
     }
 
     suspend fun createChannel(serverId: String, request: CreateChannelRequest): OperationResult<Channel> {
-        if (serverRepository.getServer(serverId) == null) {
+        if (serverService.getServer(serverId) == null) {
             return OperationResult.Failure.NotFound("Server not found")
         }
 
-        val channel = request.toDomain(id = UUID.randomUUID().toString(), serverId = serverId)
-        val created = channelRepository.createChannel(channel)
-        
+        val created = channelService.createChannel(serverId, request.name, request.type, request.topic)
         return if (created != null) {
-            val roles = serverRepository.getRoles(serverId)
-            val everyoneRole = roles.find { it.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE }
-            if (everyoneRole != null) {
-                val override = ChannelPermissionOverride(
-                    id = UUID.randomUUID().toString(),
-                    channelId = created.id,
-                    targetId = everyoneRole.id,
-                    targetType = OverrideType.ROLE,
-                    allow = 0L,
-                    deny = 0L
-                )
-                channelRepository.upsertOverride(created.id, override)
-            }
             broadcastChannelCreated(serverId, created)
             OperationResult.Success(created)
         } else {
@@ -231,10 +205,10 @@ class ChannelController(
     }
 
     suspend fun getChannelsByServer(serverId: String, userId: String? = null): OperationResult<List<Channel>> {
-        if (serverRepository.getServer(serverId) == null) {
+        if (serverService.getServer(serverId) == null) {
             return OperationResult.Failure.NotFound("Server not found")
         }
-        val channels = channelRepository.getChannelsByServer(serverId)
+        val channels = channelService.getChannelsByServer(serverId)
         val filtered = if (userId != null) {
             channels.filter { channel ->
                 hasPermission(serverId, channel.id, userId, ConfluxPermission.VIEW_CHANNEL)
@@ -250,7 +224,7 @@ class ChannelController(
     }
 
     suspend fun getChannel(channelId: String): OperationResult<Channel> {
-        val channel = channelRepository.getChannel(channelId)
+        val channel = channelService.getChannel(channelId)
         return if (channel != null) {
             OperationResult.Success(channel)
         } else {

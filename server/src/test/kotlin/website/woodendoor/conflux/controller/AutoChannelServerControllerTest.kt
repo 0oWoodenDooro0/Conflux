@@ -19,8 +19,10 @@ class AutoChannelServerControllerTest {
     private val serverRepository = mockk<ServerRepository>()
     private val userRepository = mockk<UserRepository>()
     private val channelRepository = mockk<ChannelRepository>()
-    // Note: This will fail to compile initially because ServerController doesn't take channelRepository yet
-    private val controller = ServerController(serverRepository, userRepository, channelRepository)
+    private val channelPermissionService = website.woodendoor.conflux.service.impl.ChannelPermissionServiceImpl(channelRepository, serverRepository)
+    private val channelService = website.woodendoor.conflux.service.impl.ChannelServiceImpl(channelRepository, channelPermissionService)
+    private val serverService = website.woodendoor.conflux.service.impl.ServerServiceImpl(serverRepository, userRepository, channelService)
+    private val controller = ServerController(serverService)
 
     @Test
     fun `test createServer creates default general channel with everyone override`() = runBlocking {

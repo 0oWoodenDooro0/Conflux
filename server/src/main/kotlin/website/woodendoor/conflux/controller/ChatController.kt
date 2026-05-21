@@ -9,29 +9,30 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import website.woodendoor.conflux.WebSocketConnectionManager
-import website.woodendoor.conflux.database.repositories.ChannelRepository
-import website.woodendoor.conflux.database.repositories.MessageRepository
-import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.*
+import website.woodendoor.conflux.service.ChatService
+import website.woodendoor.conflux.service.ChannelService
+import website.woodendoor.conflux.service.ChannelPermissionService
+import website.woodendoor.conflux.service.ServerService
 
 class ChatController(
-    private val messageRepository: MessageRepository,
-    private val channelRepository: ChannelRepository,
-    private val serverRepository: ServerRepository,
-    private val roleController: RoleController,
+    private val chatService: ChatService,
+    private val channelService: ChannelService,
+    private val channelPermissionService: ChannelPermissionService,
+    private val serverService: ServerService,
     private val connectionManager: WebSocketConnectionManager
 ) {
 
     suspend fun sendMessage(channelId: String, request: SendMessageRequest): OperationResult<Message> {
-        val channel = channelRepository.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
+        val channel = channelService.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
         
         // Verify membership
-        val members = serverRepository.getMembers(channel.serverId)
+        val members = serverService.getMembers(channel.serverId)
         if (members.none { it.id == request.senderId }) {
             return OperationResult.Failure.Forbidden("User is not a member of this server")
         }
         
-        val permissions = channelRepository.getEffectivePermissions(channel.serverId, channelId, request.senderId)
+        val permissions = channelPermissionService.getEffectivePermissions(channel.serverId, channelId, request.senderId)
         if (!ConfluxPermission.hasPermission(permissions, ConfluxPermission.MESSAGING)) {
             return OperationResult.Failure.Forbidden("No messaging permission in this channel")
         }
@@ -43,7 +44,7 @@ class ChatController(
             return OperationResult.Failure.BadRequest("Message cannot be empty")
         }
 
-        val message = messageRepository.saveMessage(
+        val message = chatService.sendMessage(
             channelId = channelId,
             senderId = request.senderId,
             content = request.content
@@ -55,12 +56,12 @@ class ChatController(
     }
 
     suspend fun getMessagesByChannel(channelId: String): OperationResult<List<Message>> {
-        val messages = messageRepository.getMessagesByChannel(channelId)
+        val messages = chatService.getMessagesByChannel(channelId)
         return OperationResult.Success(messages)
     }
 
     private suspend fun broadcastMessage(channelId: String, message: Message) {
-        val channel = channelRepository.getChannel(channelId) ?: return
+        val channel = channelService.getChannel(channelId) ?: return
         val serverId = channel.serverId
         
         val event = ConfluxEvent.NewMessage(message, serverId)
@@ -77,7 +78,7 @@ class ChatController(
             coroutineScope {
                 serverSubscribers.map { userId ->
                     async {
-                        val perms = channelRepository.getEffectivePermissions(serverId, channelId, userId)
+                        val perms = channelPermissionService.getEffectivePermissions(serverId, channelId, userId)
                         userId to ConfluxPermission.hasPermission(perms, ConfluxPermission.VIEW_CHANNEL)
                     }
                 }.forEach { deferred ->

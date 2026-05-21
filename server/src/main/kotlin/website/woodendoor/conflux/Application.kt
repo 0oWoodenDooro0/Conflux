@@ -16,6 +16,8 @@ import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
 import website.woodendoor.conflux.database.repositories.*
 import website.woodendoor.conflux.routes.*
+import website.woodendoor.conflux.service.*
+import website.woodendoor.conflux.service.impl.*
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -62,11 +64,18 @@ fun Application.module() {
     val tokenManager = WebSocketAuthTokenManager()
     val connectionManager = WebSocketConnectionManager()
 
-    val serverController = ServerController(serverRepository, userRepository, channelRepository)
-    val channelController = ChannelController(channelRepository, serverRepository, connectionManager)
-    val roleController = RoleController(serverRepository, connectionManager)
-    val chatController = ChatController(messageRepository, channelRepository, serverRepository, roleController, connectionManager)
-    val userController = UserController(userRepository)
+    val channelPermissionService = ChannelPermissionServiceImpl(channelRepository, serverRepository)
+    val channelService = ChannelServiceImpl(channelRepository, channelPermissionService)
+    val serverServiceImpl = ServerServiceImpl(serverRepository, userRepository, channelService)
+    val userService = UserServiceImpl(userRepository)
+    val roleService = RoleServiceImpl(serverRepository)
+    val chatService = ChatServiceImpl(messageRepository)
+
+    val serverController = ServerController(serverServiceImpl)
+    val channelController = ChannelController(channelService, channelPermissionService, serverServiceImpl, connectionManager)
+    val roleController = RoleController(roleService, connectionManager)
+    val chatController = ChatController(chatService, channelService, channelPermissionService, serverServiceImpl, connectionManager)
+    val userController = UserController(userService)
 
     routing {
         get("/") {

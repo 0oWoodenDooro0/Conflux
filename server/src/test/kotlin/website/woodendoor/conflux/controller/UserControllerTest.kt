@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 
 class UserControllerTest {
     private val userRepository = mockk<UserRepository>()
-    private val controller = UserController(userRepository)
+    private val userService = website.woodendoor.conflux.service.impl.UserServiceImpl(userRepository)
+    private val controller = UserController(userService)
 
     @Test
     fun `test login with existing user`() = runBlocking {

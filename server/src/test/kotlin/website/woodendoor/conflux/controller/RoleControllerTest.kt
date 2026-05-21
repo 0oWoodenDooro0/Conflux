@@ -15,7 +15,8 @@ import kotlin.test.assertTrue
 class RoleControllerTest {
     private val serverRepository = mockk<ServerRepository>()
     private val connectionManager = mockk<WebSocketConnectionManager>(relaxed = true)
-    private val controller = RoleController(serverRepository, connectionManager)
+    private val roleService = website.woodendoor.conflux.service.impl.RoleServiceImpl(serverRepository)
+    private val controller = RoleController(roleService, connectionManager)
 
     @Test
     fun `test createRole success`() = runBlocking {
