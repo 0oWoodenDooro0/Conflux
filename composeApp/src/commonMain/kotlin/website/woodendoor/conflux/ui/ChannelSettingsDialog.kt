@@ -28,41 +28,51 @@ fun ChannelSettingsDialog(
     apiClient: ServerApiClient,
     onDismissRequest: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Overview", "Permissions")
+    var selectedTab by remember { mutableStateOf(ChannelSettingsTab.Overview) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.fillMaxSize().padding(16.dp),
         title = {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Channel Settings: #${channel.name}")
-                    IconButton(onClick = onDismissRequest) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
-                }
-                TabRow(selectedTabIndex = selectedTab) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTab == index,
-                            onClick = { selectedTab = index },
-                            text = { Text(title) }
-                        )
-                    }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Channel Settings: #${channel.name}")
+                IconButton(onClick = onDismissRequest) {
+                    Icon(Icons.Default.Close, contentDescription = "Close")
                 }
             }
         },
         text = {
-            Box(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
-                when (selectedTab) {
-                    0 -> ChannelOverviewTab(channel, apiClient, onDismissRequest)
-                    1 -> ChannelPermissionsTab(channel, apiClient)
+            Row(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .width(240.dp)
+                        .fillMaxHeight()
+                ) {
+                    ChannelSettingsTab.entries.forEach { tab ->
+                        NavigationDrawerItem(
+                            label = { Text(tab.name) },
+                            selected = selectedTab == tab,
+                            onClick = { selectedTab = tab },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                    }
+                }
+
+                VerticalDivider(modifier = Modifier.fillMaxHeight().width(1.dp))
+
+                Column(modifier = Modifier.weight(1f).padding(start = 24.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        when (selectedTab) {
+                            ChannelSettingsTab.Overview -> ChannelOverviewTab(channel, apiClient, onDismissRequest)
+                            ChannelSettingsTab.Permissions -> ChannelPermissionsTab(channel, apiClient)
+                        }
+                    }
                 }
             }
         },
