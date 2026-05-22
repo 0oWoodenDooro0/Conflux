@@ -3,10 +3,15 @@ package website.woodendoor.conflux.controller
 import website.woodendoor.conflux.models.CreateServerRequest
 import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.User
+import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.service.ServerService
+import website.woodendoor.conflux.service.ChannelPermissionService
+import website.woodendoor.conflux.WebSocketConnectionManager
 
 class ServerController(
-    private val serverService: ServerService
+    private val serverService: ServerService,
+    private val connectionManager: WebSocketConnectionManager,
+    private val channelPermissionService: ChannelPermissionService
 ) {
 
     suspend fun createServer(request: CreateServerRequest): OperationResult<Server> {
@@ -32,9 +37,20 @@ class ServerController(
         return OperationResult.Success(servers)
     }
 
-    suspend fun getMembers(serverId: String): OperationResult<List<User>> {
+    suspend fun getMembers(serverId: String, channelId: String? = null): OperationResult<List<User>> {
         val members = serverService.getMembers(serverId)
-        return OperationResult.Success(members)
+        val filteredMembers = if (channelId != null) {
+            members.filter { member ->
+                channelPermissionService.hasPermission(serverId, channelId, member.id, ConfluxPermission.VIEW_CHANNEL)
+            }
+        } else {
+            members
+        }
+        val membersWithPresence = filteredMembers.map { member ->
+            val isOnline = connectionManager.getUserSessions(member.id).isNotEmpty()
+            member.copy(isOnline = isOnline)
+        }
+        return OperationResult.Success(membersWithPresence)
     }
 
     suspend fun getPermissionsForMember(serverId: String, userId: String): OperationResult<Long> {
@@ -47,6 +63,7 @@ class ServerController(
         
         val joined = serverService.joinServer(userId, serverId)
         return if (joined) {
+            connectionManager.broadcastToServer(serverId, website.woodendoor.conflux.models.ConfluxEvent.PermissionUpdate(serverId, userId = userId))
             OperationResult.Success(Unit)
         } else {
             OperationResult.Failure.Conflict("Already a member or owner")

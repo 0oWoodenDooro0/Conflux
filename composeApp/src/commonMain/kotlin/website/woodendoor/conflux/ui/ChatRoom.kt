@@ -31,17 +31,9 @@ fun ChatRoom(apiClient: ServerApiClient) {
     val listState = rememberLazyListState()
     val copyToClipboard = rememberClipboardHelper()
 
-    var members by remember { mutableStateOf<List<User>>(emptyList()) }
+    val members = MainState.currentServerMembers
     var fetchedUsers by remember { mutableStateOf<Map<String, User>>(emptyMap()) }
     val pendingFetches = remember { mutableStateListOf<String>() }
-
-    LaunchedEffect(channel.serverId) {
-        try {
-            members = apiClient.getMembers(channel.serverId)
-        } catch (e: Exception) {
-            println("Failed to fetch members: ${e.message}")
-        }
-    }
 
     LaunchedEffect(messages, members) {
         val unknownAuthorIds = messages

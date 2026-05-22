@@ -12,12 +12,14 @@ import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
 import website.woodendoor.conflux.models.ConfluxEvent
 
 import website.woodendoor.conflux.database.repositories.ChannelRepository
+import website.woodendoor.conflux.database.repositories.ServerRepository
 import website.woodendoor.conflux.models.ConfluxPermission
 
 fun Route.webSocketRoutes(
     tokenManager: WebSocketAuthTokenManager,
     connectionManager: WebSocketConnectionManager,
-    channelRepository: ChannelRepository
+    channelRepository: ChannelRepository,
+    serverRepository: ServerRepository
 ) {
     post("/api/auth/ws-token") {
         val userId = call.receiveText() // Simple for now
@@ -44,6 +46,16 @@ fun Route.webSocketRoutes(
 
         // Successfully connected
         connectionManager.addConnection(userId, this)
+        
+        // Broadcast presence change to servers
+        try {
+            val servers = serverRepository.getServersForUser(userId)
+            servers.forEach { server ->
+                connectionManager.broadcastToServer(server.id, ConfluxEvent.UserPresenceChanged(userId, true))
+            }
+        } catch (e: Exception) {
+            // Ignore
+        }
         
         try {
             // No need to send raw text confirmation, use events if needed or just wait
@@ -72,6 +84,15 @@ fun Route.webSocketRoutes(
             }
         } finally {
             connectionManager.removeConnection(userId, this)
+            // Broadcast presence change to servers
+            try {
+                val servers = serverRepository.getServersForUser(userId)
+                servers.forEach { server ->
+                    connectionManager.broadcastToServer(server.id, ConfluxEvent.UserPresenceChanged(userId, false))
+                }
+            } catch (e: Exception) {
+                // Ignore
+            }
         }
     }
 }

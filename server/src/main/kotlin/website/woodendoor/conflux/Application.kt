@@ -71,7 +71,7 @@ fun Application.module() {
     val roleService = RoleServiceImpl(serverRepository)
     val chatService = ChatServiceImpl(messageRepository)
 
-    val serverController = ServerController(serverServiceImpl)
+    val serverController = ServerController(serverServiceImpl, connectionManager, channelPermissionService)
     val channelController = ChannelController(channelService, channelPermissionService, serverServiceImpl, connectionManager)
     val roleController = RoleController(roleService, connectionManager)
     val chatController = ChatController(chatService, channelService, channelPermissionService, serverServiceImpl, connectionManager)
@@ -96,6 +96,6 @@ fun Application.module() {
         messageRoutes(chatController)
         roleRoutes(roleController)
         userRoutes(userController)
-        webSocketRoutes(tokenManager, connectionManager, channelRepository)
+        webSocketRoutes(tokenManager, connectionManager, channelRepository, serverRepository)
     }
 }

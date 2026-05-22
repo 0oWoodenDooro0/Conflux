@@ -24,7 +24,8 @@ fun Route.serverRoutes(
 
         get("/{id}/members") {
             val serverId = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing serverId")
-            val result = serverController.getMembers(serverId)
+            val channelId = call.request.queryParameters["channelId"]
+            val result = serverController.getMembers(serverId, channelId)
             call.respond(result)
         }
 

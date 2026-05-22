@@ -199,6 +199,10 @@ fun MainScreen() {
                     }
                 }
             }
+
+            if (selectedServer != null && MainState.selectedChannel != null && !isCreatingServer && !isJoiningServer && !isShowingSettings && channelToEdit == null) {
+                MemberSidebar(apiClient = apiClient)
+            }
         }
     }
 }

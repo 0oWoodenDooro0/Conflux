@@ -8,5 +8,6 @@ data class User(
     val username: String,
     val discriminator: String,
     val avatar: String? = null,
-    val permissions: Long = 0
+    val permissions: Long = 0,
+    val isOnline: Boolean = false
 )

@@ -76,8 +76,12 @@ class ServerApiClient(
         return response.status.isSuccess()
     }
 
-    suspend fun getMembers(serverId: String): List<User> {
-        return client.get("$baseUrl/api/servers/$serverId/members").body()
+    suspend fun getMembers(serverId: String, channelId: String? = null): List<User> {
+        return client.get("$baseUrl/api/servers/$serverId/members") {
+            if (channelId != null) {
+                parameter("channelId", channelId)
+            }
+        }.body()
     }
 
     suspend fun getMessages(channelId: String): List<Message> {

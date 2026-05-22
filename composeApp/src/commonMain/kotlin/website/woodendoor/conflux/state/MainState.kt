@@ -13,6 +13,7 @@ import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.ConfluxEvent
 import website.woodendoor.conflux.models.Message
 import website.woodendoor.conflux.models.Server
+import website.woodendoor.conflux.models.User
 
 object MainState {
     var currentUserId by mutableStateOf<String?>(null)
@@ -28,6 +29,7 @@ object MainState {
 
     var selectedChannel by mutableStateOf<Channel?>(null)
     var messages by mutableStateOf<List<Message>>(emptyList())
+    var currentServerMembers by mutableStateOf<List<User>>(emptyList())
     var messageFetchError by mutableStateOf<String?>(null)
     var messageSendError by mutableStateOf<String?>(null)
 
@@ -140,6 +142,7 @@ object MainState {
                     currentUserId?.let { userId ->
                         try {
                             currentUserPermissions = apiClient.getPermissions(event.serverId, userId)
+                            currentServerMembers = apiClient.getMembers(event.serverId, selectedChannel?.id)
                             val oldChannelIds = channelList.map { it.id }.toSet()
                             val newChannels = apiClient.getChannels(event.serverId, userId)
                             val newChannelIds = newChannels.map { it.id }.toSet()
@@ -174,6 +177,11 @@ object MainState {
                     }
                 }
             }
+            is ConfluxEvent.UserPresenceChanged -> {
+                currentServerMembers = currentServerMembers.map {
+                    if (it.id == event.userId) it.copy(isOnline = event.isOnline) else it
+                }
+            }
         }
     }
 
@@ -183,6 +191,7 @@ object MainState {
         channelFetchError = null
         selectedChannel = null
         messages = emptyList()
+        currentServerMembers = emptyList()
         currentUserPermissions = 0L
         currentChannelPermissions = 0L
 
@@ -190,6 +199,7 @@ object MainState {
 
         try {
             channelList = apiClient.getChannels(server.id, currentUserId)
+            currentServerMembers = apiClient.getMembers(server.id)
             currentUserId?.let { userId ->
                 currentUserPermissions = apiClient.getPermissions(server.id, userId)
             }
@@ -222,6 +232,7 @@ object MainState {
                 currentUserId?.let { userId ->
                     currentChannelPermissions = apiClient.getChannelPermissions(server.id, channel.id, userId)
                 }
+                currentServerMembers = apiClient.getMembers(server.id, channel.id)
             }
         } catch (e: Exception) {
             messageFetchError = e.message ?: "Unknown error"
@@ -281,6 +292,7 @@ object MainState {
         messageSendError = null
         unreadChannels = emptySet()
         unreadServerIds = emptySet()
+        currentServerMembers = emptyList()
         webSocketClient?.close()
         webSocketClient = null
     }

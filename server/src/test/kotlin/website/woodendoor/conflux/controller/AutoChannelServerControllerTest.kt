@@ -22,7 +22,8 @@ class AutoChannelServerControllerTest {
     private val channelPermissionService = website.woodendoor.conflux.service.impl.ChannelPermissionServiceImpl(channelRepository, serverRepository)
     private val channelService = website.woodendoor.conflux.service.impl.ChannelServiceImpl(channelRepository, channelPermissionService)
     private val serverService = website.woodendoor.conflux.service.impl.ServerServiceImpl(serverRepository, userRepository, channelService)
-    private val controller = ServerController(serverService)
+    private val connectionManager = io.mockk.mockk<website.woodendoor.conflux.WebSocketConnectionManager>(relaxed = true)
+    private val controller = ServerController(serverService, connectionManager, channelPermissionService)
 
     @Test
     fun `test createServer creates default general channel with everyone override`() = runBlocking {

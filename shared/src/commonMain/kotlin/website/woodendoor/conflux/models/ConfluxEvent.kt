@@ -26,5 +26,8 @@ sealed class ConfluxEvent {
     data class PermissionUpdate(val serverId: String, val roleId: String? = null, val userId: String? = null) : ConfluxEvent()
     
     @Serializable
+    data class UserPresenceChanged(val userId: String, val isOnline: Boolean) : ConfluxEvent()
+    
+    @Serializable
     data class Error(val message: String) : ConfluxEvent()
 }
