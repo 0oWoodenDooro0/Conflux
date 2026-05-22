@@ -1,8 +1,0 @@
-{
-  "track_id": "role_management_debug_20260503",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-03T10:00:00Z",
-  "updated_at": "2026-05-03T10:00:00Z",
-  "description": "Expand server settings with role management tabs, permissions bitmask control, member assignment, and a right-click developer debug menu for IDs."
-}

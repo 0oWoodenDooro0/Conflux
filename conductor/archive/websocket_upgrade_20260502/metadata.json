@@ -1,8 +1,0 @@
-{
-  "track_id": "websocket_upgrade_20260502",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-02T10:00:00Z",
-  "updated_at": "2026-05-02T10:00:00Z",
-  "description": "即時通訊 (WebSocket 升級) 把單純的 HTTP POST 升級成 WebSocket 即時推播。 後端調整：引入 Ktor WebSocket 外掛，設計一個機制來記錄哪些 User 正在監聽哪個 Channel。當有人發訊息時，除了寫入資料庫，立刻將該訊息廣播 (Broadcast) 給同頻道內的連線者。 前端調整：將 KMP 客戶端改為長連線模式，一旦收到廣播事件，就直接把新訊息塞進前端的 MessageList 狀態中，畫面就會瞬間更新。"
-}

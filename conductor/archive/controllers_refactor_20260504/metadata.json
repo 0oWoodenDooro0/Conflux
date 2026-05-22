@@ -1,8 +1,0 @@
-{
-  "track_id": "controllers_refactor_20260504",
-  "type": "refactor",
-  "status": "new",
-  "created_at": "2026-05-04T12:00:00Z",
-  "updated_at": "2026-05-04T12:00:00Z",
-  "description": "建立應用層控制器 (Controllers) 以符合設計類別圖。在後端專案中新增一層 Controller 層 (Application Layer)，將現有的路由邏輯重構，並確保 RoleController 被建立。"
-}

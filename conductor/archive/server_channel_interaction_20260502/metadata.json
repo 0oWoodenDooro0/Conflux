@@ -1,8 +1,0 @@
-{
-  "track_id": "server_channel_interaction_20260502",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-02T10:00:00Z",
-  "updated_at": "2026-05-02T10:00:00Z",
-  "description": "處理「點擊某個伺服器 ➔ 顯示該伺服器專屬頻道」的連動效果，並包含新增頻道功能。"
-}
