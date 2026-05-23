@@ -54,3 +54,10 @@ data class UpdateRoleRequest(
     val color: Int? = null,
     val priorityLevel: Int? = null
 )
+
+@Serializable
+data class ErrorResponse(
+    val error: String,
+    val details: String? = null
+)
+

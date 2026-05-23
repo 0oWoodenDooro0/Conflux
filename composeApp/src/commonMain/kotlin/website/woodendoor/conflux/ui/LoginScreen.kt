@@ -14,6 +14,8 @@ import org.koin.compose.koinInject
 import website.woodendoor.conflux.models.User
 import website.woodendoor.conflux.validation.UsernameValidator
 import website.woodendoor.conflux.validation.ValidationResult
+import website.woodendoor.conflux.util.Result
+import website.woodendoor.conflux.util.safeApiCall
 
 @Composable
 fun LoginScreen(
@@ -61,21 +63,22 @@ fun LoginScreen(
         
         Button(
             onClick = {
-                when (val result = UsernameValidator.validateUsername(username)) {
+                when (val validation = UsernameValidator.validateUsername(username)) {
                     is ValidationResult.Error -> {
-                        errorMessage = result.message
+                        errorMessage = validation.message
                     }
                     ValidationResult.Success -> {
                         scope.launch {
                             isLoading = true
-                            try {
-                                val user = apiClient.login(username)
-                                onLoginSuccess(user)
-                            } catch (e: Exception) {
-                                errorMessage = "Login failed: ${e.message}"
-                            } finally {
-                                isLoading = false
+                            when (val result = safeApiCall { apiClient.login(username) }) {
+                                is Result.Success -> {
+                                    onLoginSuccess(result.data)
+                                }
+                                is Result.Failure -> {
+                                    errorMessage = "Login failed: ${result.message}"
+                                }
                             }
+                            isLoading = false
                         }
                     }
                 }

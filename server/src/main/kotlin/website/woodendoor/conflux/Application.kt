@@ -11,6 +11,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
+import io.ktor.server.plugins.statuspages.StatusPages
+import website.woodendoor.conflux.exceptions.ConfluxException
+import website.woodendoor.conflux.models.ErrorResponse
 import website.woodendoor.conflux.controller.*
 import website.woodendoor.conflux.database.DatabaseFactory
 import website.woodendoor.conflux.database.models.*
@@ -47,6 +50,23 @@ fun Application.module() {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Patch)
         allowMethod(HttpMethod.Delete)
+    }
+    install(StatusPages) {
+        exception<ConfluxException> { call, cause ->
+            call.respond(HttpStatusCode.fromValue(cause.statusCode), ErrorResponse(cause.message, cause.details))
+        }
+        exception<io.ktor.server.plugins.BadRequestException> { call, cause ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid request format", cause.message))
+        }
+        exception<kotlinx.serialization.SerializationException> { call, cause ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid JSON formatting or parameters", cause.message))
+        }
+        exception<io.ktor.server.plugins.CannotTransformContentToTypeException> { call, cause ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid content format", cause.message))
+        }
+        exception<Exception> { call, cause ->
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("An unexpected server error occurred", cause.message))
+        }
     }
     DatabaseFactory.init()
     transaction {

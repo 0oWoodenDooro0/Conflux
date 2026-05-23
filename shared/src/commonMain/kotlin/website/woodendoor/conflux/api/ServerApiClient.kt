@@ -13,6 +13,7 @@ class ServerApiClient(
     private val baseUrl: String
 ) {
     constructor(baseUrl: String) : this(HttpClient {
+        expectSuccess = true
         install(ContentNegotiation) {
             json()
         }

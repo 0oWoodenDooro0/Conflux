@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.ktor.serverContentNegotiation)
     implementation(libs.ktor.serverCors)
     implementation(libs.ktor.serverWebsockets)
+    implementation(libs.ktor.serverStatusPages)
     implementation(libs.ktor.serializationKotlinxJson)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

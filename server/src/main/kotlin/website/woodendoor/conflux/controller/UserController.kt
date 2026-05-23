@@ -6,33 +6,27 @@ import website.woodendoor.conflux.service.UserService
 import website.woodendoor.conflux.validation.UsernameValidator
 import website.woodendoor.conflux.validation.ValidationResult
 
+import website.woodendoor.conflux.exceptions.*
+
 class UserController(
     private val userService: UserService
 ) {
 
-    suspend fun login(request: LoginRequest): OperationResult<User> {
+    suspend fun login(request: LoginRequest): User {
         when (val validationResult = UsernameValidator.validateUsername(request.username)) {
             is ValidationResult.Error -> {
-                return OperationResult.Failure.BadRequest(validationResult.message)
+                throw BadRequestException(validationResult.message)
             }
             ValidationResult.Success -> { /* OK */ }
         }
 
-        val user = userService.getOrCreateUser(request.username)
-        return if (user != null) {
-            OperationResult.Success(user)
-        } else {
-            OperationResult.Failure.InternalError("Failed to create or retrieve user")
-        }
+        return userService.getOrCreateUser(request.username)
+            ?: throw InternalServerErrorException("Failed to create or retrieve user")
     }
 
-    suspend fun getUser(id: String): OperationResult<User> {
-        val user = userService.getUser(id)
-        return if (user != null) {
-            OperationResult.Success(user)
-        } else {
-            OperationResult.Failure.NotFound("User with ID $id not found")
-        }
+    suspend fun getUser(id: String): User {
+        return userService.getUser(id)
+            ?: throw UserNotFoundException("User with ID $id not found")
     }
 }
 

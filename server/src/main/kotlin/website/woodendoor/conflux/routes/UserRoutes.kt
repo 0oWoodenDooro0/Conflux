@@ -9,24 +9,18 @@ import website.woodendoor.conflux.controller.UserController
 import website.woodendoor.conflux.controller.respond
 import website.woodendoor.conflux.models.LoginRequest
 
+import website.woodendoor.conflux.exceptions.BadRequestException
+
 fun Route.userRoutes(userController: UserController) {
     post("/api/login") {
-        try {
-            val request = call.receive<LoginRequest>()
-            val result = userController.login(request)
-            call.respond(result, HttpStatusCode.OK)
-        } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-        }
+        val request = call.receive<LoginRequest>()
+        val user = userController.login(request)
+        call.respond(HttpStatusCode.OK, user)
     }
 
     get("/api/users/{userId}") {
-        val userId = call.parameters["userId"]
-        if (userId == null) {
-            call.respond(HttpStatusCode.BadRequest, "Missing userId")
-            return@get
-        }
-        val result = userController.getUser(userId)
-        call.respond(result, HttpStatusCode.OK)
+        val userId = call.parameters["userId"] ?: throw BadRequestException("Missing userId")
+        val user = userController.getUser(userId)
+        call.respond(HttpStatusCode.OK, user)
     }
 }
