@@ -19,6 +19,8 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
+            api(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
             api(libs.kotlinx.serialization.json)
             api(libs.ktor.client.core)
             api(libs.ktor.client.websockets)

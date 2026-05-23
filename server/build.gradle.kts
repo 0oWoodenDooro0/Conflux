@@ -15,6 +15,9 @@ application {
 }
 
 dependencies {
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger.slf4j)
     implementation(projects.shared)
     implementation(libs.logback)
     implementation(libs.ktor.serverCore)

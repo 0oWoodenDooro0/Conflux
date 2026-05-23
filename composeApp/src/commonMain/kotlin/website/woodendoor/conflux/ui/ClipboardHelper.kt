@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package website.woodendoor.conflux.ui
 
 import androidx.compose.runtime.Composable

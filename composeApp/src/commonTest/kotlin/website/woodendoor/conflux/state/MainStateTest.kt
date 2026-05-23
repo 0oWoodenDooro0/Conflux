@@ -109,6 +109,13 @@ class MainStateTest {
                         headers = headersOf(HttpHeaders.ContentType, "application/json")
                     )
                 }
+                request.url.encodedPath.endsWith("/members") -> {
+                    respond(
+                        content = ByteReadChannel("[]"),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
                 request.url.encodedPath.endsWith("/permissions") -> {
                     respond(
                         content = ByteReadChannel("7"),
@@ -238,6 +245,13 @@ class MainStateTest {
                 request.url.encodedPath.contains("/permissions") -> {
                     respond(
                         content = ByteReadChannel(permissions.toString()),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+                request.url.encodedPath.contains("/members") -> {
+                    respond(
+                        content = ByteReadChannel("[]"),
                         status = HttpStatusCode.OK,
                         headers = headersOf(HttpHeaders.ContentType, "application/json")
                     )

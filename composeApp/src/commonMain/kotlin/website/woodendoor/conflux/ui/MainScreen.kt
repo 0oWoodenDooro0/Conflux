@@ -13,11 +13,13 @@ import website.woodendoor.conflux.models.Server
 import website.woodendoor.conflux.models.ConfluxPermission
 import website.woodendoor.conflux.state.LoginState
 import website.woodendoor.conflux.state.MainState
+import org.koin.compose.koinInject
+
 
 @Composable
 fun MainScreen() {
     val user = LoginState.currentUser ?: return
-    val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
+    val apiClient = koinInject<ServerApiClient>()
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var isCreatingServer by remember { mutableStateOf(false) }

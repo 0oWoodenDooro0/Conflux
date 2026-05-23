@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import website.woodendoor.conflux.DEFAULT_BASE_URL
 import website.woodendoor.conflux.api.ServerApiClient
+import org.koin.compose.koinInject
+
 import website.woodendoor.conflux.models.User
 import website.woodendoor.conflux.validation.UsernameValidator
 import website.woodendoor.conflux.validation.ValidationResult
@@ -21,7 +23,7 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val apiClient = remember { ServerApiClient(DEFAULT_BASE_URL) }
+    val apiClient = koinInject<ServerApiClient>()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),

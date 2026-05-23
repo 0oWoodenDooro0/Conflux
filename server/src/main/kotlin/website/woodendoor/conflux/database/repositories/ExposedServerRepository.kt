@@ -13,7 +13,7 @@ import java.util.UUID
 import website.woodendoor.conflux.DEFAULT_ROLE_NAME_EVERYONE
 import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
 
-class ExposedServerRepository(private val userRepository: ExposedUserRepository) : ServerRepository {
+class ExposedServerRepository(private val userRepository: UserRepository) : ServerRepository {
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
         name = row[Servers.name],

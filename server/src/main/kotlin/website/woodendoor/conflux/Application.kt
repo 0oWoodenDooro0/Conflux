@@ -21,6 +21,11 @@ import website.woodendoor.conflux.service.impl.*
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.koin.ktor.plugin.Koin
+import org.koin.ktor.ext.inject
+import org.koin.logger.slf4jLogger
+import website.woodendoor.conflux.di.serverModule
+
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -57,25 +62,21 @@ fun Application.module() {
         }
     }
     
-    val userRepository = ExposedUserRepository()
-    val serverRepository = ExposedServerRepository(userRepository)
-    val channelRepository = ExposedChannelRepository()
-    val messageRepository = ExposedMessageRepository()
-    val tokenManager = WebSocketAuthTokenManager()
-    val connectionManager = WebSocketConnectionManager()
+    install(Koin) {
+        slf4jLogger()
+        modules(serverModule)
+    }
 
-    val channelPermissionService = ChannelPermissionServiceImpl(channelRepository, serverRepository)
-    val channelService = ChannelServiceImpl(channelRepository, channelPermissionService)
-    val serverServiceImpl = ServerServiceImpl(serverRepository, userRepository, channelService)
-    val userService = UserServiceImpl(userRepository)
-    val roleService = RoleServiceImpl(serverRepository)
-    val chatService = ChatServiceImpl(messageRepository)
+    val serverController by inject<ServerController>()
+    val channelController by inject<ChannelController>()
+    val roleController by inject<RoleController>()
+    val chatController by inject<ChatController>()
+    val userController by inject<UserController>()
+    val tokenManager by inject<WebSocketAuthTokenManager>()
+    val connectionManager by inject<WebSocketConnectionManager>()
+    val channelRepository by inject<ChannelRepository>()
+    val serverRepository by inject<ServerRepository>()
 
-    val serverController = ServerController(serverServiceImpl, connectionManager, channelPermissionService)
-    val channelController = ChannelController(channelService, channelPermissionService, serverServiceImpl, connectionManager)
-    val roleController = RoleController(roleService, connectionManager)
-    val chatController = ChatController(chatService, channelService, channelPermissionService, serverServiceImpl, connectionManager)
-    val userController = UserController(userService)
 
     routing {
         get("/") {
