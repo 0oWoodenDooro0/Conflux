@@ -6,9 +6,10 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 
 object DatabaseFactory {
-    fun init() {
-        val driverClassName = "org.h2.Driver"
-        val jdbcURL = "jdbc:h2:mem:conflux;DB_CLOSE_DELAY=-1;"
+    fun init(
+        driverClassName: String = "org.h2.Driver",
+        jdbcURL: String = "jdbc:h2:mem:conflux;DB_CLOSE_DELAY=-1;"
+    ) {
         Database.connect(jdbcURL, driverClassName)
     }
 

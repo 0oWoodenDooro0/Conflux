@@ -30,10 +30,7 @@ import org.koin.logger.slf4jLogger
 import website.woodendoor.conflux.di.serverModule
 
 
-fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
     install(WebSockets)
@@ -68,7 +65,9 @@ fun Application.module() {
             call.respond(HttpStatusCode.InternalServerError, ErrorResponse("An unexpected server error occurred", cause.message))
         }
     }
-    DatabaseFactory.init()
+    val dbDriver = environment.config.propertyOrNull("database.driver")?.getString() ?: "org.h2.Driver"
+    val dbUrl = environment.config.propertyOrNull("database.url")?.getString() ?: "jdbc:h2:mem:conflux;DB_CLOSE_DELAY=-1;"
+    DatabaseFactory.init(dbDriver, dbUrl)
     transaction {
         SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages)
         
