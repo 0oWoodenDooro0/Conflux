@@ -31,9 +31,10 @@ class ChannelControllerTest {
         val updatedChannel = existingChannel.copy(name = "renamed-general")
         
         coEvery { channelRepository.getChannel(channelId) } returns existingChannel
+        coEvery { channelRepository.getEffectivePermissions("server-1", channelId, "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
         coEvery { channelRepository.updateChannel(any()) } returns true
         
-        val result = controller.editChannel(channelId, request)
+        val result = controller.editChannel(channelId, "user-1", request)
         
         assertTrue(result is OperationResult.Success<*>)
         assertEquals(updatedChannel, (result as OperationResult.Success<Channel>).data)
@@ -46,7 +47,7 @@ class ChannelControllerTest {
         
         coEvery { channelRepository.getChannel(channelId) } returns null
         
-        val result = controller.editChannel(channelId, request)
+        val result = controller.editChannel(channelId, "user-1", request)
         
         assertTrue(result is OperationResult.Failure.NotFound)
     }
@@ -57,9 +58,10 @@ class ChannelControllerTest {
         val existingChannel = Channel(channelId, "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
         
         coEvery { channelRepository.getChannel(channelId) } returns existingChannel
+        coEvery { channelRepository.getEffectivePermissions("server-1", channelId, "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
         coEvery { channelRepository.deleteChannel(channelId) } returns true
         
-        val result = controller.deleteChannel(channelId)
+        val result = controller.deleteChannel(channelId, "user-1")
         
         assertTrue(result is OperationResult.Success)
         assertEquals(Unit, result.data)
@@ -71,7 +73,7 @@ class ChannelControllerTest {
         
         coEvery { channelRepository.getChannel(channelId) } returns null
         
-        val result = controller.deleteChannel(channelId)
+        val result = controller.deleteChannel(channelId, "user-1")
         
         assertTrue(result is OperationResult.Failure.NotFound)
     }
@@ -82,23 +84,34 @@ class ChannelControllerTest {
         val channel = Channel("channel-1", "server-1", "general", website.woodendoor.conflux.models.ChannelType.TEXT)
         val everyoneRole = website.woodendoor.conflux.models.Role("role-1", "server-1", "@everyone", 0L, null, website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE)
         
+        coEvery { channelRepository.getEffectivePermissions("server-1", "", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
         coEvery { serverRepository.getServer("server-1") } returns Server("server-1", "Test", "owner")
         coEvery { channelRepository.createChannel(any()) } returns channel
         coEvery { serverRepository.getRoles("server-1") } returns listOf(everyoneRole)
         coEvery { channelRepository.upsertOverride(any(), any()) } returns true
         
-        val result = controller.createChannel("server-1", request)
+        val result = controller.createChannel("server-1", "user-1", request)
         
         assertTrue(result is OperationResult.Success)
         assertEquals(channel, result.data)
     }
 
     @Test
+    fun `test createChannel forbidden`() = runBlocking {
+        val request = CreateChannelRequest("general")
+        coEvery { channelRepository.getEffectivePermissions("server-1", "", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.NONE
+        
+        val result = controller.createChannel("server-1", "user-1", request)
+        assertTrue(result is OperationResult.Failure.Forbidden)
+    }
+
+    @Test
     fun `test createChannel server not found`() = runBlocking {
         val request = CreateChannelRequest("general")
+        coEvery { channelRepository.getEffectivePermissions("server-1", "", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
         coEvery { serverRepository.getServer("server-1") } returns null
         
-        val result = controller.createChannel("server-1", request)
+        val result = controller.createChannel("server-1", "user-1", request)
         
         assertTrue(result is OperationResult.Failure.NotFound)
     }
@@ -214,9 +227,10 @@ class ChannelControllerTest {
         coEvery { serverRepository.getRoles(serverId) } returns listOf(everyoneRole)
         coEvery { channelRepository.getChannelsByServer(serverId) } returns channels
         coEvery { channelRepository.getOverrides("channel-1") } returns overrides
+        coEvery { channelRepository.getEffectivePermissions(serverId, "channel-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
         coEvery { channelRepository.deleteOverride(overrideId) } returns true
 
-        val result = controller.deleteOverride(serverId, overrideId)
+        val result = controller.deleteOverride(serverId, "user-1", overrideId)
 
         assertTrue(result is OperationResult.Success)
     }
@@ -243,8 +257,9 @@ class ChannelControllerTest {
         coEvery { serverRepository.getRoles(serverId) } returns listOf(everyoneRole)
         coEvery { channelRepository.getChannelsByServer(serverId) } returns channels
         coEvery { channelRepository.getOverrides("channel-1") } returns overrides
+        coEvery { channelRepository.getEffectivePermissions(serverId, "channel-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.CHANNEL_MANAGEMENT
 
-        val result = controller.deleteOverride(serverId, overrideId)
+        val result = controller.deleteOverride(serverId, "user-1", overrideId)
 
         assertTrue(result is OperationResult.Failure.BadRequest)
         assertEquals("Cannot delete the @everyone override", result.message)

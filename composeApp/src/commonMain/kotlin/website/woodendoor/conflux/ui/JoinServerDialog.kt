@@ -15,7 +15,7 @@ import website.woodendoor.conflux.validation.ServerIdValidator
 fun JoinServerDialog(
     apiClient: ServerApiClient,
     onDismissRequest: () -> Unit,
-    onJoined: () -> Unit
+    onJoined: (String) -> Unit
 ) {
     var serverId by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
@@ -61,7 +61,7 @@ fun JoinServerDialog(
                             try {
                                 val success = MainState.joinServer(serverId, user.id, apiClient)
                                 if (success) {
-                                    onJoined()
+                                    onJoined(serverId)
                                 } else {
                                     isError = true
                                     errorMessage = "Could not join server. Check the ID or if you are already a member."

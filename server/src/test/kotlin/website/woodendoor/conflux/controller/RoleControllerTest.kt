@@ -23,21 +23,32 @@ class RoleControllerTest {
         val request = CreateRoleRequest("Admin", 1L)
         val role = Role("role-1", "server-1", "Admin", 1L)
         
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT
         coEvery { serverRepository.createRole("server-1", any()) } returns role
         
-        val result = controller.createRole("server-1", request)
+        val result = controller.createRole("server-1", "user-1", request)
         
         assertTrue(result is OperationResult.Success)
         assertEquals(role, result.data)
     }
 
     @Test
+    fun `test createRole forbidden`() = runBlocking {
+        val request = CreateRoleRequest("Admin", 1L)
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.NONE
+        
+        val result = controller.createRole("server-1", "user-1", request)
+        assertTrue(result is OperationResult.Failure.Forbidden)
+    }
+
+    @Test
     fun `test createRole failure`() = runBlocking {
         val request = CreateRoleRequest("Admin", 1L)
         
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT
         coEvery { serverRepository.createRole("server-1", any()) } returns null
         
-        val result = controller.createRole("server-1", request)
+        val result = controller.createRole("server-1", "user-1", request)
         
         assertTrue(result is OperationResult.Failure.InternalError)
     }
@@ -74,27 +85,30 @@ class RoleControllerTest {
     @Test
     fun `test updateRole success`() = runBlocking {
         val role = Role("role-1", "server-1", "Admin", 1L)
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT
         coEvery { serverRepository.updateRole(role) } returns true
         
-        val result = controller.updateRole(role)
+        val result = controller.updateRole("server-1", "user-1", role)
         assertTrue(result is OperationResult.Success)
         coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }
 
     @Test
     fun `test assignRoleToMember success`() = runBlocking {
-        coEvery { serverRepository.assignRoleToMember("server-1", "user-1", "role-1") } returns true
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT
+        coEvery { serverRepository.assignRoleToMember("server-1", "user-2", "role-1") } returns true
         
-        val result = controller.assignRoleToMember("server-1", "user-1", "role-1")
+        val result = controller.assignRoleToMember("server-1", "user-1", "user-2", "role-1")
         assertTrue(result is OperationResult.Success)
         coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }
 
     @Test
     fun `test removeRoleFromMember success`() = runBlocking {
-        coEvery { serverRepository.removeRoleFromMember("server-1", "user-1", "role-1") } returns true
+        coEvery { serverRepository.getPermissionsForMember("server-1", "user-1") } returns website.woodendoor.conflux.models.ConfluxPermission.ROLE_MANAGEMENT
+        coEvery { serverRepository.removeRoleFromMember("server-1", "user-2", "role-1") } returns true
         
-        val result = controller.removeRoleFromMember("server-1", "user-1", "role-1")
+        val result = controller.removeRoleFromMember("server-1", "user-1", "user-2", "role-1")
         assertTrue(result is OperationResult.Success)
         coVerify { connectionManager.broadcastToServer("server-1", any()) }
     }

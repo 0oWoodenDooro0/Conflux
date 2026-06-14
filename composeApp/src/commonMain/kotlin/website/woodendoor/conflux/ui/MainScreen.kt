@@ -27,6 +27,8 @@ fun MainScreen() {
     var isCreatingChannel by remember { mutableStateOf(false) }
     var isShowingSettings by remember { mutableStateOf(false) }
     var channelToEdit by remember { mutableStateOf<website.woodendoor.conflux.models.Channel?>(null) }
+    var newlyAddedServerId by remember { mutableStateOf<String?>(null) }
+    var hasAutoSelected by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     val servers = MainState.serverList
@@ -64,10 +66,28 @@ fun MainScreen() {
             try {
                 MainState.serverList = apiClient.getServers(user.id)
                 MainState.subscribeToAllServers()
+
+                val serverToSelect = if (newlyAddedServerId != null) {
+                    MainState.serverList.find { it.id == newlyAddedServerId }
+                } else if (!hasAutoSelected && MainState.selectedServer == null) {
+                    MainState.serverList.firstOrNull()
+                } else {
+                    null
+                }
+
+                if (serverToSelect != null) {
+                    MainState.selectServer(serverToSelect, apiClient)
+                    val firstChannel = MainState.channelList.firstOrNull()
+                    if (firstChannel != null) {
+                        MainState.selectChannel(firstChannel, apiClient)
+                    }
+                }
+                hasAutoSelected = true
             } catch (e: Exception) {
                 error = "Failed to load servers: ${e.message}"
             } finally {
                 isLoading = false
+                newlyAddedServerId = null
             }
         }
     }
@@ -91,6 +111,10 @@ fun MainScreen() {
                     isJoiningServer = false
                     scope.launch {
                         MainState.selectServer(server, apiClient)
+                        val firstChannel = MainState.channelList.firstOrNull()
+                        if (firstChannel != null) {
+                            MainState.selectChannel(firstChannel, apiClient)
+                        }
                     }
                 },
                 onHomeClick = {
@@ -139,7 +163,8 @@ fun MainScreen() {
                     CreateServerDialog(
                         apiClient = apiClient,
                         onDismissRequest = { isCreatingServer = false },
-                        onServerCreated = {
+                        onServerCreated = { server ->
+                            newlyAddedServerId = server.id
                             isCreatingServer = false
                         }
                     )
@@ -147,7 +172,8 @@ fun MainScreen() {
                     JoinServerDialog(
                         apiClient = apiClient,
                         onDismissRequest = { isJoiningServer = false },
-                        onJoined = {
+                        onJoined = { joinedServerId ->
+                            newlyAddedServerId = joinedServerId
                             isJoiningServer = false
                         }
                     )

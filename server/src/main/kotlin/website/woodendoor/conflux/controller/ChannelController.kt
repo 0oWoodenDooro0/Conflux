@@ -19,16 +19,20 @@ class ChannelController(
     private val connectionManager: WebSocketConnectionManager
 ) {
 
-    suspend fun getOverrides(channelId: String): OperationResult<List<ChannelPermissionOverride>> {
-        if (channelService.getChannel(channelId) == null) {
-            return OperationResult.Failure.NotFound("Channel not found")
+    suspend fun getOverrides(channelId: String, userId: String): OperationResult<List<ChannelPermissionOverride>> {
+        val channel = channelService.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
+        if (!hasPermission(channel.serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
         }
         val overrides = channelPermissionService.getOverrides(channelId)
         return OperationResult.Success(overrides)
     }
 
-    suspend fun upsertOverride(channelId: String, request: UpsertOverrideRequest): OperationResult<Unit> {
+    suspend fun upsertOverride(channelId: String, userId: String, request: UpsertOverrideRequest): OperationResult<Unit> {
         val channel = channelService.getChannel(channelId) ?: return OperationResult.Failure.NotFound("Channel not found")
+        if (!hasPermission(channel.serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
+        }
 
         val success = channelPermissionService.upsertOverride(channelId, request)
         return if (success) {
@@ -39,7 +43,7 @@ class ChannelController(
         }
     }
 
-    suspend fun deleteOverride(serverId: String, overrideId: String): OperationResult<Unit> {
+    suspend fun deleteOverride(serverId: String, userId: String, overrideId: String): OperationResult<Unit> {
         val channels = channelService.getChannelsByServer(serverId)
         var foundOverride: ChannelPermissionOverride? = null
         for (channel in channels) {
@@ -52,6 +56,9 @@ class ChannelController(
         }
         if (foundOverride == null) {
             return OperationResult.Failure.NotFound("Override not found or failed to delete")
+        }
+        if (!hasPermission(serverId, foundOverride.channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
         }
 
         val success = channelPermissionService.deleteOverride(serverId, overrideId)
@@ -90,9 +97,12 @@ class ChannelController(
         return channelPermissionService.hasPermission(serverId, channelId, userId, permission)
     }
 
-    suspend fun editChannel(channelId: String, request: UpdateChannelRequest): OperationResult<Channel> {
+    suspend fun editChannel(channelId: String, userId: String, request: UpdateChannelRequest): OperationResult<Channel> {
         val existingChannel = channelService.getChannel(channelId)
             ?: return OperationResult.Failure.NotFound("Channel not found")
+        if (!hasPermission(existingChannel.serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
+        }
 
         val updatedChannel = existingChannel.copy(
             name = request.name ?: existingChannel.name,
@@ -134,9 +144,12 @@ class ChannelController(
         }
     }
 
-    suspend fun deleteChannel(channelId: String): OperationResult<Unit> {
+    suspend fun deleteChannel(channelId: String, userId: String): OperationResult<Unit> {
         val existingChannel = channelService.getChannel(channelId)
             ?: return OperationResult.Failure.NotFound("Channel not found")
+        if (!hasPermission(existingChannel.serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
+        }
 
         val success = channelService.deleteChannel(channelId)
         return if (success) {
@@ -165,7 +178,10 @@ class ChannelController(
         }
     }
 
-    suspend fun createChannel(serverId: String, request: CreateChannelRequest): OperationResult<Channel> {
+    suspend fun createChannel(serverId: String, userId: String, request: CreateChannelRequest): OperationResult<Channel> {
+        if (!hasPermission(serverId, channelId = "", userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
+            return OperationResult.Failure.Forbidden("Insufficient permissions")
+        }
         if (serverService.getServer(serverId) == null) {
             return OperationResult.Failure.NotFound("Server not found")
         }

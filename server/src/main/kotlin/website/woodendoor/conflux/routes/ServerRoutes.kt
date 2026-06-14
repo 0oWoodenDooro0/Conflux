@@ -30,13 +30,9 @@ fun Route.serverRoutes(
         }
 
         post {
-            try {
-                val request = call.receive<CreateServerRequest>()
-                val result = serverController.createServer(request)
-                call.respond(result, HttpStatusCode.Created)
-            } catch (e: Exception) {
-                call.respond(status = HttpStatusCode.BadRequest, message = "Invalid request: ${e.message}")
-            }
+            val request = call.receive<CreateServerRequest>()
+            val result = serverController.createServer(request)
+            call.respond(result, HttpStatusCode.Created)
         }
 
         post("/{id}/join") {
@@ -73,17 +69,9 @@ fun Route.channelRoutes(
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val request = call.receive<CreateChannelRequest>()
-                val result = channelController.createChannel(serverId, request)
-                call.respond(result, HttpStatusCode.Created)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val request = call.receive<CreateChannelRequest>()
+            val result = channelController.createChannel(serverId, userId, request)
+            call.respond(result, HttpStatusCode.Created)
         }
 
         patch("/{channelId}") {
@@ -91,17 +79,9 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing channelId")
             
-            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val request = call.receive<UpdateChannelRequest>()
-                val result = channelController.editChannel(channelId, request)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val request = call.receive<UpdateChannelRequest>()
+            val result = channelController.editChannel(channelId, userId, request)
+            call.respond(result)
         }
 
         delete("/{channelId}") {
@@ -109,16 +89,8 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing channelId")
             
-            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val result = channelController.deleteChannel(channelId)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val result = channelController.deleteChannel(channelId, userId)
+            call.respond(result)
         }
 
         get("/{channelId}/overrides") {
@@ -126,11 +98,7 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing channelId")
 
-            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@get call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            val result = channelController.getOverrides(channelId)
+            val result = channelController.getOverrides(channelId, userId)
             call.respond(result)
         }
 
@@ -139,17 +107,9 @@ fun Route.channelRoutes(
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val channelId = call.parameters["channelId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing channelId")
 
-            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val request = call.receive<UpsertOverrideRequest>()
-                val result = channelController.upsertOverride(channelId, request)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val request = call.receive<UpsertOverrideRequest>()
+            val result = channelController.upsertOverride(channelId, userId, request)
+            call.respond(result)
         }
 
         delete("/{channelId}/overrides/{overrideId}") {
@@ -158,11 +118,7 @@ fun Route.channelRoutes(
             val channelId = call.parameters["channelId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing channelId")
             val overrideId = call.parameters["overrideId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing overrideId")
 
-            if (!channelController.hasPermission(serverId, channelId, userId, ConfluxPermission.CHANNEL_MANAGEMENT)) {
-                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            val result = channelController.deleteOverride(serverId, overrideId)
+            val result = channelController.deleteOverride(serverId, userId, overrideId)
             call.respond(result)
         }
 
@@ -188,20 +144,12 @@ fun Route.roleRoutes(roleController: RoleController) {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
-                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            val request = call.receive<CreateRoleRequest>()
+            if (request.priorityLevel !in 0..100) {
+                return@post call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
             }
-
-            try {
-                val request = call.receive<CreateRoleRequest>()
-                if (request.priorityLevel !in 0..100) {
-                    return@post call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
-                }
-                val result = roleController.createRole(serverId, request)
-                call.respond(result, HttpStatusCode.Created)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val result = roleController.createRole(serverId, userId, request)
+            call.respond(result, HttpStatusCode.Created)
         }
 
         patch("/{roleId}") {
@@ -209,44 +157,36 @@ fun Route.roleRoutes(roleController: RoleController) {
             val userId = call.request.queryParameters["userId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val roleId = call.parameters["roleId"] ?: return@patch call.respond(HttpStatusCode.BadRequest, "Missing roleId")
 
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
-                return@patch call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            val request = call.receive<UpdateRoleRequest>()
+            
+            val existingRole = when (val getResult = roleController.getRole(roleId)) {
+                is OperationResult.Success -> getResult.data
+                is OperationResult.Failure -> return@patch call.respond(getResult)
             }
 
-            try {
-                val request = call.receive<UpdateRoleRequest>()
-                
-                val existingRole = when (val getResult = roleController.getRole(roleId)) {
-                    is OperationResult.Success -> getResult.data
-                    is OperationResult.Failure -> return@patch call.respond(getResult)
+            if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+                if (request.name != null && request.name != existingRole.name) {
+                    return@patch call.respond(HttpStatusCode.BadRequest, "Cannot rename the @everyone role")
                 }
-
-                if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
-                    if (request.name != null && request.name != existingRole.name) {
-                        return@patch call.respond(HttpStatusCode.BadRequest, "Cannot rename the @everyone role")
-                    }
-                    if (request.priorityLevel != null && request.priorityLevel != existingRole.priorityLevel) {
-                        return@patch call.respond(HttpStatusCode.BadRequest, "Cannot change the priority of the @everyone role")
-                    }
-                } else {
-                    // For custom roles, ensure priority is in 0..100
-                    if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
-                        return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
-                    }
+                if (request.priorityLevel != null && request.priorityLevel != existingRole.priorityLevel) {
+                    return@patch call.respond(HttpStatusCode.BadRequest, "Cannot change the priority of the @everyone role")
                 }
-                
-                val updatedRole = existingRole.copy(
-                    name = request.name ?: existingRole.name,
-                    permissions = request.permissions ?: existingRole.permissions,
-                    color = if (request.color != null) request.color else existingRole.color,
-                    priorityLevel = request.priorityLevel ?: existingRole.priorityLevel
-                )
-                
-                val result = roleController.updateRole(updatedRole)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            } else {
+                // For custom roles, ensure priority is in 0..100
+                if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
+                    return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
+                }
             }
+            
+            val updatedRole = existingRole.copy(
+                name = request.name ?: existingRole.name,
+                permissions = request.permissions ?: existingRole.permissions,
+                color = if (request.color != null) request.color else existingRole.color,
+                priorityLevel = request.priorityLevel ?: existingRole.priorityLevel
+            )
+            
+            val result = roleController.updateRole(serverId, userId, updatedRole)
+            call.respond(result)
         }
 
         delete("/{roleId}") {
@@ -254,59 +194,35 @@ fun Route.roleRoutes(roleController: RoleController) {
             val userId = call.request.queryParameters["userId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing userId")
             val roleId = call.parameters["roleId"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing roleId")
 
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
-                return@delete call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
+            val existingRole = when (val getResult = roleController.getRole(roleId)) {
+                is OperationResult.Success -> getResult.data
+                is OperationResult.Failure -> return@delete call.respond(getResult)
             }
 
-            try {
-                val existingRole = when (val getResult = roleController.getRole(roleId)) {
-                    is OperationResult.Success -> getResult.data
-                    is OperationResult.Failure -> return@delete call.respond(getResult)
-                }
-
-                if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
-                    return@delete call.respond(HttpStatusCode.BadRequest, "Cannot delete the @everyone role")
-                }
-
-                val result = roleController.deleteRole(roleId)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
+            if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+                return@delete call.respond(HttpStatusCode.BadRequest, "Cannot delete the @everyone role")
             }
+
+            val result = roleController.deleteRole(serverId, userId, roleId)
+            call.respond(result)
         }
         
         post("/assign") {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
-                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val request = call.receive<AssignRoleRequest>()
-                val result = roleController.assignRoleToMember(serverId, request.userId, request.roleId)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val request = call.receive<AssignRoleRequest>()
+            val result = roleController.assignRoleToMember(serverId, userId, request.userId, request.roleId)
+            call.respond(result)
         }
 
         post("/remove") {
             val serverId = call.parameters["serverId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing serverId")
             val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
             
-            if (!roleController.hasPermission(serverId, userId, ConfluxPermission.ROLE_MANAGEMENT)) {
-                return@post call.respond(HttpStatusCode.Forbidden, "Insufficient permissions")
-            }
-
-            try {
-                val request = call.receive<AssignRoleRequest>()
-                val result = roleController.removeRoleFromMember(serverId, request.userId, request.roleId)
-                call.respond(result)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
-            }
+            val request = call.receive<AssignRoleRequest>()
+            val result = roleController.removeRoleFromMember(serverId, userId, request.userId, request.roleId)
+            call.respond(result)
         }
 
         get("/{roleId}/members") {
