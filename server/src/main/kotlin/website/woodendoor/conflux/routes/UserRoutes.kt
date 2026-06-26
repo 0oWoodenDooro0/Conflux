@@ -9,11 +9,18 @@ import io.ktor.server.routing.*
 import website.woodendoor.conflux.controller.UserController
 import website.woodendoor.conflux.controller.respond
 import website.woodendoor.conflux.models.LoginRequest
+import website.woodendoor.conflux.models.RegisterRequest
 
 fun Route.userRoutes(userController: UserController) {
     post("/api/login") {
         val request = call.receive<LoginRequest>()
         val user = userController.login(request)
+        call.respond(HttpStatusCode.OK, user)
+    }
+
+    post("/api/register") {
+        val request = call.receive<RegisterRequest>()
+        val user = userController.register(request)
         call.respond(HttpStatusCode.OK, user)
     }
 

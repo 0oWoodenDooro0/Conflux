@@ -21,9 +21,9 @@ class ServerListRouteTest {
         }
         
         // 1. Login to get a user
-        val loginResponse = client.post("/api/login") {
+        val loginResponse = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(LoginRequest(username = "serverUser")))
+            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "serverUser", password = "password123")))
         }
         val user = Json.decodeFromString<User>(loginResponse.bodyAsText())
         
@@ -77,9 +77,9 @@ class ServerListRouteTest {
         }
 
         // 1. Create a user with a specific ID and username via login
-        val loginResponse = client.post("/api/login") {
+        val loginResponse = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(LoginRequest(username = "realuser")))
+            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "realuser", password = "password123")))
         }
         val user = Json.decodeFromString<User>(loginResponse.bodyAsText())
         val userId = user.id

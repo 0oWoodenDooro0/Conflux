@@ -15,12 +15,13 @@ class ExposedUserRepository : UserRepository {
         avatar = row[Users.avatar]
     )
 
-    override suspend fun createUser(user: User): User? = dbQuery {
+    override suspend fun createUser(user: User, passwordHash: String): User? = dbQuery {
         val insertStatement = Users.insert {
             it[id] = user.id
             it[username] = user.username
             it[discriminator] = user.discriminator
             it[avatar] = user.avatar
+            it[Users.passwordHash] = passwordHash
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
     }
@@ -34,6 +35,12 @@ class ExposedUserRepository : UserRepository {
     override suspend fun findByUsername(username: String): User? = dbQuery {
         Users.selectAll().where { Users.username eq username }
             .map(::resultRowToUser)
+            .singleOrNull()
+    }
+
+    override suspend fun getPasswordHash(username: String): String? = dbQuery {
+        Users.selectAll().where { Users.username eq username }
+            .map { it[Users.passwordHash] }
             .singleOrNull()
     }
 

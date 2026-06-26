@@ -20,8 +20,27 @@ class UserController(
             ValidationResult.Success -> { /* OK */ }
         }
 
-        return userService.getOrCreateUser(request.username)
-            ?: throw InternalServerErrorException("Failed to create or retrieve user")
+        return userService.authenticateUser(request.username, request.password)
+            ?: throw InternalServerErrorException("Failed to authenticate user")
+    }
+
+    suspend fun register(request: website.woodendoor.conflux.models.RegisterRequest): User {
+        when (val validationResult = UsernameValidator.validateUsername(request.username)) {
+            is ValidationResult.Error -> {
+                throw BadRequestException(validationResult.message)
+            }
+            ValidationResult.Success -> { /* OK */ }
+        }
+
+        when (val validationResult = website.woodendoor.conflux.validation.PasswordValidator.validatePassword(request.password)) {
+            is ValidationResult.Error -> {
+                throw BadRequestException(validationResult.message)
+            }
+            ValidationResult.Success -> { /* OK */ }
+        }
+
+        return userService.registerUser(request.username, request.password)
+            ?: throw InternalServerErrorException("Failed to register user")
     }
 
     suspend fun getUser(id: String): User {

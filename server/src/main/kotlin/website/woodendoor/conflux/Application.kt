@@ -77,6 +77,7 @@ fun Application.module() {
                 it[id] = "default-user"
                 it[username] = "DefaultUser"
                 it[discriminator] = "0000"
+                it[passwordHash] = website.woodendoor.conflux.util.PasswordHasher.hashPassword("defaultpass")
             }
         }
     }

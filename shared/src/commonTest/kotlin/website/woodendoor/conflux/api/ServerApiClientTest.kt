@@ -148,6 +148,9 @@ class ServerApiClientTest {
         val mockEngine = MockEngine { request ->
             assertEquals("/api/login", request.url.encodedPath)
             assertEquals(HttpMethod.Post, request.method)
+            val body = (request.body as? io.ktor.http.content.TextContent)?.text
+            val expectedBody = Json.encodeToString(LoginRequest("testuser", "password123"))
+            assertEquals(expectedBody, body)
 
             respond(
                 content = ByteReadChannel(Json.encodeToString(mockUser)),
@@ -161,7 +164,39 @@ class ServerApiClientTest {
                 json()
             }
         }, "http://localhost:8080")
-        val result = client.login("testuser")
+        val result = client.login("testuser", "password123")
+
+        assertEquals(mockUser, result)
+    }
+
+    @Test
+    fun testRegister() = runTest {
+        val mockUser = User(
+            id = "user-id",
+            username = "testuser",
+            discriminator = "1234"
+        )
+
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/register", request.url.encodedPath)
+            assertEquals(HttpMethod.Post, request.method)
+            val body = (request.body as? io.ktor.http.content.TextContent)?.text
+            val expectedBody = Json.encodeToString(RegisterRequest("testuser", "password123"))
+            assertEquals(expectedBody, body)
+
+            respond(
+                content = ByteReadChannel(Json.encodeToString(mockUser)),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = ServerApiClient(HttpClient(mockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }, "http://localhost:8080")
+        val result = client.register("testuser", "password123")
 
         assertEquals(mockUser, result)
     }

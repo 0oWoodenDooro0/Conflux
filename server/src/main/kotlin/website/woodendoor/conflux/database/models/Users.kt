@@ -7,6 +7,7 @@ object Users : Table("users") {
     val username = varchar("username", 32)
     val discriminator = varchar("discriminator", 4)
     val avatar = varchar("avatar", 255).nullable()
+    val passwordHash = varchar("password_hash", 255).default("")
 
     override val primaryKey = PrimaryKey(id)
 }

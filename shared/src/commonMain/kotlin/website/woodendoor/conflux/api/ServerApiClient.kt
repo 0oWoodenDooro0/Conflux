@@ -19,10 +19,17 @@ class ServerApiClient(
         }
     }, baseUrl)
 
-    suspend fun login(username: String): User {
+    suspend fun login(username: String, password: String = ""): User {
         return client.post("$baseUrl/api/login") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequest(username))
+            setBody(LoginRequest(username, password))
+        }.body()
+    }
+
+    suspend fun register(username: String, password: String): User {
+        return client.post("$baseUrl/api/register") {
+            contentType(ContentType.Application.Json)
+            setBody(RegisterRequest(username, password))
         }.body()
     }
 

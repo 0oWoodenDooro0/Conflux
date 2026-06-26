@@ -10,8 +10,11 @@ import website.woodendoor.conflux.DEFAULT_BASE_URL
 val sharedModule = module {
     single {
         HttpClient {
+            expectSuccess = true
             install(ContentNegotiation) {
-                json()
+                json(kotlinx.serialization.json.Json {
+                    ignoreUnknownKeys = true
+                })
             }
         }
     }
