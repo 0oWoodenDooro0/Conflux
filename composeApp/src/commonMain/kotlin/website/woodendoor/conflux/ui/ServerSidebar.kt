@@ -22,7 +22,6 @@ fun ServerSidebar(
     selectedServerId: String? = null,
     unreadServerIds: Set<String> = emptySet(),
     onServerClick: (Server) -> Unit,
-    onHomeClick: () -> Unit,
     onCreateServerClick: () -> Unit,
     onJoinServerClick: () -> Unit
 ) {
@@ -36,20 +35,6 @@ fun ServerSidebar(
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Home Button
-        ServerIcon(
-            name = "H",
-            onClick = onHomeClick,
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        )
-        
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-            thickness = 2.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-        
         // Server List
         LazyColumn(
             modifier = Modifier.weight(1f),

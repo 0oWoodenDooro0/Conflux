@@ -117,11 +117,6 @@ fun MainScreen() {
                         }
                     }
                 },
-                onHomeClick = {
-                    isCreatingServer = false
-                    isJoiningServer = false
-                    MainState.selectedServer = null
-                },
                 onCreateServerClick = { 
                     isCreatingServer = true 
                     isJoiningServer = false
