@@ -15,7 +15,7 @@ class ServerController(
 ) {
 
     suspend fun createServer(request: CreateServerRequest): OperationResult<Server> {
-        val created = serverService.createServer(request.name, request.ownerId)
+        val created = serverService.createServer(request.name, request.ownerId, request.icon, request.description)
         return if (created != null) {
             OperationResult.Success(created)
         } else {
@@ -68,5 +68,12 @@ class ServerController(
         } else {
             OperationResult.Failure.Conflict("Already a member or owner")
         }
+    }
+
+    suspend fun joinByInviteCode(userId: String, inviteCode: String): OperationResult<Server> {
+        val server = serverService.joinByInviteCode(userId, inviteCode)
+            ?: return OperationResult.Failure.NotFound("Invalid invite code")
+        connectionManager.broadcastToServer(server.id, website.woodendoor.conflux.models.ConfluxEvent.PermissionUpdate(server.id, userId = userId))
+        return OperationResult.Success(server)
     }
 }

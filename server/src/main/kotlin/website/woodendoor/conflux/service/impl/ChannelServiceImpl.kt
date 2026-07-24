@@ -12,13 +12,15 @@ class ChannelServiceImpl(
     private val channelPermissionService: ChannelPermissionService
 ) : ChannelService {
 
-    override suspend fun createChannel(serverId: String, name: String, type: ChannelType, topic: String?): Channel? {
+    override suspend fun createChannel(serverId: String, name: String, type: ChannelType, topic: String?, categoryId: String?, position: Int): Channel? {
         val channel = Channel(
             id = UUID.randomUUID().toString(),
             serverId = serverId,
             name = name,
             type = type,
-            topic = topic
+            topic = topic,
+            categoryId = categoryId,
+            position = position
         )
         val created = channelRepository.createChannel(channel)
         if (created != null) {

@@ -4,7 +4,7 @@ import website.woodendoor.conflux.models.Channel
 import website.woodendoor.conflux.models.ChannelType
 
 interface ChannelService {
-    suspend fun createChannel(serverId: String, name: String, type: ChannelType, topic: String? = null): Channel?
+    suspend fun createChannel(serverId: String, name: String, type: ChannelType, topic: String? = null, categoryId: String? = null, position: Int = 0): Channel?
     suspend fun getChannel(id: String): Channel?
     suspend fun getChannelsByServer(serverId: String): List<Channel>
     suspend fun updateChannel(channel: Channel): Boolean

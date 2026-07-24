@@ -6,11 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import website.woodendoor.conflux.controller.*
-import website.woodendoor.conflux.database.repositories.ServerRepository
-import website.woodendoor.conflux.database.repositories.UserRepository
 import website.woodendoor.conflux.models.*
-import website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE
-import java.util.*
 
 fun Route.serverRoutes(
     serverController: ServerController
@@ -41,6 +37,13 @@ fun Route.serverRoutes(
 
             val result = serverController.joinServer(userId, serverId)
             call.respond(result, HttpStatusCode.Created)
+        }
+
+        post("/invite/join") {
+            val userId = call.request.queryParameters["userId"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing userId")
+            val request = call.receive<JoinByInviteRequest>()
+            val result = serverController.joinByInviteCode(userId, request.inviteCode)
+            call.respond(result)
         }
 
         get("/{id}/members/{userId}/permissions") {
@@ -130,8 +133,9 @@ fun Route.channelRoutes(
             val result = channelController.getEffectivePermissions(serverId, channelId, userId)
             call.respond(result)
         }
-        }
-        }
+    }
+}
+
 fun Route.roleRoutes(roleController: RoleController) {
     route("/api/servers/{serverId}/roles") {
         get {
@@ -164,7 +168,7 @@ fun Route.roleRoutes(roleController: RoleController) {
                 is OperationResult.Failure -> return@patch call.respond(getResult)
             }
 
-            if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+            if (existingRole.priorityLevel == website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE) {
                 if (request.name != null && request.name != existingRole.name) {
                     return@patch call.respond(HttpStatusCode.BadRequest, "Cannot rename the @everyone role")
                 }
@@ -172,7 +176,6 @@ fun Route.roleRoutes(roleController: RoleController) {
                     return@patch call.respond(HttpStatusCode.BadRequest, "Cannot change the priority of the @everyone role")
                 }
             } else {
-                // For custom roles, ensure priority is in 0..100
                 if (request.priorityLevel != null && request.priorityLevel !in 0..100) {
                     return@patch call.respond(HttpStatusCode.BadRequest, "Priority level must be between 0 and 100")
                 }
@@ -199,7 +202,7 @@ fun Route.roleRoutes(roleController: RoleController) {
                 is OperationResult.Failure -> return@delete call.respond(getResult)
             }
 
-            if (existingRole.priorityLevel == DEFAULT_ROLE_PRIORITY_EVERYONE) {
+            if (existingRole.priorityLevel == website.woodendoor.conflux.DEFAULT_ROLE_PRIORITY_EVERYONE) {
                 return@delete call.respond(HttpStatusCode.BadRequest, "Cannot delete the @everyone role")
             }
 

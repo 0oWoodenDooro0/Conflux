@@ -13,7 +13,9 @@ class ExposedChannelRepository : ChannelRepository {
         serverId = row[Channels.serverId],
         name = row[Channels.name],
         type = row[Channels.type],
-        topic = row[Channels.topic]
+        topic = row[Channels.topic],
+        categoryId = row[Channels.categoryId],
+        position = row[Channels.position]
     )
 
     private fun resultRowToOverride(row: ResultRow) = ChannelPermissionOverride(
@@ -32,6 +34,8 @@ class ExposedChannelRepository : ChannelRepository {
             it[name] = channel.name
             it[type] = channel.type
             it[topic] = channel.topic
+            it[categoryId] = channel.categoryId
+            it[position] = channel.position
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToChannel)
     }
@@ -44,6 +48,7 @@ class ExposedChannelRepository : ChannelRepository {
 
     override suspend fun getChannelsByServer(serverId: String): List<Channel> = dbQuery {
         Channels.selectAll().where { Channels.serverId eq serverId }
+            .orderBy(Channels.position, SortOrder.ASC)
             .map(::resultRowToChannel)
     }
 
@@ -52,6 +57,8 @@ class ExposedChannelRepository : ChannelRepository {
             it[name] = channel.name
             it[type] = channel.type
             it[topic] = channel.topic
+            it[categoryId] = channel.categoryId
+            it[position] = channel.position
         } > 0
     }
 

@@ -35,14 +35,23 @@ data class UpdateProfileRequest(
 @Serializable
 data class CreateServerRequest(
     val name: String,
-    val ownerId: String
+    val ownerId: String,
+    val icon: String? = null,
+    val description: String? = null
+)
+
+@Serializable
+data class JoinByInviteRequest(
+    val inviteCode: String
 )
 
 @Serializable
 data class CreateChannelRequest(
     val name: String,
     val type: ChannelType = ChannelType.TEXT,
-    val topic: String? = null
+    val topic: String? = null,
+    val categoryId: String? = null,
+    val position: Int = 0
 )
 
 @Serializable
@@ -63,7 +72,9 @@ data class CreateRoleRequest(
 data class UpdateChannelRequest(
     val name: String? = null,
     val type: ChannelType? = null,
-    val topic: String? = null
+    val topic: String? = null,
+    val categoryId: String? = null,
+    val position: Int? = null
 )
 
 @Serializable

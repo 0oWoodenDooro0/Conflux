@@ -107,7 +107,9 @@ class ChannelController(
         val updatedChannel = existingChannel.copy(
             name = request.name ?: existingChannel.name,
             type = request.type ?: existingChannel.type,
-            topic = request.topic ?: existingChannel.topic
+            topic = request.topic ?: existingChannel.topic,
+            categoryId = request.categoryId ?: existingChannel.categoryId,
+            position = request.position ?: existingChannel.position
         )
 
         val success = channelService.updateChannel(updatedChannel)
@@ -186,7 +188,7 @@ class ChannelController(
             return OperationResult.Failure.NotFound("Server not found")
         }
 
-        val created = channelService.createChannel(serverId, request.name, request.type, request.topic)
+        val created = channelService.createChannel(serverId, request.name, request.type, request.topic, request.categoryId, request.position)
         return if (created != null) {
             broadcastChannelCreated(serverId, created)
             OperationResult.Success(created)

@@ -7,6 +7,9 @@ data class Server(
     val id: String,
     val name: String,
     val ownerId: String,
+    val icon: String? = null,
+    val description: String? = null,
+    val inviteCode: String? = null,
     val memberIds: List<String> = emptyList(),
     val roleIds: List<String> = emptyList(),
     val roles: List<Role> = emptyList()

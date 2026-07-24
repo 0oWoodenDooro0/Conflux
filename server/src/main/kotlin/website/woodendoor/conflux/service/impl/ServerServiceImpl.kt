@@ -13,7 +13,7 @@ class ServerServiceImpl(
     private val channelService: ChannelService
 ) : ServerService {
 
-    override suspend fun createServer(name: String, ownerId: String): Server? {
+    override suspend fun createServer(name: String, ownerId: String, icon: String?, description: String?): Server? {
         val owner = userRepository.getUser(ownerId) ?: userRepository.findByUsername(ownerId)
         val resolvedOwnerId = if (owner == null) {
             val newUserId = UUID.randomUUID().toString()
@@ -32,20 +32,43 @@ class ServerServiceImpl(
         val server = Server(
             id = UUID.randomUUID().toString(),
             name = name,
-            ownerId = resolvedOwnerId
+            ownerId = resolvedOwnerId,
+            icon = icon,
+            description = description
         )
         val created = serverRepository.createServer(server)
         if (created != null) {
             try {
-                // This call automatically triggers the everyone override creation via ChannelServiceImpl!
+                // Create default Text Channels category & channel
+                val textCat = channelService.createChannel(
+                    serverId = created.id,
+                    name = "TEXT CHANNELS",
+                    type = ChannelType.CATEGORY
+                )
+                
                 channelService.createChannel(
                     serverId = created.id,
                     name = "general",
                     type = ChannelType.TEXT,
-                    topic = "Welcome to ${created.name}!"
+                    topic = "Welcome to ${created.name}!",
+                    categoryId = textCat?.id
+                )
+
+                // Create default Voice Channels category & channel
+                val voiceCat = channelService.createChannel(
+                    serverId = created.id,
+                    name = "VOICE CHANNELS",
+                    type = ChannelType.CATEGORY
+                )
+
+                channelService.createChannel(
+                    serverId = created.id,
+                    name = "General Voice",
+                    type = ChannelType.VOICE,
+                    categoryId = voiceCat?.id
                 )
             } catch (e: Exception) {
-                println("Failed to create default #general channel for server ${created.id}: ${e.message}")
+                println("Failed to create default channels for server ${created.id}: ${e.message}")
             }
         }
         return created
@@ -69,5 +92,11 @@ class ServerServiceImpl(
 
     override suspend fun joinServer(userId: String, serverId: String): Boolean {
         return serverRepository.joinServer(userId, serverId)
+    }
+
+    override suspend fun joinByInviteCode(userId: String, inviteCode: String): Server? {
+        val server = serverRepository.findByInviteCode(inviteCode) ?: return null
+        val joined = serverRepository.joinServer(userId, server.id)
+        return if (joined || server.ownerId == userId) server else server
     }
 }

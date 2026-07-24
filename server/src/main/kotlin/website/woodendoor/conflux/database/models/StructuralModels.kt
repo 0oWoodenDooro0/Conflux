@@ -6,6 +6,9 @@ object Servers : Table("servers") {
     val id = varchar("id", 36)
     val name = varchar("name", 100)
     val ownerId = varchar("owner_id", 36).references(Users.id)
+    val icon = varchar("icon", 255).nullable()
+    val description = varchar("description", 255).nullable()
+    val inviteCode = varchar("invite_code", 16).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }
@@ -35,6 +38,8 @@ object Channels : Table("channels") {
     val name = varchar("name", 100)
     val type = enumerationByName("type", 20, website.woodendoor.conflux.models.ChannelType::class)
     val topic = varchar("topic", 255).nullable()
+    val categoryId = varchar("category_id", 36).nullable()
+    val position = integer("position").default(0)
 
     override val primaryKey = PrimaryKey(id)
 }

@@ -7,6 +7,7 @@ import website.woodendoor.conflux.models.User
 interface ServerRepository {
     suspend fun createServer(server: Server): Server?
     suspend fun getServer(id: String): Server?
+    suspend fun findByInviteCode(inviteCode: String): Server?
     suspend fun getServersForUser(userId: String): List<Server>
     suspend fun updateServer(server: Server): Boolean
     suspend fun deleteServer(id: String): Boolean

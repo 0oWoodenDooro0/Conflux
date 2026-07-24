@@ -17,7 +17,10 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
     private fun resultRowToServer(row: ResultRow) = Server(
         id = row[Servers.id],
         name = row[Servers.name],
-        ownerId = row[Servers.ownerId]
+        ownerId = row[Servers.ownerId],
+        icon = row[Servers.icon],
+        description = row[Servers.description],
+        inviteCode = row[Servers.inviteCode]
     )
 
     private fun resultRowToRole(row: ResultRow) = Role(
@@ -37,21 +40,23 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
     )
 
     override suspend fun createServer(server: Server): Server? = dbQuery {
+        val code = server.inviteCode ?: UUID.randomUUID().toString().substring(0, 8)
         val insertStatement = Servers.insert {
             it[id] = server.id
             it[name] = server.name
             it[ownerId] = server.ownerId
+            it[icon] = server.icon
+            it[description] = server.description
+            it[inviteCode] = code
         }
         val createdServer = insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToServer)
         
         if (createdServer != null) {
-            // Add creator to ServerMembers
             ServerMembers.insert {
                 it[this.serverId] = createdServer.id
                 it[this.userId] = createdServer.ownerId
             }
 
-            // Create @everyone role
             Roles.insert {
                 it[id] = UUID.randomUUID().toString()
                 it[this.serverId] = createdServer.id
@@ -67,6 +72,12 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
 
     override suspend fun getServer(id: String): Server? = dbQuery {
         Servers.selectAll().where { Servers.id eq id }
+            .map(::resultRowToServer)
+            .singleOrNull()
+    }
+
+    override suspend fun findByInviteCode(inviteCode: String): Server? = dbQuery {
+        Servers.selectAll().where { Servers.inviteCode eq inviteCode }
             .map(::resultRowToServer)
             .singleOrNull()
     }
@@ -92,6 +103,11 @@ class ExposedServerRepository(private val userRepository: UserRepository) : Serv
         Servers.update({ Servers.id eq server.id }) {
             it[name] = server.name
             it[ownerId] = server.ownerId
+            it[icon] = server.icon
+            it[description] = server.description
+            if (server.inviteCode != null) {
+                it[inviteCode] = server.inviteCode
+            }
         } > 0
     }
 
