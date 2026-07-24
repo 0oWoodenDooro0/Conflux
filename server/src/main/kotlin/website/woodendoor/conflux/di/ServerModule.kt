@@ -14,6 +14,8 @@ val serverModule = module {
     single<ServerRepository> { ExposedServerRepository(get()) }
     single<ChannelRepository> { ExposedChannelRepository() }
     single<MessageRepository> { ExposedMessageRepository() }
+    single<FriendRepository> { ExposedFriendRepository(get()) }
+    single<DirectMessageRepository> { ExposedDirectMessageRepository(get()) }
 
     // Managers
     single { WebSocketAuthTokenManager() }
@@ -26,6 +28,7 @@ val serverModule = module {
     single<UserService> { UserServiceImpl(get()) }
     single<RoleService> { RoleServiceImpl(get()) }
     single<ChatService> { ChatServiceImpl(get()) }
+    single<FriendAndDmService> { FriendAndDmServiceImpl(get(), get(), get()) }
 
     // Controllers
     single { ServerController(get(), get(), get()) }
@@ -33,4 +36,5 @@ val serverModule = module {
     single { RoleController(get(), get()) }
     single { ChatController(get(), get(), get(), get(), get()) }
     single { UserController(get(), get()) }
+    single { FriendAndDmController(get()) }
 }

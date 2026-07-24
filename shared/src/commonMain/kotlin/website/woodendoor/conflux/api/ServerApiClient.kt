@@ -54,6 +54,49 @@ class ServerApiClient(
         }.body()
     }
 
+    // Friend & DM APIs
+    suspend fun getFriends(userId: String): List<Friendship> {
+        return client.get("$baseUrl/api/friends") {
+            parameter("userId", userId)
+        }.body()
+    }
+
+    suspend fun sendFriendRequest(userId: String, targetUsername: String): Friendship {
+        return client.post("$baseUrl/api/friends/request") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(FriendRequestPayload(targetUsername))
+        }.body()
+    }
+
+    suspend fun acceptFriendRequest(userId: String, friendshipId: String): Boolean {
+        val response = client.post("$baseUrl/api/friends/$friendshipId/accept") {
+            parameter("userId", userId)
+        }
+        return response.status.isSuccess()
+    }
+
+    suspend fun removeFriend(userId: String, friendshipId: String): Boolean {
+        val response = client.delete("$baseUrl/api/friends/$friendshipId") {
+            parameter("userId", userId)
+        }
+        return response.status.isSuccess()
+    }
+
+    suspend fun getDmChannels(userId: String): List<Channel> {
+        return client.get("$baseUrl/api/dm/channels") {
+            parameter("userId", userId)
+        }.body()
+    }
+
+    suspend fun openDmChannel(userId: String, targetUserId: String): Channel {
+        return client.post("$baseUrl/api/dm/open") {
+            parameter("userId", userId)
+            contentType(ContentType.Application.Json)
+            setBody(OpenDmRequest(targetUserId))
+        }.body()
+    }
+
     suspend fun getServers(userId: String): List<Server> {
         return client.get("$baseUrl/api/servers") {
             parameter("userId", userId)

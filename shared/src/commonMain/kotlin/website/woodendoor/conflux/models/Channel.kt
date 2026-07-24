@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class ChannelType {
-    TEXT, VOICE, ANNOUNCEMENT
+    TEXT, VOICE, ANNOUNCEMENT, DM, GROUP_DM
 }
 
 @Serializable
@@ -15,5 +15,6 @@ data class Channel(
     val type: ChannelType,
     val topic: String? = null,
     val metadata: Map<String, String> = emptyMap(),
-    val canManage: Boolean = false
+    val canManage: Boolean = false,
+    val recipients: List<User> = emptyList()
 )

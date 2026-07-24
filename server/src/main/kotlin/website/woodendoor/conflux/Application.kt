@@ -69,7 +69,10 @@ fun Application.module() {
     val dbUrl = environment.config.propertyOrNull("database.url")?.getString() ?: "jdbc:h2:mem:conflux;DB_CLOSE_DELAY=-1;"
     DatabaseFactory.init(dbDriver, dbUrl)
     transaction {
-        SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages)
+        SchemaUtils.create(
+            Users, Servers, Roles, Channels, ServerMembers, MemberRoles,
+            ChannelPermissionOverrides, Messages, Friendships, DirectMessageChannels, DirectMessageMembers
+        )
         
         // Create a default user if it doesn't exist
         if (Users.selectAll().where { Users.id eq "default-user" }.empty()) {
@@ -92,6 +95,7 @@ fun Application.module() {
     val roleController by inject<RoleController>()
     val chatController by inject<ChatController>()
     val userController by inject<UserController>()
+    val friendAndDmController by inject<FriendAndDmController>()
     val tokenManager by inject<WebSocketAuthTokenManager>()
     val connectionManager by inject<WebSocketConnectionManager>()
     val channelRepository by inject<ChannelRepository>()
@@ -117,6 +121,7 @@ fun Application.module() {
         messageRoutes(chatController)
         roleRoutes(roleController)
         userRoutes(userController)
+        friendAndDmRoutes(friendAndDmController)
         webSocketRoutes(tokenManager, connectionManager, channelRepository, serverRepository)
     }
 }

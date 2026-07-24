@@ -20,8 +20,8 @@ class PermissionQueryTest {
     fun setup() {
         DatabaseFactory.init()
         transaction {
-            SchemaUtils.drop(Messages, ChannelPermissionOverrides, MemberRoles, ServerMembers, Channels, Roles, Servers, Users)
-            SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages)
+            SchemaUtils.drop(Friendships, DirectMessageMembers, DirectMessageChannels, Messages, ChannelPermissionOverrides, MemberRoles, ServerMembers, Channels, Roles, Servers, Users)
+            SchemaUtils.create(Users, Servers, Roles, Channels, ServerMembers, MemberRoles, ChannelPermissionOverrides, Messages, Friendships, DirectMessageChannels, DirectMessageMembers)
         }
     }
 
