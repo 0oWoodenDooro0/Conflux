@@ -32,5 +32,5 @@ val serverModule = module {
     single { ChannelController(get(), get(), get(), get()) }
     single { RoleController(get(), get()) }
     single { ChatController(get(), get(), get(), get(), get()) }
-    single { UserController(get()) }
+    single { UserController(get(), get()) }
 }

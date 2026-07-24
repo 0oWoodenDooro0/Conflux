@@ -3,6 +3,7 @@ package website.woodendoor.conflux.controller
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import website.woodendoor.conflux.auth.WebSocketAuthTokenManager
 import website.woodendoor.conflux.database.repositories.UserRepository
 import website.woodendoor.conflux.models.LoginRequest
 import website.woodendoor.conflux.models.User
@@ -14,7 +15,8 @@ import kotlin.test.assertFailsWith
 class UserControllerTest {
     private val userRepository = mockk<UserRepository>()
     private val userService = website.woodendoor.conflux.service.impl.UserServiceImpl(userRepository)
-    private val controller = UserController(userService)
+    private val tokenManager = WebSocketAuthTokenManager()
+    private val controller = UserController(userService, tokenManager)
 
     @Test
     fun `test login with existing user`() {
@@ -25,10 +27,11 @@ class UserControllerTest {
             
             coEvery { userRepository.findByUsername("existing") } returns user
             coEvery { userRepository.getPasswordHash("existing") } returns hashed
+            coEvery { userRepository.updateUser(any()) } returns true
             
             val result = controller.login(request)
             
-            assertEquals(user, result)
+            assertEquals("existing", result.user.username)
         }
     }
 
@@ -70,7 +73,7 @@ class UserControllerTest {
             
             val result = controller.register(request)
             
-            assertEquals("newuser", result.username)
+            assertEquals("newuser", result.user.username)
         }
     }
 

@@ -12,6 +12,9 @@ class ServerApiClient(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
+    var authToken: String? = null
+        private set
+
     constructor(baseUrl: String) : this(HttpClient {
         expectSuccess = true
         install(ContentNegotiation) {
@@ -19,17 +22,35 @@ class ServerApiClient(
         }
     }, baseUrl)
 
-    suspend fun login(username: String, password: String = ""): User {
-        return client.post("$baseUrl/api/login") {
+    suspend fun login(username: String, password: String = ""): AuthResponse {
+        val response: AuthResponse = client.post("$baseUrl/api/login") {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest(username, password))
         }.body()
+        authToken = response.token
+        return response
     }
 
-    suspend fun register(username: String, password: String): User {
-        return client.post("$baseUrl/api/register") {
+    suspend fun register(username: String, password: String): AuthResponse {
+        val response: AuthResponse = client.post("$baseUrl/api/register") {
             contentType(ContentType.Application.Json)
             setBody(RegisterRequest(username, password))
+        }.body()
+        authToken = response.token
+        return response
+    }
+
+    suspend fun updateUserStatus(userId: String, onlineStatus: OnlineStatus, statusMessage: String? = null): User {
+        return client.put("$baseUrl/api/users/$userId/status") {
+            contentType(ContentType.Application.Json)
+            setBody(UpdateStatusRequest(onlineStatus, statusMessage))
+        }.body()
+    }
+
+    suspend fun updateUserProfile(userId: String, avatar: String? = null, statusMessage: String? = null): User {
+        return client.put("$baseUrl/api/users/$userId/profile") {
+            contentType(ContentType.Application.Json)
+            setBody(UpdateProfileRequest(avatar, statusMessage))
         }.body()
     }
 

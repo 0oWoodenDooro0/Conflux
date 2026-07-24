@@ -20,9 +20,9 @@ class JoinServerRouteTest {
         // 1. Create owner and server
         val loginOwner = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "joinOwner1", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "joinOwner1", password = "password123")))
         }
-        val owner = Json.decodeFromString<User>(loginOwner.bodyAsText())
+        val owner = Json.decodeFromString<AuthResponse>(loginOwner.bodyAsText()).user
 
         val createResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -33,9 +33,9 @@ class JoinServerRouteTest {
         // 2. Create joiner
         val loginJoiner = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "joiner1", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "joiner1", password = "password123")))
         }
-        val joiner = Json.decodeFromString<User>(loginJoiner.bodyAsText())
+        val joiner = Json.decodeFromString<AuthResponse>(loginJoiner.bodyAsText()).user
 
         // 3. Join server
         val joinResponse = client.post("/api/servers/${server.id}/join?userId=${joiner.id}")
@@ -66,9 +66,9 @@ class JoinServerRouteTest {
         // 1. Create owner and server
         val loginOwner = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "owner2", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "owner2", password = "password123")))
         }
-        val owner = Json.decodeFromString<User>(loginOwner.bodyAsText())
+        val owner = Json.decodeFromString<AuthResponse>(loginOwner.bodyAsText()).user
 
         val createResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -79,9 +79,9 @@ class JoinServerRouteTest {
         // 2. Create joiner
         val loginJoiner = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "joiner2", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "joiner2", password = "password123")))
         }
-        val joiner = Json.decodeFromString<User>(loginJoiner.bodyAsText())
+        val joiner = Json.decodeFromString<AuthResponse>(loginJoiner.bodyAsText()).user
 
         // 3. Join first time
         client.post("/api/servers/${server.id}/join?userId=${joiner.id}")
@@ -100,9 +100,9 @@ class JoinServerRouteTest {
         // 1. Create owner and server
         val loginOwner = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "owner3", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "owner3", password = "password123")))
         }
-        val owner = Json.decodeFromString<User>(loginOwner.bodyAsText())
+        val owner = Json.decodeFromString<AuthResponse>(loginOwner.bodyAsText()).user
 
         val createResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)

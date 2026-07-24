@@ -284,7 +284,7 @@ fun LoginScreen(
                                 isLoading = true
                                 when (val result = safeApiCall { apiClient.login(username, password) }) {
                                     is Result.Success -> {
-                                        onLoginSuccess(result.data)
+                                        onLoginSuccess(result.data.user)
                                     }
                                     is Result.Failure -> {
                                         errorMessage = "Invalid username or password"

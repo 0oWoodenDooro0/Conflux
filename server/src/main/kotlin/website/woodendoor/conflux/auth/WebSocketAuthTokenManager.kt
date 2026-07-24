@@ -15,4 +15,8 @@ class WebSocketAuthTokenManager {
     fun validateToken(token: String): String? {
         return tokens.remove(token)
     }
+
+    fun peekUserId(token: String): String? {
+        return tokens[token]
+    }
 }

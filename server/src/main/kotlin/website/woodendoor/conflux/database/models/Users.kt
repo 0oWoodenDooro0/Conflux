@@ -8,6 +8,8 @@ object Users : Table("users") {
     val discriminator = varchar("discriminator", 4)
     val avatar = varchar("avatar", 255).nullable()
     val passwordHash = varchar("password_hash", 255).default("")
+    val statusMessage = varchar("status_message", 255).nullable()
+    val onlineStatus = varchar("online_status", 16).default("OFFLINE")
 
     override val primaryKey = PrimaryKey(id)
 }

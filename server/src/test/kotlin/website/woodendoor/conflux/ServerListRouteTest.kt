@@ -6,10 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import website.woodendoor.conflux.models.CreateServerRequest
-import website.woodendoor.conflux.models.Server
-import website.woodendoor.conflux.models.User
-import website.woodendoor.conflux.models.LoginRequest
+import website.woodendoor.conflux.models.*
 import kotlin.test.*
 
 class ServerListRouteTest {
@@ -23,19 +20,9 @@ class ServerListRouteTest {
         // 1. Login to get a user
         val loginResponse = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "serverUser", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "serverUser", password = "password123")))
         }
-        val user = Json.decodeFromString<User>(loginResponse.bodyAsText())
-        
-        // 2. Create a server (as default-user for now, but we want to see it)
-        // Wait, the current implementation of createServer sets ownerId to "default-user".
-        // And there is no way to join a server yet.
-        // So for this track, maybe the GET /api/servers?userId=... should return ALL servers if the user is "default-user" 
-        // or if we change createServer to use the provided userId (not yet implemented in API).
-        
-        // Let's refine the plan: the route should return servers where the user is owner.
-        // I'll update createServer to use a provided ownerId or just return all for now to satisfy the "Server List" requirement.
-        // Actually, the spec says "where the user is a member or owner".
+        val user = Json.decodeFromString<AuthResponse>(loginResponse.bodyAsText()).user
         
         val createResponse = client.post("/api/servers") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -43,8 +30,6 @@ class ServerListRouteTest {
         }
         assertEquals(HttpStatusCode.Created, createResponse.status)
         
-        // 3. Get servers for the user
-        // Since createServer uses "default-user", I'll test with that.
         val response = client.get("/api/servers?userId=default-user")
         assertEquals(HttpStatusCode.OK, response.status)
         val servers = Json.decodeFromString<List<Server>>(response.bodyAsText())
@@ -79,9 +64,9 @@ class ServerListRouteTest {
         // 1. Create a user with a specific ID and username via login
         val loginResponse = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest(username = "realuser", password = "password123")))
+            setBody(Json.encodeToString(RegisterRequest(username = "realuser", password = "password123")))
         }
-        val user = Json.decodeFromString<User>(loginResponse.bodyAsText())
+        val user = Json.decodeFromString<AuthResponse>(loginResponse.bodyAsText()).user
         val userId = user.id
         
         // 2. Create a server with the user's ID

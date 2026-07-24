@@ -15,6 +15,24 @@ data class RegisterRequest(
 )
 
 @Serializable
+data class AuthResponse(
+    val token: String,
+    val user: User
+)
+
+@Serializable
+data class UpdateStatusRequest(
+    val onlineStatus: OnlineStatus,
+    val statusMessage: String? = null
+)
+
+@Serializable
+data class UpdateProfileRequest(
+    val avatar: String? = null,
+    val statusMessage: String? = null
+)
+
+@Serializable
 data class CreateServerRequest(
     val name: String,
     val ownerId: String
@@ -67,4 +85,3 @@ data class ErrorResponse(
     val error: String,
     val details: String? = null
 )
-

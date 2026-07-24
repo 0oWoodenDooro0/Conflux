@@ -6,8 +6,9 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import website.woodendoor.conflux.models.AuthResponse
 import website.woodendoor.conflux.models.LoginRequest
-import website.woodendoor.conflux.models.User
+import website.woodendoor.conflux.models.RegisterRequest
 import kotlin.test.*
 
 class LoginRouteTest {
@@ -21,10 +22,10 @@ class LoginRouteTest {
         // 1. First register the user
         val firstResponse = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest("existingUser", "password123")))
+            setBody(Json.encodeToString(RegisterRequest("existingUser", "password123")))
         }
         assertEquals(HttpStatusCode.OK, firstResponse.status)
-        val user1 = Json.decodeFromString<User>(firstResponse.bodyAsText())
+        val auth1 = Json.decodeFromString<AuthResponse>(firstResponse.bodyAsText())
         
         // 2. Second login with correct password
         val secondResponse = client.post("/api/login") {
@@ -32,10 +33,11 @@ class LoginRouteTest {
             setBody(Json.encodeToString(LoginRequest("existingUser", "password123")))
         }
         assertEquals(HttpStatusCode.OK, secondResponse.status)
-        val user2 = Json.decodeFromString<User>(secondResponse.bodyAsText())
+        val auth2 = Json.decodeFromString<AuthResponse>(secondResponse.bodyAsText())
         
-        assertEquals(user1.id, user2.id)
-        assertEquals("existingUser", user2.username)
+        assertEquals(auth1.user.id, auth2.user.id)
+        assertEquals("existingUser", auth2.user.username)
+        assertNotNull(auth2.token)
 
         // 3. Login with incorrect password
         val thirdResponse = client.post("/api/login") {
@@ -52,12 +54,13 @@ class LoginRouteTest {
         }
         val response = client.post("/api/register") {
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            setBody(Json.encodeToString(website.woodendoor.conflux.models.RegisterRequest("newUser", "password123")))
+            setBody(Json.encodeToString(RegisterRequest("newUser", "password123")))
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        val user = Json.decodeFromString<User>(response.bodyAsText())
-        assertEquals("newUser", user.username)
-        assertNotNull(user.id)
+        val auth = Json.decodeFromString<AuthResponse>(response.bodyAsText())
+        assertEquals("newUser", auth.user.username)
+        assertNotNull(auth.user.id)
+        assertNotNull(auth.token)
     }
 
     @Test

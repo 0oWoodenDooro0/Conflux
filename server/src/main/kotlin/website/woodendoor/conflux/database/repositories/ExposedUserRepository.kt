@@ -2,17 +2,24 @@ package website.woodendoor.conflux.database.repositories
 
 import website.woodendoor.conflux.database.DatabaseFactory.dbQuery
 import website.woodendoor.conflux.database.models.Users
+import website.woodendoor.conflux.models.OnlineStatus
 import website.woodendoor.conflux.models.User
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
-import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 
 class ExposedUserRepository : UserRepository {
     private fun resultRowToUser(row: ResultRow) = User(
         id = row[Users.id],
         username = row[Users.username],
         discriminator = row[Users.discriminator],
-        avatar = row[Users.avatar]
+        avatar = row[Users.avatar],
+        statusMessage = row[Users.statusMessage],
+        onlineStatus = try {
+            OnlineStatus.valueOf(row[Users.onlineStatus])
+        } catch (e: Exception) {
+            OnlineStatus.OFFLINE
+        },
+        isOnline = row[Users.onlineStatus] != "OFFLINE"
     )
 
     override suspend fun createUser(user: User, passwordHash: String): User? = dbQuery {
@@ -22,6 +29,8 @@ class ExposedUserRepository : UserRepository {
             it[discriminator] = user.discriminator
             it[avatar] = user.avatar
             it[Users.passwordHash] = passwordHash
+            it[statusMessage] = user.statusMessage
+            it[onlineStatus] = user.onlineStatus.name
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
     }
@@ -49,6 +58,8 @@ class ExposedUserRepository : UserRepository {
             it[username] = user.username
             it[discriminator] = user.discriminator
             it[avatar] = user.avatar
+            it[statusMessage] = user.statusMessage
+            it[onlineStatus] = user.onlineStatus.name
         } > 0
     }
 

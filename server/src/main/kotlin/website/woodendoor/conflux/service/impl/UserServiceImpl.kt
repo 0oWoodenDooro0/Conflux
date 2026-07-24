@@ -1,6 +1,7 @@
 package website.woodendoor.conflux.service.impl
 
 import website.woodendoor.conflux.database.repositories.UserRepository
+import website.woodendoor.conflux.models.OnlineStatus
 import website.woodendoor.conflux.models.User
 import website.woodendoor.conflux.service.UserService
 
@@ -17,7 +18,9 @@ class UserServiceImpl(
         val newUser = User(
             id = java.util.UUID.randomUUID().toString(),
             username = username,
-            discriminator = (1000..9999).random().toString()
+            discriminator = (1000..9999).random().toString(),
+            onlineStatus = OnlineStatus.ONLINE,
+            isOnline = true
         )
         return userRepository.createUser(newUser)
     }
@@ -39,18 +42,43 @@ class UserServiceImpl(
         val newUser = User(
             id = java.util.UUID.randomUUID().toString(),
             username = username,
-            discriminator = (1000..9999).random().toString()
+            discriminator = (1000..9999).random().toString(),
+            onlineStatus = OnlineStatus.ONLINE,
+            isOnline = true
         )
         return userRepository.createUser(newUser, hashedPassword)
     }
 
     override suspend fun authenticateUser(username: String, passwordRaw: String): User? {
-        val existingUser = userRepository.findByUsername(username) 
+        val existingUser = userRepository.findByUsername(username)
             ?: throw website.woodendoor.conflux.exceptions.UserNotFoundException("User not found")
         val storedHash = userRepository.getPasswordHash(username) ?: ""
         if (!website.woodendoor.conflux.util.PasswordHasher.verifyPassword(passwordRaw, storedHash)) {
             throw website.woodendoor.conflux.exceptions.UnauthorizedException("Invalid username or password")
         }
-        return existingUser
+        val updatedUser = existingUser.copy(onlineStatus = OnlineStatus.ONLINE, isOnline = true)
+        userRepository.updateUser(updatedUser)
+        return updatedUser
+    }
+
+    override suspend fun updateUserStatus(userId: String, status: OnlineStatus, statusMessage: String?): User? {
+        val user = userRepository.getUser(userId) ?: return null
+        val updatedUser = user.copy(
+            onlineStatus = status,
+            isOnline = status != OnlineStatus.OFFLINE,
+            statusMessage = statusMessage ?: user.statusMessage
+        )
+        userRepository.updateUser(updatedUser)
+        return updatedUser
+    }
+
+    override suspend fun updateUserProfile(userId: String, avatar: String?, statusMessage: String?): User? {
+        val user = userRepository.getUser(userId) ?: return null
+        val updatedUser = user.copy(
+            avatar = avatar ?: user.avatar,
+            statusMessage = statusMessage ?: user.statusMessage
+        )
+        userRepository.updateUser(updatedUser)
+        return updatedUser
     }
 }
